@@ -3,7 +3,7 @@ import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/home/HeroSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import AboutSection from "@/components/home/AboutSection";
-import CentersSection from "@/components/home/CentersSection";
+import FeaturesShowcase from "@/components/home/FeaturesShowcase";
 import PricingSection from "@/components/home/PricingSection";
 import ContactFormSection from "@/components/home/ContactFormSection";
 import FAQSection from "@/components/home/FAQSection";
@@ -25,7 +25,7 @@ export default function Home() {
         <HeroSection />
         <FeaturesSection />
         <AboutSection />
-        <CentersSection />
+        <FeaturesShowcase />
         <PricingSection />
         <ContactFormSection />
         <FAQSection />
