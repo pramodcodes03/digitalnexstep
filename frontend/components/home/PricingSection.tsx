@@ -93,13 +93,13 @@ const PricingSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative ${plan.featured ? "md:-mt-4 md:mb-4" : ""}`}
+              className={`relative ${plan.featured ? "md:-mt-8 md:mb-8" : "mt-4"}`}
             >
-              {/* Featured Badge */}
+              {/* Featured Badge - FIXED */}
               {plan.featured && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                  <div className="px-4 py-1 bg-gradient-primary text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-1">
-                    <FiStar className="w-4 h-4" />
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-20">
+                  <div className="px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-sm font-bold rounded-full shadow-xl flex items-center gap-2 animate-pulse">
+                    <FiStar className="w-4 h-4 fill-white" />
                     Most Popular
                   </div>
                 </div>

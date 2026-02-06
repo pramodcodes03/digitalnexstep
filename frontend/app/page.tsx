@@ -6,6 +6,7 @@ import AboutSection from "@/components/home/AboutSection";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
 import ExploreFeatures from "@/components/home/ExploreFeatures";
 import FeaturesShowcase from "@/components/home/FeaturesShowcase";
+import RobustSupport from "@/components/home/RobustSupport";
 import PricingSection from "@/components/home/PricingSection";
 import ContactFormSection from "@/components/home/ContactFormSection";
 import FAQSection from "@/components/home/FAQSection";
@@ -30,6 +31,7 @@ export default function Home() {
         <WhyChooseUs />
         <ExploreFeatures />
         <FeaturesShowcase />
+        <RobustSupport />
         <PricingSection />
         <ContactFormSection />
         <FAQSection />
