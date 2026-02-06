@@ -75,7 +75,7 @@ const HeroSection: React.FC = () => {
       <div className="absolute inset-0 overflow-hidden">
         {/* Gradient Orbs */}
         <motion.div
-          className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 dark:from-blue-500/30 dark:to-cyan-500/30 rounded-full blur-3xl"
+          className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 dark:from-blue-500/30 dark:to-cyan-500/30 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
@@ -87,7 +87,7 @@ const HeroSection: React.FC = () => {
           }}
         />
         <motion.div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-500/30 dark:to-pink-500/30 rounded-full blur-3xl"
+          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-500/30 to-pink-500/30 dark:from-purple-500/30 dark:to-pink-500/30 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.3, 0.6, 0.3],
@@ -100,7 +100,7 @@ const HeroSection: React.FC = () => {
           }}
         />
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-500/10 to-yellow-500/10 dark:from-orange-500/20 dark:to-yellow-500/20 rounded-full blur-3xl"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-500/20 to-yellow-500/20 dark:from-orange-500/20 dark:to-yellow-500/20 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.1, 1],
             rotate: [0, 180, 360],
@@ -128,7 +128,7 @@ const HeroSection: React.FC = () => {
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-blue-500/10 dark:bg-white/30 rounded-full"
+            className="absolute w-2 h-2 bg-blue-500/30 dark:bg-white/30 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
