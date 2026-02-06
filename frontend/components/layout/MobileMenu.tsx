@@ -56,18 +56,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
-            className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white z-50 lg:hidden shadow-2xl"
+            className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white dark:bg-gray-900 z-50 lg:hidden shadow-2xl"
           >
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Menu</h2>
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Menu</h2>
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors-smooth"
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors-smooth"
                   aria-label="Close menu"
                 >
-                  <FiX className="w-6 h-6 text-gray-600" />
+                  <FiX className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                 </button>
               </div>
 
@@ -86,7 +86,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                         <Link
                           href={item.href}
                           onClick={handleLinkClick}
-                          className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-primary-50 text-gray-700 hover:text-primary-600 transition-colors-smooth group"
+                          className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-primary-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors-smooth group"
                         >
                           <Icon className="w-5 h-5 group-hover:scale-110 transition-transform-smooth" />
                           <span className="font-medium">{item.name}</span>
@@ -98,11 +98,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               </nav>
 
               {/* Footer CTA */}
-              <div className="p-6 border-t border-gray-200">
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700">
                 <Link
                   href="#contact"
                   onClick={handleLinkClick}
-                  className="block w-full px-6 py-3 text-center font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors-smooth shadow-md"
+                  className="block w-full px-6 py-3 text-center font-semibold text-white bg-primary-600 dark:bg-primary-500 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors-smooth shadow-md"
                 >
                   Get Started
                 </Link>

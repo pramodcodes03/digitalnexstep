@@ -85,12 +85,12 @@ const ExploreFeatures: React.FC = () => {
   const [activeFeature, setActiveFeature] = useState(0);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-500/5 to-pink-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-500/[0.03] to-pink-500/[0.03] dark:from-orange-500/5 dark:to-pink-500/5 rounded-full blur-3xl" />
       </div>
 
       <Container className="relative z-10">
@@ -102,13 +102,13 @@ const ExploreFeatures: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mb-6">
             Explore Our{" "}
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
               Top Features
             </span>
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Powerful management tools designed to streamline every aspect of your educational institution
           </p>
         </motion.div>
@@ -131,39 +131,39 @@ const ExploreFeatures: React.FC = () => {
               >
                 {/* Card */}
                 <div
-                  className={`relative h-full bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border transition-all-smooth ${
+                  className={`relative h-full bg-gradient-to-br backdrop-blur-xl rounded-2xl p-6 border transition-all-smooth ${
                     isActive
                       ? `border-transparent bg-gradient-to-br ${feature.gradient} shadow-2xl -translate-y-2`
-                      : "border-gray-700/50 hover:border-gray-600"
+                      : "from-white/80 to-gray-50/80 dark:from-gray-800/50 dark:to-gray-900/50 border-gray-200 dark:border-gray-700/50 hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                 >
                   {/* Glow Effect */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-opacity-smooth -z-10`} />
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 blur-xl transition-opacity-smooth -z-10`} />
 
                   {/* Icon */}
                   <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all-smooth ${
-                    isActive ? "bg-white/20" : "bg-gray-700/50 group-hover:bg-gray-600/50"
+                    isActive ? "bg-white/20" : "bg-gray-100 dark:bg-gray-700/50 group-hover:bg-gray-200 dark:group-hover:bg-gray-600/50"
                   }`}>
                     <Icon className={`w-7 h-7 transition-colors-smooth ${
-                      isActive ? "text-white" : "text-gray-300 group-hover:text-white"
+                      isActive ? "text-white" : "text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
                     }`} />
                   </div>
 
                   {/* Content */}
                   <h3 className={`text-xl font-bold mb-2 transition-colors-smooth ${
-                    isActive ? "text-white" : "text-gray-200 group-hover:text-white"
+                    isActive ? "text-white" : "text-gray-900 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white"
                   }`}>
                     {feature.title}
                   </h3>
                   <p className={`text-sm leading-relaxed mb-4 transition-colors-smooth ${
-                    isActive ? "text-white/90" : "text-gray-400 group-hover:text-gray-300"
+                    isActive ? "text-white/90" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
                   }`}>
                     {feature.description}
                   </p>
 
                   {/* Arrow */}
                   <div className={`flex items-center gap-2 font-semibold transition-all-smooth ${
-                    isActive ? "text-white gap-3" : "text-gray-400 group-hover:text-white group-hover:gap-3"
+                    isActive ? "text-white gap-3" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white group-hover:gap-3"
                   }`}>
                     <span className="text-sm">Explore</span>
                     <FiChevronRight className="w-4 h-4" />

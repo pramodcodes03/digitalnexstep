@@ -60,7 +60,7 @@ const CountUp: React.FC<{ end: number; duration?: number; isLarge?: boolean; suf
 
 const AboutSection: React.FC = () => {
   return (
-    <section id="about" className="py-20 bg-white">
+    <section id="about" className="py-20 bg-white dark:bg-gray-900">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Image Column */}
@@ -83,7 +83,7 @@ const AboutSection: React.FC = () => {
             </div>
 
             {/* Decorative Element */}
-            <div className="absolute -bottom-6 -right-6 w-72 h-72 bg-primary-100 rounded-2xl -z-10" />
+            <div className="absolute -bottom-6 -right-6 w-72 h-72 bg-primary-100 dark:bg-primary-900/30 rounded-2xl -z-10" />
           </motion.div>
 
           {/* Content Column */}
@@ -94,16 +94,16 @@ const AboutSection: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="space-y-6"
           >
-            <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold uppercase tracking-wide">
+            <span className="inline-block px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-semibold uppercase tracking-wide">
               About Us
             </span>
 
-            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
               Empowering Education Through{" "}
               <span className="gradient-text">Innovation</span>
             </h2>
 
-            <div className="space-y-4 text-gray-600 leading-relaxed text-lg">
+            <div className="space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
               <p>
                 Founded with a vision to revolutionize educational assessments, DigitalNexStep
                 has been at the forefront of educational technology for over a decade. We believe
@@ -133,17 +133,17 @@ const AboutSection: React.FC = () => {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="text-center p-4 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100"
+                    className="text-center p-4 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/30 dark:to-primary-800/30"
                   >
-                    <Icon className="w-8 h-8 text-primary-600 mx-auto mb-2" />
-                    <div className="text-3xl font-extrabold text-primary-700 mb-1">
+                    <Icon className="w-8 h-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
+                    <div className="text-3xl font-extrabold text-primary-700 dark:text-primary-400 mb-1">
                       <CountUp
                         end={stat.value}
                         isLarge={stat.isLarge}
                         suffix={stat.suffix}
                       />
                     </div>
-                    <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">{stat.label}</div>
                   </motion.div>
                 );
               })}

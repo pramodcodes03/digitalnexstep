@@ -20,64 +20,64 @@ const features = [
     title: "Real-time Analytics",
     description:
       "Monitor student performance and assessment metrics in real-time with comprehensive dashboards and insights.",
-    color: "text-blue-600",
-    bgColor: "bg-blue-100",
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-100 dark:bg-blue-900/30",
   },
   {
     icon: FiCheckCircle,
     title: "Automated Grading",
     description:
       "Save time with intelligent automated grading for objective questions, with manual override options for complex assessments.",
-    color: "text-green-600",
-    bgColor: "bg-green-100",
+    color: "text-green-600 dark:text-green-400",
+    bgColor: "bg-green-100 dark:bg-green-900/30",
   },
   {
     icon: FiEdit3,
     title: "Custom Assessments",
     description:
       "Create tailored assessments with our intuitive builder. Support for multiple question types, multimedia, and adaptive testing.",
-    color: "text-purple-600",
-    bgColor: "bg-purple-100",
+    color: "text-purple-600 dark:text-purple-400",
+    bgColor: "bg-purple-100 dark:bg-purple-900/30",
   },
   {
     icon: FiShield,
     title: "Secure Platform",
     description:
       "Enterprise-grade security with encrypted data, secure authentication, and compliance with educational standards.",
-    color: "text-red-600",
-    bgColor: "bg-red-100",
+    color: "text-red-600 dark:text-red-400",
+    bgColor: "bg-red-100 dark:bg-red-900/30",
   },
   {
     icon: FiFileText,
     title: "Multi-format Support",
     description:
       "Support for various assessment formats including MCQs, essays, coding challenges, and multimedia submissions.",
-    color: "text-yellow-600",
-    bgColor: "bg-yellow-100",
+    color: "text-yellow-600 dark:text-yellow-400",
+    bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
   },
   {
     icon: FiBarChart2,
     title: "Detailed Reporting",
     description:
       "Generate comprehensive reports with actionable insights. Export data for further analysis and stakeholder presentations.",
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-100",
+    color: "text-indigo-600 dark:text-indigo-400",
+    bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
   },
 ];
 
 const FeaturesSection: React.FC = () => {
   return (
-    <section id="features" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section id="features" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-16">
-          <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
+          <span className="inline-block px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
             Our Features
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
             Everything You Need for{" "}
             <span className="gradient-text">Modern Assessment</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Comprehensive tools designed to streamline your assessment workflow,
             enhance student engagement, and provide meaningful insights.
           </p>
@@ -100,13 +100,13 @@ const FeaturesSection: React.FC = () => {
                   >
                     <Icon className={`w-8 h-8 ${feature.color}`} />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                     {feature.description}
                   </p>
-                  <div className="mt-6 flex items-center text-primary-600 font-semibold group-hover:gap-2 transition-all-smooth">
+                  <div className="mt-6 flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:gap-2 transition-all-smooth">
                     <span>Learn more</span>
                     <svg
                       className="w-5 h-5 opacity-0 group-hover:opacity-100 -ml-5 group-hover:ml-0 transition-all-smooth"

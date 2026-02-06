@@ -69,17 +69,17 @@ const PricingSection: React.FC = () => {
   };
 
   return (
-    <section id="pricing" className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section id="pricing" className="py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-16">
-          <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
+          <span className="inline-block px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
             Pricing Plans
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
             Choose Your{" "}
             <span className="gradient-text">Perfect Plan</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Flexible pricing designed to scale with your needs. All plans include our core features
             with no hidden fees.
           </p>
@@ -107,29 +107,29 @@ const PricingSection: React.FC = () => {
 
               <Card
                 padding="none"
-                className={`h-full ${
+                className={`h-full bg-white dark:bg-gray-800 ${
                   plan.featured
                     ? "border-2 border-primary-600 shadow-glow-lg"
-                    : "border border-gray-200"
+                    : "border border-gray-200 dark:border-gray-700"
                 }`}
               >
                 <div className="p-8">
                   {/* Plan Header */}
                   <div className="text-center mb-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                    <p className="text-gray-600 mb-6">{plan.description}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">{plan.description}</p>
                     <div className="mb-6">
                       {plan.price ? (
                         <>
                           <div className="flex items-baseline justify-center gap-1">
-                            <span className="text-5xl font-extrabold text-primary-700">
+                            <span className="text-5xl font-extrabold text-primary-700 dark:text-primary-400">
                               ${plan.price}
                             </span>
-                            <span className="text-gray-600">/{plan.period}</span>
+                            <span className="text-gray-600 dark:text-gray-300">/{plan.period}</span>
                           </div>
                         </>
                       ) : (
-                        <div className="text-4xl font-extrabold text-primary-700">
+                        <div className="text-4xl font-extrabold text-primary-700 dark:text-primary-400">
                           {plan.period}
                         </div>
                       )}
@@ -140,8 +140,8 @@ const PricingSection: React.FC = () => {
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
-                        <FiCheck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">{feature}</span>
+                        <FiCheck className="w-5 h-5 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -171,9 +171,9 @@ const PricingSection: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center mt-12"
         >
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             All plans include 14-day money-back guarantee. No credit card required for trial.{" "}
-            <a href="#contact" className="text-primary-600 font-semibold hover:underline">
+            <a href="#contact" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
               Contact us
             </a>{" "}
             for custom pricing.

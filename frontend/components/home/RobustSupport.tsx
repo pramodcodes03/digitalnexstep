@@ -66,12 +66,12 @@ const RobustSupport: React.FC = () => {
   const [activeFeature, setActiveFeature] = useState(0);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/[0.03] to-purple-500/[0.03] dark:from-blue-500/5 dark:to-purple-500/5 rounded-full blur-3xl" />
       </div>
 
       <Container className="relative z-10">
@@ -83,14 +83,14 @@ const RobustSupport: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6">
-            <span className="bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mb-6">
+            <span className="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 dark:from-orange-400 dark:via-red-400 dark:to-pink-400 bg-clip-text text-transparent">
               Robust Operational
             </span>
             <br />
             Support
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Comprehensive support services to ensure your educational platform runs
             smoothly 24/7. We're committed to your success every step of the way.
           </p>
@@ -114,32 +114,32 @@ const RobustSupport: React.FC = () => {
               >
                 {/* Card */}
                 <div
-                  className={`relative h-full bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-2xl p-8 border transition-all-smooth ${
+                  className={`relative h-full bg-gradient-to-br backdrop-blur-xl rounded-2xl p-8 border transition-all-smooth ${
                     isActive
                       ? `border-transparent bg-gradient-to-br ${feature.gradient} shadow-2xl -translate-y-2`
-                      : "border-gray-700/50 hover:border-gray-600"
+                      : "from-white/80 to-gray-50/80 dark:from-gray-800/50 dark:to-gray-900/50 border-gray-200 dark:border-gray-700/50 hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                 >
                   {/* Glow Effect */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-opacity-smooth -z-10`} />
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 blur-xl transition-opacity-smooth -z-10`} />
 
                   {/* Icon */}
                   <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 transition-all-smooth ${
-                    isActive ? "bg-white/20" : `${feature.iconBg} group-hover:bg-white/10`
+                    isActive ? "bg-white/20" : `bg-gray-100 dark:${feature.iconBg} group-hover:bg-gray-200 dark:group-hover:bg-white/10`
                   }`}>
                     <Icon className={`w-8 h-8 transition-colors-smooth ${
-                      isActive ? "text-white" : `${feature.iconColor} group-hover:text-white`
+                      isActive ? "text-white" : `text-gray-700 dark:${feature.iconColor} group-hover:text-gray-900 dark:group-hover:text-white`
                     }`} />
                   </div>
 
                   {/* Content */}
                   <h3 className={`text-xl font-bold mb-3 transition-colors-smooth ${
-                    isActive ? "text-white" : "text-gray-200 group-hover:text-white"
+                    isActive ? "text-white" : "text-gray-900 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white"
                   }`}>
                     {feature.title}
                   </h3>
                   <p className={`text-sm leading-relaxed transition-colors-smooth ${
-                    isActive ? "text-white/90" : "text-gray-400 group-hover:text-gray-300"
+                    isActive ? "text-white/90" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
                   }`}>
                     {feature.description}
                   </p>
@@ -169,12 +169,12 @@ const RobustSupport: React.FC = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-700/50 text-center hover:border-gray-600 transition-all-smooth"
+                className="bg-gradient-to-br from-white/80 to-gray-50/80 dark:from-gray-800/50 dark:to-gray-900/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-gray-700/50 text-center hover:border-gray-300 dark:hover:border-gray-600 transition-all-smooth"
               >
-                <div className="text-4xl font-extrabold bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                <div className="text-4xl font-extrabold bg-gradient-to-r from-orange-600 to-pink-600 dark:from-orange-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
                   {stat.value}
                 </div>
-                <div className="text-gray-300 font-medium">{stat.label}</div>
+                <div className="text-gray-700 dark:text-gray-300 font-medium">{stat.label}</div>
               </motion.div>
             ))}
           </div>

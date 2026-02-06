@@ -186,14 +186,14 @@ const FeaturesShowcase: React.FC = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
             Pioneering Next-gen Education with{" "}
             <span className="gradient-text">AI-based Solutions</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
             Discover the latest upgrades for schools
           </p>
 
@@ -203,8 +203,8 @@ const FeaturesShowcase: React.FC = () => {
               onClick={() => handleTabChange("Teacher Assistant")}
               className={`px-8 py-3 text-lg font-semibold rounded-t-lg transition-all-smooth ${
                 activeTab === "Teacher Assistant"
-                  ? "bg-white text-orange-600 border-b-4 border-orange-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 border-b-4 border-orange-600 dark:border-orange-400"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
               Teacher Assistant
@@ -213,8 +213,8 @@ const FeaturesShowcase: React.FC = () => {
               onClick={() => handleTabChange("Smarter Assessments")}
               className={`px-8 py-3 text-lg font-semibold rounded-t-lg transition-all-smooth ${
                 activeTab === "Smarter Assessments"
-                  ? "bg-white text-orange-600 border-b-4 border-orange-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-400 border-b-4 border-orange-600 dark:border-orange-400"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
               Smarter Assessments
@@ -227,22 +227,22 @@ const FeaturesShowcase: React.FC = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-orange-50 hover:text-orange-600 transition-all-smooth group"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-10 w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400 transition-all-smooth group"
             aria-label="Previous slide"
           >
-            <FiChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-orange-600" />
+            <FiChevronLeft className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-400" />
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-orange-50 hover:text-orange-600 transition-all-smooth group"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 z-10 w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400 transition-all-smooth group"
             aria-label="Next slide"
           >
-            <FiChevronRight className="w-6 h-6 text-gray-600 group-hover:text-orange-600" />
+            <FiChevronRight className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-400" />
           </button>
 
           {/* Carousel Content */}
-          <div className="bg-white rounded-3xl shadow-strong border-4 border-orange-500 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-strong border-4 border-orange-500 dark:border-orange-600 overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${activeTab}-${currentSlide}`}
@@ -254,10 +254,10 @@ const FeaturesShowcase: React.FC = () => {
               >
                 {/* Left Side - Text Content */}
                 <div className="flex flex-col justify-center space-y-6">
-                  <h3 className="text-3xl md:text-4xl font-bold text-orange-600">
+                  <h3 className="text-3xl md:text-4xl font-bold text-orange-600 dark:text-orange-400">
                     {currentData.title}
                   </h3>
-                  <p className="text-lg text-gray-700 leading-relaxed">
+                  <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                     {currentData.description}
                   </p>
 
@@ -271,8 +271,8 @@ const FeaturesShowcase: React.FC = () => {
                         transition={{ delay: index * 0.1 }}
                         className="space-y-1"
                       >
-                        <h4 className="text-lg font-bold text-gray-900">{feature.title}</h4>
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <h4 className="text-lg font-bold text-gray-900 dark:text-white">{feature.title}</h4>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                           {feature.description}
                         </p>
                       </motion.div>
@@ -282,7 +282,7 @@ const FeaturesShowcase: React.FC = () => {
 
                 {/* Right Side - Image */}
                 <div className="flex items-center justify-center">
-                  <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg overflow-hidden border-2 border-gray-200">
+                  <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl shadow-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700">
                     {/* Placeholder for image - replace with actual images */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center p-8">
@@ -291,8 +291,8 @@ const FeaturesShowcase: React.FC = () => {
                             {activeTab === "Teacher Assistant" ? "🎓" : "📊"}
                           </span>
                         </div>
-                        <p className="text-gray-600 font-medium">{currentData.imageAlt}</p>
-                        <p className="text-sm text-gray-500 mt-2">Image Placeholder</p>
+                        <p className="text-gray-600 dark:text-gray-300 font-medium">{currentData.imageAlt}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Image Placeholder</p>
                       </div>
                     </div>
                   </div>
@@ -309,8 +309,8 @@ const FeaturesShowcase: React.FC = () => {
                 onClick={() => setCurrentSlide(index)}
                 className={`h-2 rounded-full transition-all-smooth ${
                   index === currentSlide
-                    ? "w-8 bg-orange-600"
-                    : "w-2 bg-gray-300 hover:bg-gray-400"
+                    ? "w-8 bg-orange-600 dark:bg-orange-400"
+                    : "w-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />

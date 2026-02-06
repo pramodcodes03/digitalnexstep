@@ -58,23 +58,23 @@ interface FAQItemProps {
 
 const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onClick }) => {
   return (
-    <div className="border-b border-gray-200 last:border-0">
+    <div className="border-b border-gray-200 dark:border-gray-700 last:border-0">
       <button
         onClick={onClick}
-        className="w-full py-6 flex items-start justify-between gap-4 text-left hover:text-primary-600 transition-colors-smooth group"
+        className="w-full py-6 flex items-start justify-between gap-4 text-left hover:text-primary-600 dark:hover:text-primary-400 transition-colors-smooth group"
       >
-        <span className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors-smooth">
+        <span className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors-smooth">
           {question}
         </span>
         <div
-          className={`flex-shrink-0 w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center transition-all-smooth ${
-            isOpen ? "bg-primary-600 rotate-180" : "group-hover:bg-primary-200"
+          className={`flex-shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center transition-all-smooth ${
+            isOpen ? "bg-primary-600 dark:bg-primary-500 rotate-180" : "group-hover:bg-primary-200 dark:group-hover:bg-primary-800/50"
           }`}
         >
           {isOpen ? (
             <FiMinus className="w-5 h-5 text-white" />
           ) : (
-            <FiPlus className="w-5 h-5 text-primary-600 group-hover:text-primary-700" />
+            <FiPlus className="w-5 h-5 text-primary-600 dark:text-primary-400 group-hover:text-primary-700 dark:group-hover:text-primary-300" />
           )}
         </div>
       </button>
@@ -88,7 +88,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onClick }) 
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <p className="pb-6 text-gray-600 leading-relaxed">{answer}</p>
+            <p className="pb-6 text-gray-600 dark:text-gray-300 leading-relaxed">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -104,19 +104,19 @@ const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-gray-50">
+    <section id="faq" className="py-20 bg-gray-50 dark:bg-gray-800">
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-16">
-          <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
+          <span className="inline-block px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
             FAQ
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
             Frequently Asked{" "}
             <span className="gradient-text">Questions</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Find answers to common questions about our platform. Can't find what you're looking for?{" "}
-            <a href="#contact" className="text-primary-600 font-semibold hover:underline">
+            <a href="#contact" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
               Contact us
             </a>
             .
@@ -124,7 +124,7 @@ const FAQSection: React.FC = () => {
         </AnimatedSection>
 
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-soft p-8">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-soft p-8 border border-gray-200 dark:border-gray-700">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
@@ -152,10 +152,10 @@ const FAQSection: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center mt-12"
         >
-          <p className="text-lg text-gray-700 mb-4">Still have questions?</p>
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">Still have questions?</p>
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors-smooth shadow-md hover:shadow-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 transition-colors-smooth shadow-md hover:shadow-lg"
           >
             Get in Touch
           </a>
