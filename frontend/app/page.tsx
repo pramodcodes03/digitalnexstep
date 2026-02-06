@@ -4,6 +4,7 @@ import HeroSection from "@/components/home/HeroSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import AboutSection from "@/components/home/AboutSection";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
+import ExploreFeatures from "@/components/home/ExploreFeatures";
 import FeaturesShowcase from "@/components/home/FeaturesShowcase";
 import PricingSection from "@/components/home/PricingSection";
 import ContactFormSection from "@/components/home/ContactFormSection";
@@ -27,6 +28,7 @@ export default function Home() {
         <FeaturesSection />
         <AboutSection />
         <WhyChooseUs />
+        <ExploreFeatures />
         <FeaturesShowcase />
         <PricingSection />
         <ContactFormSection />
