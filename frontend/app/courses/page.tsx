@@ -286,21 +286,17 @@ function CourseCard({ course, index }: { course: typeof courses[0]; index: numbe
         </div>
 
         {/* Learn More Button */}
-        <motion.button
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl text-sm transition-colors duration-200 group/btn"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.15 }}
-        >
-          <span>Learn More</span>
-          <motion.span
-            initial={{ x: 0 }}
-            whileHover={{ x: 4 }}
-            transition={{ duration: 0.2 }}
+        <Link href={`/courses/${course.id}`}>
+          <motion.div
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl text-sm transition-colors duration-200 group/btn cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.15 }}
           >
+            <span>Learn More</span>
             <FiArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
-          </motion.span>
-        </motion.button>
+          </motion.div>
+        </Link>
       </div>
 
       {/* Glow effect on hover */}
