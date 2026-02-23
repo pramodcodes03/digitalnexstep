@@ -398,8 +398,8 @@ export default function AboutPage() {
             >
               <ImageCollage
                 images={[
-                  "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=700&q=80",
-                  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80",
+                  "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=700&q=80",
+                  "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&q=80",
                 ]}
               />
             </motion.div>
