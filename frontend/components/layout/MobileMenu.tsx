@@ -13,7 +13,7 @@ interface MobileMenuProps {
 const navItems = [
   { name: "Home", href: "/", icon: FiHome },
   { name: "Features", href: "#features", icon: FiGrid },
-  { name: "About Us", href: "#about", icon: FiInfo },
+  { name: "About Us", href: "/about", icon: FiInfo },
   { name: "Courses", href: "/courses", icon: FiBookOpen },
   { name: "Pricing", href: "#pricing", icon: FiDollarSign },
   { name: "FAQ", href: "#faq", icon: FiHelpCircle },
