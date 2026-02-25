@@ -6,10 +6,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle } from "react-icons/fi";
 import MobileMenu from "./MobileMenu";
 import Button from "../ui/Button";
-import Container from "../ui/Container";
 import { useTheme } from "@/contexts/ThemeContext";
 
-const navItems = [
+/* ── All nav items in display order ── */
+const allNavItems = [
+  { name: "Home", href: "/" },
+  { name: "Features", href: "/features" },
+  { name: "About Us", href: "/about" },
+  { name: "Courses", href: "/courses" },
+  { name: "Verification", href: "/verification" },
+  { name: "Gallery", href: "/gallery" },
+  { name: "Student Corner", href: "/student-corner" },
+  { name: "FAQ", href: "#faq" },
+  { name: "Contact", href: "/contact" },
+];
+
+/* Items shown directly on lg (1024-1279px) — rest go to "More" */
+const primaryItems = [
   { name: "Home", href: "/" },
   { name: "Features", href: "/features" },
   { name: "About Us", href: "/about" },
@@ -18,7 +31,7 @@ const navItems = [
   { name: "Contact", href: "/contact" },
 ];
 
-const moreItems = [
+const overflowItems = [
   { name: "Gallery", href: "/gallery", icon: FiImage },
   { name: "Student Corner", href: "/student-corner", icon: FiUsers },
   { name: "FAQ", href: "#faq", icon: FiHelpCircle },
@@ -42,7 +55,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = navItems.map((item) => {
+      const sections = allNavItems.map((item) => {
         const href = item.href.replace("#", "");
         return document.getElementById(href);
       }).filter(Boolean);
@@ -70,6 +83,29 @@ const Header: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /* Shared nav link renderer */
+  const NavLink = ({ name, href }: { name: string; href: string }) => {
+    const isActive = activeSection === href || (href === "/" && activeSection === "");
+    return (
+      <Link
+        href={href}
+        className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth group whitespace-nowrap"
+      >
+        {name}
+        {isActive && (
+          <motion.div
+            layoutId="activeSection"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          />
+        )}
+        {!isActive && (
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all-smooth" />
+        )}
+      </Link>
+    );
+  };
+
   return (
     <>
       <motion.header
@@ -82,10 +118,10 @@ const Header: React.FC = () => {
             : "bg-white/95 dark:bg-gray-900/95 py-4"
         }`}
       >
-        <Container>
+        <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
               <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform-smooth">
                 <span className="text-white font-bold text-xl">DN</span>
               </div>
@@ -97,30 +133,18 @@ const Header: React.FC = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-6">
-              {navItems.map((item) => {
-                const isActive = activeSection === item.href || (item.href === "/" && activeSection === "");
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth group whitespace-nowrap"
-                  >
-                    {item.name}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeSection"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    {!isActive && (
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all-smooth" />
-                    )}
-                  </Link>
-                );
-              })}
+            {/* ═══ Desktop Navigation: XL+ (1280px+) — ALL items flat ═══ */}
+            <nav className="hidden xl:flex items-center gap-5">
+              {allNavItems.map((item) => (
+                <NavLink key={item.name} name={item.name} href={item.href} />
+              ))}
+            </nav>
+
+            {/* ═══ Desktop Navigation: LG only (1024-1279px) — primary + More dropdown ═══ */}
+            <nav className="hidden lg:flex xl:hidden items-center gap-4">
+              {primaryItems.map((item) => (
+                <NavLink key={item.name} name={item.name} href={item.href} />
+              ))}
 
               {/* More Dropdown */}
               <div
@@ -148,20 +172,13 @@ const Header: React.FC = () => {
                       transition={{ duration: 0.2, ease: "easeOut" }}
                       className="absolute top-full right-0 mt-1 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 overflow-hidden"
                     >
-                      {moreItems.map((item) => {
+                      {overflowItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive =
-                          activeSection === item.href ||
-                          (typeof window !== "undefined" && window.location.pathname === item.href);
                         return (
                           <Link
                             key={item.name}
                             href={item.href}
-                            className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors-smooth ${
-                              isActive
-                                ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
-                                : "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                            }`}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors-smooth"
                           >
                             <Icon className="w-4 h-4" />
                             {item.name}
@@ -175,7 +192,7 @@ const Header: React.FC = () => {
             </nav>
 
             {/* Theme Toggle and CTA Buttons */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
@@ -227,7 +244,7 @@ const Header: React.FC = () => {
               </button>
             </div>
           </div>
-        </Container>
+        </div>
       </motion.header>
 
       {/* Mobile Menu */}
