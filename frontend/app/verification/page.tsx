@@ -72,11 +72,8 @@ const branches = [
 export default function VerificationPage() {
   const [activeTab, setActiveTab] = useState<VerificationType>("student");
   const [formData, setFormData] = useState({
-    name: "",
-    registrationId: "",
-    email: "",
-    phone: "",
-    centerName: "",
+    certificateNumber: "",
+    atcCode: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -285,88 +282,37 @@ export default function VerificationPage() {
                     </h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       {activeTab === "student"
-                        ? "Enter your details to verify your certificate"
-                        : "Enter your center details to verify ATC status"}
+                        ? "Enter your certificate number to verify"
+                        : "Enter your ATC code to verify status"}
                     </p>
                   </div>
                 </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        {activeTab === "student" ? "Full Name" : "Center Name"}
-                      </label>
-                      <input
-                        type="text"
-                        name={activeTab === "student" ? "name" : "centerName"}
-                        value={
-                          activeTab === "student"
-                            ? formData.name
-                            : formData.centerName
-                        }
-                        onChange={handleInputChange}
-                        placeholder={
-                          activeTab === "student"
-                            ? "Enter your full name"
-                            : "Enter center name"
-                        }
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        {activeTab === "student"
-                          ? "Registration ID"
-                          : "ATC License Number"}
-                      </label>
-                      <input
-                        type="text"
-                        name="registrationId"
-                        value={formData.registrationId}
-                        onChange={handleInputChange}
-                        placeholder={
-                          activeTab === "student"
-                            ? "e.g., DNS-STU-2024-XXXXX"
-                            : "e.g., DNS-ATC-XXXXX"
-                        }
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="Enter your email"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="Enter phone number"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                        required
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      {activeTab === "student"
+                        ? "Certificate Number"
+                        : "ATC Code"}
+                    </label>
+                    <input
+                      type="text"
+                      name={activeTab === "student" ? "certificateNumber" : "atcCode"}
+                      value={
+                        activeTab === "student"
+                          ? formData.certificateNumber
+                          : formData.atcCode
+                      }
+                      onChange={handleInputChange}
+                      placeholder={
+                        activeTab === "student"
+                          ? "e.g., DNS-CERT-2024-XXXXX"
+                          : "e.g., DNS-ATC-XXXXX"
+                      }
+                      className="w-full px-5 py-4 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300 text-lg"
+                      required
+                    />
                   </div>
 
                   {/* Verify Button */}
