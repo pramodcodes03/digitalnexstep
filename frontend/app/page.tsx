@@ -11,7 +11,6 @@ import ExperiencedStaff from "@/components/home/ExperiencedStaff";
 import ExploreFeatures from "@/components/home/ExploreFeatures";
 import FeaturesShowcase from "@/components/home/FeaturesShowcase";
 import RobustSupport from "@/components/home/RobustSupport";
-import PricingSection from "@/components/home/PricingSection";
 import JobUpdates from "@/components/home/JobUpdates";
 import Testimonials from "@/components/home/Testimonials";
 import OurPartners from "@/components/home/OurPartners";
@@ -42,7 +41,6 @@ export default function Home() {
         <ExploreFeatures />
         <FeaturesShowcase />
         <RobustSupport />
-        <PricingSection />
         <JobUpdates />
         <Testimonials />
         <OurPartners />
