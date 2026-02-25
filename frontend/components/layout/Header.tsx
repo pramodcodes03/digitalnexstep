@@ -11,7 +11,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 const navItems = [
   { name: "Home", href: "/" },
-  { name: "Features", href: "#features" },
+  { name: "Features", href: "/features" },
   { name: "About Us", href: "/about" },
   { name: "Courses", href: "/courses" },
   { name: "Pricing", href: "#pricing" },
