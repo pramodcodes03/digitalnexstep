@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiMenu, FiMoon, FiSun } from "react-icons/fi";
+import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle } from "react-icons/fi";
 import MobileMenu from "./MobileMenu";
 import Button from "../ui/Button";
 import Container from "../ui/Container";
@@ -15,10 +15,13 @@ const navItems = [
   { name: "About Us", href: "/about" },
   { name: "Courses", href: "/courses" },
   { name: "Verification", href: "/verification" },
-  { name: "Gallery", href: "/gallery" },
-  { name: "Student Corner", href: "/student-corner" },
-  { name: "FAQ", href: "#faq" },
   { name: "Contact", href: "/contact" },
+];
+
+const moreItems = [
+  { name: "Gallery", href: "/gallery", icon: FiImage },
+  { name: "Student Corner", href: "/student-corner", icon: FiUsers },
+  { name: "FAQ", href: "#faq", icon: FiHelpCircle },
 ];
 
 const Header: React.FC = () => {
@@ -26,6 +29,7 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,14 +98,14 @@ const Header: React.FC = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-6">
               {navItems.map((item) => {
                 const isActive = activeSection === item.href || (item.href === "/" && activeSection === "");
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="relative py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth group"
+                    className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth group whitespace-nowrap"
                   >
                     {item.name}
                     {isActive && (
@@ -117,6 +121,57 @@ const Header: React.FC = () => {
                   </Link>
                 );
               })}
+
+              {/* More Dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => setIsMoreOpen(true)}
+                onMouseLeave={() => setIsMoreOpen(false)}
+              >
+                <button
+                  className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth flex items-center gap-1 whitespace-nowrap"
+                >
+                  More
+                  <FiChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      isMoreOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {isMoreOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute top-full right-0 mt-1 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 overflow-hidden"
+                    >
+                      {moreItems.map((item) => {
+                        const Icon = item.icon;
+                        const isActive =
+                          activeSection === item.href ||
+                          (typeof window !== "undefined" && window.location.pathname === item.href);
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors-smooth ${
+                              isActive
+                                ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
+                                : "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {item.name}
+                          </Link>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </nav>
 
             {/* Theme Toggle and CTA Buttons */}
