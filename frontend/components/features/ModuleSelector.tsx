@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { gsap } from "./useGsap";
 import { cn } from "@/lib/utils";
 import type { MainFeature } from "./featuresData";
@@ -21,6 +21,34 @@ const ModuleSelector: React.FC<ModuleSelectorProps> = ({
   const indicatorRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
 
+  // Reusable: move indicator to active pill
+  const updateIndicator = useCallback(
+    (animate = true) => {
+      const idx = features.findIndex((f) => f.id === activeId);
+      const pill = pillsRef.current[idx];
+      if (!pill || !indicatorRef.current || !containerRef.current) return;
+
+      // Use offsetLeft/offsetWidth — stable regardless of scroll position
+      const left = pill.offsetLeft;
+      const width = pill.offsetWidth;
+
+      if (animate) {
+        gsap.to(indicatorRef.current, {
+          x: left,
+          width,
+          duration: 0.45,
+          ease: "power3.out",
+        });
+      } else {
+        gsap.set(indicatorRef.current, { x: left, width });
+      }
+
+      // Scroll pill into view
+      pill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    },
+    [activeId, features]
+  );
+
   // Entrance animation
   useEffect(() => {
     if (hasAnimated.current || !containerRef.current) return;
@@ -36,28 +64,34 @@ const ModuleSelector: React.FC<ModuleSelectorProps> = ({
         duration: 0.5,
         stagger: 0.04,
         ease: "back.out(1.4)",
+        onComplete: () => updateIndicator(false),
       }
     );
-  }, []);
+  }, [updateIndicator]);
 
-  // Slide indicator to active pill
+  // Slide indicator when activeId changes
   useEffect(() => {
-    const idx = features.findIndex((f) => f.id === activeId);
-    const pill = pillsRef.current[idx];
-    if (!pill || !indicatorRef.current || !containerRef.current) return;
-
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const pillRect = pill.getBoundingClientRect();
-
-    gsap.to(indicatorRef.current, {
-      x: pillRect.left - containerRect.left,
-      width: pillRect.width,
-      duration: 0.45,
-      ease: "power3.out",
+    // Use rAF to ensure DOM has settled after React state change
+    const raf = requestAnimationFrame(() => {
+      updateIndicator(true);
     });
+    return () => cancelAnimationFrame(raf);
+  }, [updateIndicator]);
 
-    // Scroll pill into view
-    pill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  // Also recalculate on scroll (in case container is scrolled)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const onScroll = () => {
+      const idx = features.findIndex((f) => f.id === activeId);
+      const pill = pillsRef.current[idx];
+      if (!pill || !indicatorRef.current) return;
+      gsap.set(indicatorRef.current, { x: pill.offsetLeft, width: pill.offsetWidth });
+    };
+
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => container.removeEventListener("scroll", onScroll);
   }, [activeId, features]);
 
   return (

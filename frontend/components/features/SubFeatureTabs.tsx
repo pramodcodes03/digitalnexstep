@@ -21,34 +21,52 @@ const SubFeatureTabs: React.FC<SubFeatureTabsProps> = ({
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const lineRef = useRef<HTMLDivElement>(null);
 
+  // Reset tabs ref array when subFeatures change
+  useEffect(() => {
+    tabsRef.current = tabsRef.current.slice(0, subFeatures.length);
+  }, [subFeatures]);
+
   // Entrance animation
   useEffect(() => {
     const validTabs = tabsRef.current.filter(Boolean);
     gsap.fromTo(
       validTabs,
       { opacity: 0, x: 30 },
-      { opacity: 1, x: 0, duration: 0.45, stagger: 0.06, ease: "power3.out" }
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.45,
+        stagger: 0.06,
+        ease: "power3.out",
+      }
     );
   }, [subFeatures]);
 
-  // Active underline
+  // Move underline to active tab using offsetLeft (scroll-safe)
+  const updateLine = useCallback(
+    (animate = true) => {
+      const idx = subFeatures.findIndex((sf) => sf.id === activeId);
+      const tab = tabsRef.current[idx];
+      if (!tab || !lineRef.current) return;
+
+      const left = tab.offsetLeft;
+      const width = tab.offsetWidth;
+
+      if (animate) {
+        gsap.to(lineRef.current, { x: left, width, duration: 0.4, ease: "power3.out" });
+      } else {
+        gsap.set(lineRef.current, { x: left, width });
+      }
+
+      tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    },
+    [activeId, subFeatures]
+  );
+
   useEffect(() => {
-    const idx = subFeatures.findIndex((sf) => sf.id === activeId);
-    const tab = tabsRef.current[idx];
-    if (!tab || !lineRef.current || !scrollRef.current) return;
-
-    const scrollRect = scrollRef.current.getBoundingClientRect();
-    const tabRect = tab.getBoundingClientRect();
-
-    gsap.to(lineRef.current, {
-      x: tabRect.left - scrollRect.left + scrollRef.current.scrollLeft,
-      width: tabRect.width,
-      duration: 0.4,
-      ease: "power3.out",
-    });
-
-    tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }, [activeId, subFeatures]);
+    const raf = requestAnimationFrame(() => updateLine(true));
+    return () => cancelAnimationFrame(raf);
+  }, [updateLine]);
 
   const scroll = useCallback((dir: number) => {
     if (!scrollRef.current) return;
