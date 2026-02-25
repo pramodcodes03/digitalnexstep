@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle } from "react-icons/fi";
+import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle, FiPackage } from "react-icons/fi";
 import MobileMenu from "./MobileMenu";
 import Button from "../ui/Button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -14,6 +14,7 @@ const allNavItems = [
   { name: "Features", href: "/features" },
   { name: "About Us", href: "/about" },
   { name: "Courses", href: "/courses" },
+  { name: "Our Products", href: "/products" },
   { name: "Verification", href: "/verification" },
   { name: "Gallery", href: "/gallery" },
   { name: "Student Corner", href: "/student-corner" },
@@ -27,6 +28,7 @@ const primaryItems = [
   { name: "Features", href: "/features" },
   { name: "About Us", href: "/about" },
   { name: "Courses", href: "/courses" },
+  { name: "Our Products", href: "/products" },
   { name: "Verification", href: "/verification" },
   { name: "Contact", href: "/contact" },
 ];
