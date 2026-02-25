@@ -18,7 +18,7 @@ const navItems = [
   { name: "Verification", href: "/verification", icon: FiCheckCircle },
   { name: "Pricing", href: "#pricing", icon: FiDollarSign },
   { name: "FAQ", href: "#faq", icon: FiHelpCircle },
-  { name: "Contact", href: "#contact", icon: FiMail },
+  { name: "Contact", href: "/contact", icon: FiMail },
 ];
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {

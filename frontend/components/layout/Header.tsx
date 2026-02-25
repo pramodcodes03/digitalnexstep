@@ -17,7 +17,7 @@ const navItems = [
   { name: "Verification", href: "/verification" },
   { name: "Pricing", href: "#pricing" },
   { name: "FAQ", href: "#faq" },
-  { name: "Contact", href: "#contact" },
+  { name: "Contact", href: "/contact" },
 ];
 
 const Header: React.FC = () => {
