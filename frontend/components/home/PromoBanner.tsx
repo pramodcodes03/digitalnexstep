@@ -18,21 +18,24 @@ export interface BannerSlide {
 const bannerSlides: BannerSlide[] = [
   {
     id: "offer-1",
-    image: "/banners/offer-1.svg",
+    image: "https://images.unsplash.com/photo-1523050854058-8df90110c476?w=1400&h=400&fit=crop&crop=center&q=80",
     alt: "Special Offer - Limited Time",
     link: "/#pricing",
+    mobileImage: "https://images.unsplash.com/photo-1523050854058-8df90110c476?w=800&h=400&fit=crop&crop=center&q=80",
   },
   {
     id: "offer-2",
-    image: "/banners/offer-2.svg",
+    image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=1400&h=400&fit=crop&crop=center&q=80",
     alt: "New Course Launch",
     link: "/courses",
+    mobileImage: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&h=400&fit=crop&crop=center&q=80",
   },
   {
     id: "notice-1",
-    image: "/banners/notice-1.svg",
-    alt: "Important Notice",
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1400&h=400&fit=crop&crop=center&q=80",
+    alt: "Important Notice - Admissions Open",
     link: "/#contact",
+    mobileImage: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=400&fit=crop&crop=center&q=80",
   },
 ];
 

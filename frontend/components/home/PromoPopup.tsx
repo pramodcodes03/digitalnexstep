@@ -16,9 +16,10 @@ export interface PopupData {
 // Replace with your real popup image and link
 const popupData: PopupData = {
   id: "popup-1",
-  image: "/banners/offer-1.svg",
+  image: "https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?w=700&h=500&fit=crop&crop=center&q=80",
   alt: "Special Offer",
   link: "/#pricing",
+  mobileImage: "https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?w=500&h=400&fit=crop&crop=center&q=80",
 };
 
 // How many seconds after page load before popup appears
