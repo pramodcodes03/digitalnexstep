@@ -43,29 +43,41 @@ const PromoBanner: React.FC = () => {
   const [current, setCurrent] = useState(0);
   const [dismissed, setDismissed] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const slidesRef = useRef<(HTMLDivElement | null)[]>([]);
   const progressRef = useRef<HTMLDivElement>(null);
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const count = bannerSlides.length;
 
-  // Slide the track to show current slide
-  const slideTo = useCallback(
+  // Crossfade to a slide
+  const showSlide = useCallback(
     (index: number, animate = true) => {
-      if (!trackRef.current) return;
-      const offset = -(index * 100);
-      if (animate) {
-        gsap.to(trackRef.current, {
-          xPercent: offset,
-          duration: 0.7,
-          ease: "power3.inOut",
-        });
-      } else {
-        gsap.set(trackRef.current, { xPercent: offset });
-      }
+      slidesRef.current.forEach((el, i) => {
+        if (!el) return;
+        if (i === index) {
+          if (animate) {
+            gsap.to(el, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" });
+          } else {
+            gsap.set(el, { opacity: 1, scale: 1 });
+          }
+          el.style.zIndex = "2";
+        } else {
+          if (animate) {
+            gsap.to(el, { opacity: 0, scale: 1.03, duration: 0.6, ease: "power2.in" });
+          } else {
+            gsap.set(el, { opacity: 0, scale: 1 });
+          }
+          el.style.zIndex = "1";
+        }
+      });
     },
     []
   );
+
+  // Init: show first slide immediately
+  useEffect(() => {
+    showSlide(0, false);
+  }, [showSlide]);
 
   // Progress bar
   useEffect(() => {
@@ -91,38 +103,35 @@ const PromoBanner: React.FC = () => {
   useEffect(() => {
     if (dismissed || count <= 1) return;
 
-    const start = () => {
-      autoplayRef.current = setInterval(() => {
-        setCurrent((prev) => {
-          const next = (prev + 1) % count;
-          slideTo(next);
-          return next;
-        });
-      }, 5000);
-    };
+    autoplayRef.current = setInterval(() => {
+      setCurrent((prev) => {
+        const next = (prev + 1) % count;
+        showSlide(next);
+        return next;
+      });
+    }, 5000);
 
-    start();
     return () => {
       if (autoplayRef.current) clearInterval(autoplayRef.current);
     };
-  }, [count, dismissed, slideTo]);
+  }, [count, dismissed, showSlide]);
 
   const goTo = useCallback(
     (index: number) => {
       if (index === current) return;
       setCurrent(index);
-      slideTo(index);
+      showSlide(index);
       // Reset autoplay
       if (autoplayRef.current) clearInterval(autoplayRef.current);
       autoplayRef.current = setInterval(() => {
         setCurrent((prev) => {
           const next = (prev + 1) % count;
-          slideTo(next);
+          showSlide(next);
           return next;
         });
       }, 5000);
     },
-    [current, count, slideTo]
+    [current, count, showSlide]
   );
 
   const goPrev = useCallback(() => goTo((current - 1 + count) % count), [current, count, goTo]);
@@ -140,23 +149,28 @@ const PromoBanner: React.FC = () => {
 
   return (
     <div ref={wrapperRef} className="relative overflow-hidden opacity-0">
-      {/* Slides track — all slides side by side, translateX to move */}
-      <div ref={trackRef} className="flex" style={{ width: `${count * 100}%` }}>
-        {bannerSlides.map((slide) => (
-          <div key={slide.id} className="w-full flex-shrink-0">
-            <Link href={slide.link} className="block group relative">
+      {/* Fixed aspect ratio container */}
+      <div className="relative w-full aspect-[16/4] sm:aspect-[16/4] md:aspect-[16/3.5] lg:aspect-[16/3]">
+        {/* Stacked slides — crossfade via opacity */}
+        {bannerSlides.map((slide, i) => (
+          <div
+            key={slide.id}
+            ref={(el) => { slidesRef.current[i] = el; }}
+            className="absolute inset-0 opacity-0"
+          >
+            <Link href={slide.link} className="block w-full h-full group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={slide.mobileImage || slide.image}
                 alt={slide.alt}
-                className="w-full h-auto block sm:hidden group-hover:brightness-110 transition-all duration-500"
+                className="w-full h-full object-cover block sm:hidden group-hover:brightness-110 transition-all duration-500"
                 draggable={false}
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={slide.image}
                 alt={slide.alt}
-                className="w-full h-auto hidden sm:block group-hover:brightness-110 transition-all duration-500"
+                className="w-full h-full object-cover hidden sm:block group-hover:brightness-110 transition-all duration-500"
                 draggable={false}
               />
             </Link>
@@ -176,7 +190,7 @@ const PromoBanner: React.FC = () => {
           </button>
           <button
             onClick={goNext}
-            className="absolute right-10 sm:right-14 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/25 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-black/50 hover:text-white transition-all hover:scale-110"
+            className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/25 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-black/50 hover:text-white transition-all hover:scale-110"
             aria-label="Next banner"
           >
             <FiChevronRight className="w-5 h-5" />
@@ -187,7 +201,7 @@ const PromoBanner: React.FC = () => {
       {/* Close */}
       <button
         onClick={handleDismiss}
-        className="absolute top-2 right-2 sm:top-3 sm:right-4 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/25 backdrop-blur-sm flex items-center justify-center text-white/70 hover:bg-black/50 hover:text-white transition-all hover:scale-110"
+        className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/70 hover:bg-black/50 hover:text-white transition-all hover:scale-110"
         aria-label="Dismiss banner"
       >
         <FiX className="w-4 h-4" />
