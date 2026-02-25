@@ -4,6 +4,7 @@ import PromoPopup from "@/components/home/PromoPopup";
 import HeroSection from "@/components/home/HeroSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import AboutSection from "@/components/home/AboutSection";
+import VisionMissionSection from "@/components/home/VisionMissionSection";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
 import ExploreFeatures from "@/components/home/ExploreFeatures";
 import FeaturesShowcase from "@/components/home/FeaturesShowcase";
@@ -29,6 +30,7 @@ export default function Home() {
         <HeroSection />
         <FeaturesSection />
         <AboutSection />
+        <VisionMissionSection />
         <WhyChooseUs />
         <ExploreFeatures />
         <FeaturesShowcase />
