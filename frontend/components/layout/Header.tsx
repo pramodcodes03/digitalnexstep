@@ -15,7 +15,7 @@ const allNavItems = [
   { name: "About Us", href: "/about" },
   { name: "Courses", href: "/courses" },
   { name: "Our Products", href: "/products" },
-  { name: "Franchise", href: "/franchise-details" },
+  { name: "Franchise", href: "/franchise" },
   { name: "Verification", href: "/verification" },
   { name: "Gallery", href: "/gallery" },
   { name: "Student Corner", href: "/student-corner" },
