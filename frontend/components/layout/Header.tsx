@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle, FiPackage } from "react-icons/fi";
+import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle, FiPackage, FiAward } from "react-icons/fi";
 import MobileMenu from "./MobileMenu";
 import Button from "../ui/Button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -15,6 +15,7 @@ const allNavItems = [
   { name: "About Us", href: "/about" },
   { name: "Courses", href: "/courses" },
   { name: "Our Products", href: "/products" },
+  { name: "Franchise", href: "/franchise" },
   { name: "Verification", href: "/verification" },
   { name: "Gallery", href: "/gallery" },
   { name: "Student Corner", href: "/student-corner" },
@@ -34,6 +35,7 @@ const primaryItems = [
 ];
 
 const overflowItems = [
+  { name: "Franchise", href: "/franchise", icon: FiAward },
   { name: "Gallery", href: "/gallery", icon: FiImage },
   { name: "Student Corner", href: "/student-corner", icon: FiUsers },
   { name: "FAQ", href: "#faq", icon: FiHelpCircle },

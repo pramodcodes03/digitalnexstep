@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { FiX, FiHome, FiGrid, FiInfo, FiHelpCircle, FiMail, FiBookOpen, FiCheckCircle, FiImage, FiUsers, FiPackage } from "react-icons/fi";
+import { FiX, FiHome, FiGrid, FiInfo, FiHelpCircle, FiMail, FiBookOpen, FiCheckCircle, FiImage, FiUsers, FiPackage, FiAward } from "react-icons/fi";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -16,6 +16,7 @@ const navItems = [
   { name: "About Us", href: "/about", icon: FiInfo },
   { name: "Courses", href: "/courses", icon: FiBookOpen },
   { name: "Our Products", href: "/products", icon: FiPackage },
+  { name: "Franchise", href: "/franchise", icon: FiAward },
   { name: "Verification", href: "/verification", icon: FiCheckCircle },
   { name: "Gallery", href: "/gallery", icon: FiImage },
   { name: "Student Corner", href: "/student-corner", icon: FiUsers },
