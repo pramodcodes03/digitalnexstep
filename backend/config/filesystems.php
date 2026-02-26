@@ -15,6 +15,8 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+    'images_endpoint' => env('IMAGES_ENDPOINT'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -49,15 +51,12 @@ return [
 
         's3' => [
             'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => false,
-            'report' => false,
+            'key' => env('E2E_OBJECT_STORAGE_ACCESS_KEY'),
+            'secret' => env('E2E_OBJECT_STORAGE_SECRET_KEY'),
+            'region' => 'us-west-2',
+            'bucket' => env('E2E_OBJECT_STORAGE_BUCKET'),
+            'endpoint' => env('E2E_OBJECT_STORAGE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
         ],
 
     ],
