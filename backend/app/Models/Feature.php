@@ -19,7 +19,9 @@ class Feature extends Model
         'title',
         'description',
         'icon',
+        'gradient',
         'image',
+        'extra_data',
         'is_active',
         'sort_order',
     ];
@@ -34,6 +36,7 @@ class Feature extends Model
         return [
             'is_active' => 'boolean',
             'sort_order' => 'integer',
+            'extra_data' => 'array',
         ];
     }
 
