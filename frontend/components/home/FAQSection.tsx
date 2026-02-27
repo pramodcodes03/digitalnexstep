@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const faqs = [
   {
@@ -97,6 +99,15 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onClick }) 
 };
 
 const FAQSection: React.FC = () => {
+  const { data: apiFaqs } = useApi(() => api.getFAQs(), [] as any[]);
+
+  const displayFaqs: { question: string; answer: string }[] = apiFaqs.length > 0
+    ? apiFaqs.map((f: any) => ({
+        question: f.question,
+        answer: f.answer,
+      }))
+    : faqs;
+
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleFAQ = (index: number) => {
@@ -125,7 +136,7 @@ const FAQSection: React.FC = () => {
 
         <div className="max-w-4xl mx-auto">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-soft p-8 border border-gray-200 dark:border-gray-700">
-            {faqs.map((faq, index) => (
+            {displayFaqs.map((faq, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}

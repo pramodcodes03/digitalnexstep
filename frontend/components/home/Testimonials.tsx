@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronLeft, FiChevronRight, FiStar, FiMessageCircle } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const testimonials = [
   {
@@ -51,9 +53,30 @@ const testimonials = [
 ];
 
 const Testimonials: React.FC = () => {
+  const defaultColors = [
+    "from-blue-500 to-indigo-600",
+    "from-purple-500 to-pink-600",
+    "from-green-500 to-emerald-600",
+    "from-orange-500 to-red-500",
+    "from-cyan-500 to-blue-600",
+    "from-rose-500 to-pink-600",
+  ];
+
+  const { data: apiTestimonials } = useApi(() => api.getTestimonials(), [] as any[]);
+
+  const displayTestimonials: typeof testimonials = apiTestimonials.length > 0
+    ? apiTestimonials.map((t: any, i: number) => ({
+        name: t.name,
+        role: [t.designation, t.company].filter(Boolean).join(", "),
+        quote: t.content,
+        rating: t.rating || 5,
+        color: defaultColors[i % defaultColors.length],
+      }))
+    : testimonials;
+
   const [activeIndex, setActiveIndex] = useState(0);
   const visibleCount = 3;
-  const maxIndex = testimonials.length - visibleCount;
+  const maxIndex = displayTestimonials.length - visibleCount;
 
   const handlePrev = () => setActiveIndex((prev) => Math.max(0, prev - 1));
   const handleNext = () => setActiveIndex((prev) => Math.min(maxIndex, prev + 1));
@@ -143,7 +166,7 @@ const Testimonials: React.FC = () => {
                 transition={{ duration: 0.4 }}
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
               >
-                {testimonials
+                {displayTestimonials
                   .slice(activeIndex, activeIndex + visibleCount)
                   .map((testimonial, index) => (
                     <motion.div

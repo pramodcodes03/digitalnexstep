@@ -11,6 +11,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
 import EnquiryModal from "@/components/ui/EnquiryModal";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 /* ─── Product data ─── */
 interface Product {
@@ -124,6 +126,24 @@ const products: Product[] = [
     icon: FiCode,
     tags: ["Custom", "Development"],
   },
+];
+
+/* ─── Icon & gradient maps for API data ─── */
+const iconMap: Record<string, React.ElementType> = {
+  FiMonitor, FiSmartphone, FiGlobe, FiShield, FiDatabase,
+  FiCpu, FiCloud, FiLayers, FiCode, FiTrendingUp, FiPackage,
+};
+
+const defaultGradients = [
+  { gradient: "from-blue-500 via-blue-600 to-indigo-700", glowColor: "rgba(59,130,246,0.35)" },
+  { gradient: "from-emerald-500 via-emerald-600 to-teal-700", glowColor: "rgba(16,185,129,0.35)" },
+  { gradient: "from-violet-500 via-purple-600 to-purple-700", glowColor: "rgba(139,92,246,0.35)" },
+  { gradient: "from-orange-500 via-orange-600 to-red-600", glowColor: "rgba(249,115,22,0.35)" },
+  { gradient: "from-cyan-500 via-cyan-600 to-blue-700", glowColor: "rgba(6,182,212,0.35)" },
+  { gradient: "from-pink-500 via-rose-500 to-rose-700", glowColor: "rgba(236,72,153,0.35)" },
+  { gradient: "from-sky-400 via-sky-500 to-indigo-600", glowColor: "rgba(56,189,248,0.35)" },
+  { gradient: "from-amber-500 via-amber-600 to-orange-700", glowColor: "rgba(245,158,11,0.35)" },
+  { gradient: "from-lime-500 via-green-600 to-emerald-700", glowColor: "rgba(132,204,22,0.35)" },
 ];
 
 /* ─── 3D Tilt Product Card ─── */
@@ -321,6 +341,21 @@ const stats = [
 export default function ProductsPage() {
   const [enquiryProduct, setEnquiryProduct] = useState<string | null>(null);
 
+  const { data: apiProducts } = useApi(() => api.getProducts(), [] as any[]);
+
+  const displayProducts: Product[] = apiProducts.length > 0
+    ? apiProducts.map((item: any, i: number) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        image: item.image || products[i % products.length]?.image || "",
+        gradient: defaultGradients[i % defaultGradients.length].gradient,
+        glowColor: defaultGradients[i % defaultGradients.length].glowColor,
+        icon: iconMap[item.icon] || FiPackage,
+        tags: item.tags || [],
+      }))
+    : products;
+
   return (
     <>
       <Header />
@@ -463,7 +498,7 @@ export default function ProductsPage() {
 
           {/* Cards grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
-            {products.map((product, i) => (
+            {displayProducts.map((product, i) => (
               <ProductCard
                 key={product.id}
                 product={product}

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://nextstep.ditrpindia.org/api";
 
 /**
  * Axios instance for API requests
@@ -11,7 +12,7 @@ export const apiClient = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  withCredentials: true, // For Laravel Sanctum
+  timeout: 10000,
 });
 
 /**
@@ -19,8 +20,8 @@ export const apiClient = axios.create({
  */
 apiClient.interceptors.request.use(
   (config) => {
-    // Add any auth tokens here if needed
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -37,9 +38,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle errors globally
     if (error.response?.status === 401) {
-      // Handle unauthorized
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
       }
@@ -55,7 +54,32 @@ export const api = {
   // Health check
   health: () => apiClient.get("/health"),
 
-  // Contact form submission
+  // Combined home page data
+  getHomePage: () => apiClient.get("/home"),
+
+  // Individual endpoints
+  getHeroSlides: () => apiClient.get("/hero-slides"),
+  getFeatures: () => apiClient.get("/features"),
+  getAboutSections: () => apiClient.get("/about-sections"),
+  getTeamMembers: () => apiClient.get("/team-members"),
+  getTestimonials: () => apiClient.get("/testimonials"),
+  getPartners: () => apiClient.get("/partners"),
+  getFAQs: (category?: string) =>
+    apiClient.get("/faqs", { params: category ? { category } : {} }),
+  getGalleryItems: (category?: string) =>
+    apiClient.get("/gallery-items", {
+      params: category && category !== "all" ? { category } : {},
+    }),
+  getProducts: () => apiClient.get("/products"),
+  getJobUpdates: () => apiClient.get("/job-updates"),
+  getCenters: () => apiClient.get("/centers"),
+  getPricing: () => apiClient.get("/pricing"),
+  getAchievements: () => apiClient.get("/achievements"),
+  getPageSections: (page?: string) =>
+    apiClient.get("/page-sections", { params: page ? { page } : {} }),
+  getSiteSettings: () => apiClient.get("/site-settings"),
+
+  // Form submissions
   contact: (data: {
     name: string;
     email: string;
@@ -64,20 +88,21 @@ export const api = {
     message: string;
   }) => apiClient.post("/contact", data),
 
-  // Newsletter subscription
+  submitEnquiry: (data: {
+    product_name: string;
+    center_name?: string;
+    email: string;
+    mobile: string;
+    state?: string;
+    city?: string;
+    pincode?: string;
+    remark?: string;
+  }) => apiClient.post("/enquiries", data),
+
+  submitFranchise: (data: Record<string, unknown>) =>
+    apiClient.post("/franchise-registrations", data),
+
   subscribe: (email: string) => apiClient.post("/subscribe", { email }),
-
-  // Get centers
-  getCenters: () => apiClient.get("/centers"),
-
-  // Get features
-  getFeatures: () => apiClient.get("/features"),
-
-  // Get pricing plans
-  getPricing: () => apiClient.get("/pricing"),
-
-  // Get FAQs
-  getFAQs: () => apiClient.get("/faqs"),
 };
 
 export default api;

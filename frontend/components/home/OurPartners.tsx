@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FiExternalLink } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const partners = [
   {
@@ -65,6 +67,29 @@ const partners = [
 ];
 
 const OurPartners: React.FC = () => {
+  const defaultColors = [
+    "from-blue-500 to-indigo-600",
+    "from-green-500 to-emerald-600",
+    "from-purple-500 to-pink-600",
+    "from-orange-500 to-red-500",
+    "from-cyan-500 to-blue-600",
+    "from-rose-500 to-pink-600",
+    "from-amber-500 to-orange-600",
+    "from-teal-500 to-cyan-600",
+  ];
+
+  const { data: apiPartners } = useApi(() => api.getPartners(), [] as any[]);
+
+  const displayPartners: typeof partners = apiPartners.length > 0
+    ? apiPartners.map((p: any, i: number) => ({
+        name: p.name,
+        category: "",
+        description: "",
+        color: defaultColors[i % defaultColors.length],
+        initials: p.name.split(" ").map((w: string) => w[0]).join("").slice(0, 3),
+      }))
+    : partners;
+
   return (
     <section className="py-24 bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
       {/* Background */}
@@ -113,7 +138,7 @@ const OurPartners: React.FC = () => {
 
         {/* Partners Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {partners.map((partner, index) => (
+          {displayPartners.map((partner, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}

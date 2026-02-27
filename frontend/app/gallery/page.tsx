@@ -16,6 +16,8 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 /* ─── Types ─── */
 type GalleryCategory = "all" | "images" | "news" | "awards" | "videos";
@@ -210,10 +212,31 @@ const categoryLabel: Record<string, string> = {
 export default function GalleryPage() {
   const [activeFilter, setActiveFilter] = useState<GalleryCategory>("all");
 
+  const categoryColors: Record<string, { color: string; accent: string }> = {
+    images: { color: "from-blue-500 to-indigo-600", accent: "blue" },
+    news: { color: "from-green-500 to-emerald-600", accent: "green" },
+    awards: { color: "from-yellow-500 to-orange-500", accent: "yellow" },
+    videos: { color: "from-purple-500 to-pink-600", accent: "purple" },
+  };
+
+  const { data: apiItems } = useApi(() => api.getGalleryItems(), [] as any[]);
+
+  const items: GalleryItem[] = apiItems.length > 0
+    ? apiItems.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        date: item.date ? new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "",
+        color: categoryColors[item.category]?.color || "from-gray-500 to-gray-600",
+        accent: categoryColors[item.category]?.accent || "gray",
+      }))
+    : galleryItems;
+
   const filteredItems =
     activeFilter === "all"
-      ? galleryItems
-      : galleryItems.filter((item) => item.category === activeFilter);
+      ? items
+      : items.filter((item) => item.category === activeFilter);
 
   const activeTab = filterTabs.find((t) => t.id === activeFilter)!;
 
