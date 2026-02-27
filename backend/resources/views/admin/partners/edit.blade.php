@@ -36,7 +36,7 @@
                     <label for="logo" class="block text-sm font-semibold text-gray-700 mb-1">Logo</label>
                     @if($partner->logo)
                         <div class="mb-3">
-                            <img src="{{ asset('storage/' . $partner->logo) }}"
+                            <img src="{{ $partner->logo }}"
                                  alt="{{ $partner->name }}"
                                  class="h-20 w-20 rounded-lg object-cover">
                         </div>

@@ -32,7 +32,7 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 @if($item->image)
-                                    <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" class="w-12 h-12 rounded-lg object-cover">
+                                    <img src="{{ $item->image }}" alt="{{ $item->name }}" class="w-12 h-12 rounded-lg object-cover">
                                 @else
                                     <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">No img</div>
                                 @endif

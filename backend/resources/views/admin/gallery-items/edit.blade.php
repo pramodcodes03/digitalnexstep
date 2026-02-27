@@ -43,7 +43,7 @@
                     <label for="image" class="block text-sm font-semibold text-gray-700 mb-1">Image</label>
                     @if($galleryItem->image)
                         <div class="mb-3">
-                            <img src="{{ asset('storage/' . $galleryItem->image) }}"
+                            <img src="{{ $galleryItem->image }}"
                                  alt="{{ $galleryItem->title }}"
                                  class="h-20 w-20 rounded-lg object-cover">
                         </div>

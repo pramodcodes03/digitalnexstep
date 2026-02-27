@@ -26,16 +26,26 @@ class Helper
         }
 
         try {
+            // Get the original file extension
             $extension = $file->getClientOriginalExtension();
+
+            // Generate a unique file name with original extension
             $fileName = uniqid('image_') . '.' . $extension;
-            $relativePath = "$folder/$fileName";
 
-            Storage::disk(static::disk())->put($relativePath, file_get_contents($file), 'public');
 
+            $domain = "nextstep_ditrp";
+
+            // Define the relative path
+            $relativePath = "$domain/$folder/$fileName";
+            // Store the original image on S3
+            Storage::disk('s3')->put($relativePath, file_get_contents($file), 'public');
+
+            // Return only the relative path
             return $relativePath;
         } catch (\Exception $e) {
-            Log::error('Error uploading file: ' . $e->getMessage());
-            return null;
+            return response()->json([
+                'error' => 'Error uploading file: ' . $e->getMessage(),
+            ], 500);
         }
     }
 

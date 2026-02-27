@@ -33,7 +33,7 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4">
                                 @if($galleryItem->image)
-                                    <img src="{{ asset('storage/' . $galleryItem->image) }}"
+                                    <img src="{{ $galleryItem->image }}"
                                          alt="{{ $galleryItem->title }}"
                                          class="h-10 w-10 rounded-lg object-cover">
                                 @else

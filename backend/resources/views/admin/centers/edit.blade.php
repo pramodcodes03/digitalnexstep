@@ -94,7 +94,7 @@
                             <label for="image" class="block text-sm font-semibold text-gray-700 mb-1">Image</label>
                             @if($center->image)
                                 <div class="mb-3">
-                                    <img src="{{ asset('storage/' . $center->image) }}" alt="{{ $center->name }}" class="w-32 h-24 rounded-xl object-cover border border-gray-200">
+                                    <img src="{{ $center->image }}" alt="{{ $center->name }}" class="w-32 h-24 rounded-xl object-cover border border-gray-200">
                                 </div>
                             @endif
                             <input type="file" name="image" id="image" accept="image/*"

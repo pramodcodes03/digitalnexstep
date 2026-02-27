@@ -87,7 +87,7 @@
                                         <div class="space-y-3">
                                             @if($setting->value)
                                                 <div class="flex items-center gap-3">
-                                                    <img src="{{ asset('storage/' . $setting->value) }}"
+                                                    <img src="{{ $setting->value }}"
                                                          alt="{{ $setting->key }}"
                                                          class="h-16 w-auto rounded-lg object-cover border border-gray-200">
                                                     <span class="text-xs text-gray-500">Current image</span>
