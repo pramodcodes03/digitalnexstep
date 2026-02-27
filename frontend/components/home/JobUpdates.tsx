@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FiBriefcase, FiMapPin, FiClock, FiArrowRight, FiDollarSign } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const jobs = [
   {
@@ -74,7 +76,32 @@ const jobs = [
   },
 ];
 
+const defaultJobColors = [
+  "from-blue-500 to-indigo-600",
+  "from-purple-500 to-pink-600",
+  "from-green-500 to-emerald-600",
+  "from-orange-500 to-red-500",
+  "from-cyan-500 to-blue-600",
+  "from-rose-500 to-pink-600",
+];
+
 const JobUpdates: React.FC = () => {
+  const { data: apiJobs } = useApi(() => api.getJobUpdates(), [] as any[]);
+
+  const displayJobs: typeof jobs = apiJobs.length > 0
+    ? apiJobs.map((j: any, i: number) => ({
+        title: j.title,
+        department: j.department || j.category || "General",
+        location: j.location || "India",
+        type: j.type || j.employment_type || "Full-time",
+        salary: j.salary || "",
+        posted: j.created_at ? new Date(j.created_at).toLocaleDateString() : "",
+        tags: j.tags || [],
+        color: defaultJobColors[i % defaultJobColors.length],
+        urgent: j.is_urgent || false,
+      }))
+    : jobs;
+
   return (
     <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Background */}
@@ -119,7 +146,7 @@ const JobUpdates: React.FC = () => {
 
         {/* Jobs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {jobs.map((job, index) => (
+          {displayJobs.map((job, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 35 }}

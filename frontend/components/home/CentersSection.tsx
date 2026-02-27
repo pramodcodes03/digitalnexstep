@@ -6,8 +6,10 @@ import { FiMapPin, FiExternalLink } from "react-icons/fi";
 import Card from "../ui/Card";
 import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
-// Mock data - in real implementation, this would come from API
+// Static fallback data
 const mockCenters = [
   { id: 1, name: "Excellence Learning Center", state: "New York", city: "New York City", logo: "ELC" },
   { id: 2, name: "Bright Future Academy", state: "California", city: "Los Angeles", logo: "BFA" },
@@ -23,16 +25,28 @@ const mockCenters = [
   { id: 12, name: "Zenith Learning Institute", state: "Colorado", city: "Denver", logo: "ZLI" },
 ];
 
-const states = ["All States", ...Array.from(new Set(mockCenters.map((c) => c.state)))];
-
 const CentersSection: React.FC = () => {
+  const { data: apiCenters } = useApi(() => api.getCenters(), [] as any[]);
+
+  const centers: typeof mockCenters = apiCenters.length > 0
+    ? apiCenters.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        state: c.state || "",
+        city: c.city || "",
+        logo: c.name.split(" ").map((w: string) => w[0]).join("").slice(0, 3),
+      }))
+    : mockCenters;
+
+  const states = ["All States", ...Array.from(new Set(centers.map((c) => c.state).filter(Boolean)))];
+
   const [selectedState, setSelectedState] = useState("All States");
   const [displayCount, setDisplayCount] = useState(8);
 
   const filteredCenters =
     selectedState === "All States"
-      ? mockCenters
-      : mockCenters.filter((center) => center.state === selectedState);
+      ? centers
+      : centers.filter((center) => center.state === selectedState);
 
   const displayedCenters = filteredCenters.slice(0, displayCount);
   const hasMore = displayCount < filteredCenters.length;

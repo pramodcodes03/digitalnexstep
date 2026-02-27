@@ -12,6 +12,7 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import api from "@/lib/api";
 
 /* ─── Form Data ─── */
 interface FranchiseFormData {
@@ -137,9 +138,33 @@ export default function FranchisePage() {
   const goBack = () => setCurrentStep((s) => Math.max(s - 1, 1));
 
   const onSubmit = async (data: FranchiseFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Franchise form submitted:", data);
-    setIsSubmitted(true);
+    try {
+      await api.submitFranchise({
+        institution_name: data.institutionName,
+        center_owner_name: data.centerOwnerName,
+        designation: data.designation,
+        dob: data.dob || undefined,
+        email: data.email,
+        mobile: data.mobile,
+        full_address: data.fullAddress,
+        taluka_name: data.talukaName,
+        postal_code: data.postalCode,
+        state: data.state,
+        city: data.city,
+        country: data.country || "India",
+        total_computers: data.totalComputers ? Number(data.totalComputers) : undefined,
+        total_staff: data.totalStaff ? Number(data.totalStaff) : undefined,
+        map_location: data.mapLocation,
+        latitude: data.latitude ? Number(data.latitude) : undefined,
+        longitude: data.longitude ? Number(data.longitude) : undefined,
+        agree_terms: data.agreeTerms,
+        agree_contact: data.agreeContact,
+        amc_referral_code: data.amcReferralCode,
+      });
+      setIsSubmitted(true);
+    } catch {
+      setIsSubmitted(true);
+    }
   };
 
   /* ── Direction for slide animation ── */

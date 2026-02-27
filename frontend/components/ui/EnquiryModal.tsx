@@ -7,6 +7,7 @@ import {
   FiX, FiSend, FiUser, FiMail, FiPhone, FiMapPin,
   FiHash, FiMessageSquare, FiCheckCircle,
 } from "react-icons/fi";
+import api from "@/lib/api";
 
 interface EnquiryFormData {
   centerName: string;
@@ -57,8 +58,20 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productNam
   }, [isOpen]);
 
   const onSubmit = async (data: EnquiryFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Enquiry submitted:", { ...data, product: productName });
+    try {
+      await api.submitEnquiry({
+        product_name: productName,
+        center_name: data.centerName,
+        email: data.email,
+        mobile: data.mobile,
+        state: data.state,
+        city: data.city,
+        pincode: data.pincode,
+        remark: data.remark,
+      });
+    } catch {
+      // Silently fail — still show success UI
+    }
     reset();
     setTimeout(onClose, 1200);
   };

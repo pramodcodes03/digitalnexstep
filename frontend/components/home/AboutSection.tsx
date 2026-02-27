@@ -5,6 +5,8 @@ import { motion, useInView } from "framer-motion";
 import { FiAward, FiUsers, FiTrendingUp, FiCheckCircle } from "react-icons/fi";
 import Button from "../ui/Button";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const stats = [
   { icon: FiAward, label: "Years of Experience", value: 10, suffix: "+" },
@@ -58,7 +60,26 @@ const CountUp: React.FC<{ end: number; duration?: number; isLarge?: boolean; suf
   return <span ref={ref}>{formatNumber(count)}{suffix}</span>;
 };
 
+const iconMap: Record<string, React.ElementType> = {
+  FiAward, FiUsers, FiTrendingUp, FiCheckCircle,
+};
+
 const AboutSection: React.FC = () => {
+  const { data: apiAbout } = useApi(() => api.getAboutSections(), [] as any[]);
+  const { data: apiAchievements } = useApi(() => api.getAchievements(), [] as any[]);
+
+  const displayStats: typeof stats = apiAchievements.length > 0
+    ? apiAchievements.map((a: any, i: number) => ({
+        icon: iconMap[a.icon] || stats[i % stats.length].icon,
+        label: a.title,
+        value: Number(a.value) || 0,
+        suffix: a.suffix || "",
+        isLarge: Number(a.value) >= 10000,
+      }))
+    : stats;
+
+  const aboutContent = apiAbout.length > 0 ? apiAbout[0] : null;
+
   return (
     <section id="about" className="py-20 bg-white dark:bg-gray-900">
       <Container>
@@ -99,32 +120,38 @@ const AboutSection: React.FC = () => {
             </span>
 
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
-              Empowering Education Through{" "}
-              <span className="gradient-text">Innovation</span>
+              {aboutContent?.title || "Empowering Education Through"}{" "}
+              <span className="gradient-text">{aboutContent?.subtitle || "Innovation"}</span>
             </h2>
 
             <div className="space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-              <p>
-                Founded with a vision to revolutionize educational assessments, DigitalNexStep
-                has been at the forefront of educational technology for over a decade. We believe
-                that assessment should be more than just testing—it should be a tool for growth,
-                insight, and continuous improvement.
-              </p>
-              <p>
-                Our platform is trusted by educational institutions nationwide, from small learning
-                centers to large university systems. We combine cutting-edge technology with deep
-                educational expertise to deliver solutions that truly make a difference.
-              </p>
-              <p>
-                Every day, we work to empower educators with the tools they need to assess fairly,
-                grade efficiently, and understand student progress deeply. Our commitment to
-                excellence drives everything we do.
-              </p>
+              {aboutContent?.description ? (
+                <p>{aboutContent.description}</p>
+              ) : (
+                <>
+                  <p>
+                    Founded with a vision to revolutionize educational assessments, DigitalNexStep
+                    has been at the forefront of educational technology for over a decade. We believe
+                    that assessment should be more than just testing—it should be a tool for growth,
+                    insight, and continuous improvement.
+                  </p>
+                  <p>
+                    Our platform is trusted by educational institutions nationwide, from small learning
+                    centers to large university systems. We combine cutting-edge technology with deep
+                    educational expertise to deliver solutions that truly make a difference.
+                  </p>
+                  <p>
+                    Every day, we work to empower educators with the tools they need to assess fairly,
+                    grade efficiently, and understand student progress deeply. Our commitment to
+                    excellence drives everything we do.
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Statistics Grid */}
             <div className="grid grid-cols-2 gap-6 pt-8">
-              {stats.map((stat, index) => {
+              {displayStats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
                   <motion.div

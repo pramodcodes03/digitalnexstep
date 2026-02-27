@@ -18,11 +18,13 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 /* ─── Types ─── */
 type VerificationType = "student" | "atc";
 
-/* ─── Branch Data ─── */
+/* ─── Branch Data (fallback) ─── */
 const branches = [
   {
     name: "Delhi (Head Office)",
@@ -69,7 +71,28 @@ const branches = [
 ];
 
 /* ─── Main Page ─── */
+const defaultBranchColors = [
+  "from-blue-500 to-indigo-600",
+  "from-purple-500 to-pink-600",
+  "from-green-500 to-emerald-600",
+  "from-orange-500 to-red-500",
+  "from-cyan-500 to-blue-600",
+  "from-rose-500 to-pink-600",
+];
+
 export default function VerificationPage() {
+  const { data: apiCenters } = useApi(() => api.getCenters(), [] as any[]);
+
+  const displayBranches: typeof branches = apiCenters.length > 0
+    ? apiCenters.map((c: any, i: number) => ({
+        name: c.name,
+        address: c.address || "",
+        phone: c.phone || "",
+        email: c.email || "",
+        color: defaultBranchColors[i % defaultBranchColors.length],
+      }))
+    : branches;
+
   const [activeTab, setActiveTab] = useState<VerificationType>("student");
   const [formData, setFormData] = useState({
     certificateNumber: "",
@@ -619,7 +642,7 @@ export default function VerificationPage() {
 
           {/* Branches Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {branches.map((branch, index) => (
+            {displayBranches.map((branch, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}

@@ -7,6 +7,8 @@ import Card from "../ui/Card";
 import Button from "../ui/Button";
 import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const plans = [
   {
@@ -59,6 +61,19 @@ const plans = [
 ];
 
 const PricingSection: React.FC = () => {
+  const { data: apiPlans } = useApi(() => api.getPricing(), [] as any[]);
+
+  const displayPlans: typeof plans = apiPlans.length > 0
+    ? apiPlans.map((p: any) => ({
+        name: p.name || p.title,
+        price: p.price != null ? Number(p.price) : null,
+        period: p.period || "month",
+        description: p.description || "",
+        features: Array.isArray(p.features) ? p.features : [],
+        featured: p.is_featured || p.featured || false,
+      }))
+    : plans;
+
   const handleGetStarted = (planName: string) => {
     if (planName === "Enterprise") {
       const contactSection = document.getElementById("contact");
@@ -86,7 +101,7 @@ const PricingSection: React.FC = () => {
         </AnimatedSection>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan, index) => (
+          {displayPlans.map((plan, index) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 20 }}

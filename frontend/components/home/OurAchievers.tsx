@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FiAward, FiStar, FiTrendingUp } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const achievers = [
   {
@@ -56,7 +58,29 @@ const achievers = [
   },
 ];
 
+const defaultAchieverColors = [
+  { color: "from-yellow-400 to-orange-500", iconBg: "bg-yellow-100 dark:bg-yellow-900/30" },
+  { color: "from-blue-400 to-indigo-500", iconBg: "bg-blue-100 dark:bg-blue-900/30" },
+  { color: "from-green-400 to-emerald-500", iconBg: "bg-green-100 dark:bg-green-900/30" },
+  { color: "from-purple-400 to-pink-500", iconBg: "bg-purple-100 dark:bg-purple-900/30" },
+  { color: "from-cyan-400 to-blue-500", iconBg: "bg-cyan-100 dark:bg-cyan-900/30" },
+  { color: "from-orange-400 to-red-500", iconBg: "bg-orange-100 dark:bg-orange-900/30" },
+];
+
 const OurAchievers: React.FC = () => {
+  const { data: apiAchievements } = useApi(() => api.getAchievements(), [] as any[]);
+
+  const displayAchievers: typeof achievers = apiAchievements.length > 0
+    ? apiAchievements.map((a: any, i: number) => ({
+        name: a.title,
+        role: [a.value, a.suffix].filter(Boolean).join(""),
+        achievement: a.description || "",
+        image: null,
+        color: defaultAchieverColors[i % defaultAchieverColors.length].color,
+        iconBg: defaultAchieverColors[i % defaultAchieverColors.length].iconBg,
+      }))
+    : achievers;
+
   return (
     <section className="py-24 bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
       {/* Background Decorations */}
@@ -106,7 +130,7 @@ const OurAchievers: React.FC = () => {
 
         {/* Achievers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {achievers.map((achiever, index) => (
+          {displayAchievers.map((achiever, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 40 }}

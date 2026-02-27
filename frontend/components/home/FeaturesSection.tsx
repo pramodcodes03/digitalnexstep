@@ -13,6 +13,8 @@ import {
 import Card from "../ui/Card";
 import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const features = [
   {
@@ -65,7 +67,32 @@ const features = [
   },
 ];
 
+const defaultColors = [
+  { color: "text-blue-600 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
+  { color: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30" },
+  { color: "text-purple-600 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
+  { color: "text-red-600 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30" },
+  { color: "text-yellow-600 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30" },
+  { color: "text-indigo-600 dark:text-indigo-400", bgColor: "bg-indigo-100 dark:bg-indigo-900/30" },
+];
+
+const iconMap: Record<string, React.ElementType> = {
+  FiActivity, FiCheckCircle, FiEdit3, FiShield, FiFileText, FiBarChart2,
+};
+
 const FeaturesSection: React.FC = () => {
+  const { data: apiFeatures } = useApi(() => api.getFeatures(), [] as any[]);
+
+  const displayFeatures: typeof features = apiFeatures.length > 0
+    ? apiFeatures.map((f: any, i: number) => ({
+        icon: iconMap[f.icon] || FiCheckCircle,
+        title: f.title || f.name,
+        description: f.description,
+        color: defaultColors[i % defaultColors.length].color,
+        bgColor: defaultColors[i % defaultColors.length].bgColor,
+      }))
+    : features;
+
   return (
     <section id="features" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       <Container>
@@ -84,7 +111,7 @@ const FeaturesSection: React.FC = () => {
         </AnimatedSection>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => {
+          {displayFeatures.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <motion.div
