@@ -100,6 +100,8 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onClick }) 
 
 const FAQSection: React.FC = () => {
   const { data: apiFaqs } = useApi(() => api.getFAQs(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "faq_header");
 
   const displayFaqs: { question: string; answer: string }[] = apiFaqs.length > 0
     ? apiFaqs.map((f: any) => ({
@@ -119,18 +121,28 @@ const FAQSection: React.FC = () => {
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-16">
           <span className="inline-block px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
-            FAQ
+            {sectionData?.subtitle || "FAQ"}
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Frequently Asked{" "}
-            <span className="gradient-text">Questions</span>
+            {sectionData?.title ? (
+              <span dangerouslySetInnerHTML={{ __html: sectionData.title }} />
+            ) : (
+              <>
+                Frequently Asked{" "}
+                <span className="gradient-text">Questions</span>
+              </>
+            )}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Find answers to common questions about our platform. Can't find what you're looking for?{" "}
-            <a href="#contact" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
-              Contact us
-            </a>
-            .
+            {sectionData?.content || (
+              <>
+                Find answers to common questions about our platform. Can&apos;t find what you&apos;re looking for?{" "}
+                <a href="#contact" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
+                  Contact us
+                </a>
+                .
+              </>
+            )}
           </p>
         </AnimatedSection>
 

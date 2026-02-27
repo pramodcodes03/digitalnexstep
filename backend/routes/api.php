@@ -31,6 +31,8 @@ Route::get('/job-updates', [PublicController::class, 'jobUpdates']);
 Route::get('/centers', [PublicController::class, 'centers']);
 Route::get('/pricing', [PublicController::class, 'pricingPlans']);
 Route::get('/achievements', [PublicController::class, 'achievements']);
+Route::get('/courses', [PublicController::class, 'courses']);
+Route::get('/courses/{id}', [PublicController::class, 'course']);
 Route::get('/page-sections', [PublicController::class, 'pageSections']);
 Route::get('/site-settings', [PublicController::class, 'siteSettings']);
 

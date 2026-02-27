@@ -14,6 +14,19 @@ import {
 } from "react-icons/fi";
 import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
+
+const iconMap: Record<string, React.ComponentType<any>> = {
+  FiAward,
+  FiShield,
+  FiZap,
+  FiUsers,
+  FiTrendingUp,
+  FiHeart,
+  FiClock,
+  FiGlobe,
+};
 
 const reasons = [
   {
@@ -97,7 +110,42 @@ const stats = [
   { number: "15+", label: "Hours Saved Per Week", suffix: "" },
 ];
 
+const colorPalette = [
+  { color: "from-blue-500 to-blue-600", iconBg: "bg-blue-100 dark:bg-blue-900/30", iconColor: "text-blue-600 dark:text-blue-400" },
+  { color: "from-green-500 to-green-600", iconBg: "bg-green-100 dark:bg-green-900/30", iconColor: "text-green-600 dark:text-green-400" },
+  { color: "from-yellow-500 to-yellow-600", iconBg: "bg-yellow-100 dark:bg-yellow-900/30", iconColor: "text-yellow-600 dark:text-yellow-400" },
+  { color: "from-purple-500 to-purple-600", iconBg: "bg-purple-100 dark:bg-purple-900/30", iconColor: "text-purple-600 dark:text-purple-400" },
+  { color: "from-orange-500 to-orange-600", iconBg: "bg-orange-100 dark:bg-orange-900/30", iconColor: "text-orange-600 dark:text-orange-400" },
+  { color: "from-pink-500 to-pink-600", iconBg: "bg-pink-100 dark:bg-pink-900/30", iconColor: "text-pink-600 dark:text-pink-400" },
+  { color: "from-indigo-500 to-indigo-600", iconBg: "bg-indigo-100 dark:bg-indigo-900/30", iconColor: "text-indigo-600 dark:text-indigo-400" },
+  { color: "from-teal-500 to-teal-600", iconBg: "bg-teal-100 dark:bg-teal-900/30", iconColor: "text-teal-600 dark:text-teal-400" },
+];
+
 const WhyChooseUs: React.FC = () => {
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "why_choose_us");
+
+  const extraData = sectionData?.extra_data || {};
+
+  const apiReasons = extraData.reasons
+    ? extraData.reasons.map((r: any, i: number) => ({
+        icon: iconMap[r.icon] || reasons[i]?.icon || FiAward,
+        title: r.title,
+        description: r.description,
+        color: colorPalette[i % colorPalette.length].color,
+        iconBg: colorPalette[i % colorPalette.length].iconBg,
+        iconColor: colorPalette[i % colorPalette.length].iconColor,
+      }))
+    : reasons;
+
+  const apiStats = extraData.stats
+    ? extraData.stats.map((s: any) => ({
+        number: s.number,
+        label: s.label,
+        suffix: "",
+      }))
+    : stats;
+
   return (
     <section className="py-20 bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
       {/* Decorative Background Elements */}
@@ -119,21 +167,27 @@ const WhyChooseUs: React.FC = () => {
               Why Choose Us
             </span>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-              The Smart Choice for{" "}
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Modern Education
-              </span>
+              {sectionData?.title ? (
+                <span dangerouslySetInnerHTML={{ __html: sectionData.title }} />
+              ) : (
+                <>
+                  The Smart Choice for{" "}
+                  <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Modern Education
+                  </span>
+                </>
+              )}
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Join thousands of educational institutions that trust us to transform their
-              assessment experience. Here's why we're the #1 choice for educators worldwide.
+              {sectionData?.subtitle ||
+                "Join thousands of educational institutions that trust us to transform their assessment experience. Here's why we're the #1 choice for educators worldwide."}
             </p>
           </motion.div>
         </AnimatedSection>
 
         {/* Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
-          {stats.map((stat, index) => (
+          {apiStats.map((stat: any, index: number) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -154,7 +208,7 @@ const WhyChooseUs: React.FC = () => {
 
         {/* Reasons Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {reasons.map((reason, index) => {
+          {apiReasons.map((reason: any, index: number) => {
             const Icon = reason.icon;
             return (
               <motion.div

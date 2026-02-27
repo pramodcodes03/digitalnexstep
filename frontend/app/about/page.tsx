@@ -11,6 +11,8 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 // ─── Animated Counter ──────────────────────────────────────────────────────────
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
@@ -201,26 +203,70 @@ function VideoLightbox({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
 export default function AboutPage() {
   const [videoOpen, setVideoOpen] = useState(false);
 
-  const stats = [
+  const { data: apiSections } = useApi(() => api.getPageSections("about"), [] as any[]);
+  const { data: apiAboutSections } = useApi(() => api.getAboutSections(), [] as any[]);
+  const { data: apiAchievements } = useApi(() => api.getAchievements(), [] as any[]);
+
+  // Helper to get section data by key
+  const getSection = (key: string) => apiSections.find((s: any) => s.section_key === key);
+  const heroData = getSection("about_hero");
+  const statsData = getSection("about_stats");
+  const visionData = getSection("about_vision");
+  const missionData = getSection("about_mission");
+  const valuesData = getSection("about_values");
+  const milestonesData = getSection("about_milestones");
+
+  const defaultStats = [
     { label: "Students Enrolled",  value: 50000, suffix: "+", icon: FiUsers,      gradient: "from-blue-500 to-primary-600" },
     { label: "Premium Courses",    value: 200,   suffix: "+", icon: FiBookOpen,   gradient: "from-violet-500 to-purple-700" },
     { label: "Years of Excellence",value: 10,    suffix: "+", icon: FiAward,      gradient: "from-orange-400 to-orange-600" },
     { label: "Success Rate",       value: 98,    suffix: "%", icon: FiTrendingUp, gradient: "from-green-500 to-emerald-700" },
   ];
 
-  const visionFeatures = [
+  const stats = statsData?.extra_data?.stats
+    ? statsData.extra_data.stats.map((s: any, i: number) => ({
+        ...defaultStats[i % defaultStats.length],
+        value: Number(s.value) || defaultStats[i % defaultStats.length].value,
+        suffix: s.suffix ?? defaultStats[i % defaultStats.length].suffix,
+        label: s.label || defaultStats[i % defaultStats.length].label,
+      }))
+    : defaultStats;
+
+  const defaultVisionFeatures = [
     { icon: FiHeart,   title: "Flexible Learning",  description: "Learn at your own pace with 24/7 access to course materials, live sessions, and recorded content.", color: "text-pink-600 dark:text-pink-400",   bgColor: "bg-pink-100 dark:bg-pink-900/30" },
     { icon: FiGlobe,   title: "Learn From Anywhere", description: "Access world-class education from any device, anywhere in the world, at any time that suits you.", color: "text-blue-600 dark:text-blue-400",   bgColor: "bg-blue-100 dark:bg-blue-900/30" },
     { icon: FiMonitor, title: "Expert Instructors",  description: "Learn from industry professionals with real-world experience who are passionate about teaching.", color: "text-purple-600 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
   ];
 
-  const missionFeatures = [
+  const visionFeatures = visionData?.extra_data?.features
+    ? visionData.extra_data.features.map((f: any, i: number) => ({
+        ...defaultVisionFeatures[i % defaultVisionFeatures.length],
+        title: f.title || defaultVisionFeatures[i % defaultVisionFeatures.length].title,
+        description: f.description || defaultVisionFeatures[i % defaultVisionFeatures.length].description,
+      }))
+    : defaultVisionFeatures;
+
+  const defaultMissionFeatures = [
     { icon: FiZap,      title: "Quality Content",   description: "Every course is meticulously crafted with up-to-date content, hands-on projects, and practical assignments.", color: "text-yellow-600 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30" },
     { icon: FiBook,     title: "Industry-Aligned",  description: "Our curriculum is designed with industry partners to ensure you learn exactly what employers need.", color: "text-teal-600 dark:text-teal-400",    bgColor: "bg-teal-100 dark:bg-teal-900/30" },
     { icon: FiAward,    title: "Career Support",    description: "Dedicated placement assistance, resume workshops, and interview preparation to launch your career.", color: "text-orange-600 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30" },
   ];
 
-  const values = [
+  const missionFeatures = missionData?.extra_data?.features
+    ? missionData.extra_data.features.map((f: any, i: number) => ({
+        ...defaultMissionFeatures[i % defaultMissionFeatures.length],
+        title: f.title || defaultMissionFeatures[i % defaultMissionFeatures.length].title,
+        description: f.description || defaultMissionFeatures[i % defaultMissionFeatures.length].description,
+      }))
+    : defaultMissionFeatures;
+
+  const iconMap: Record<string, React.ElementType> = {
+    FiStar, FiZap, FiGlobe, FiShield, FiHeart, FiTarget,
+    FiUsers, FiBookOpen, FiAward, FiTrendingUp, FiMonitor,
+    FiBook, FiEye, FiCheckCircle,
+  };
+
+  const defaultValues = [
     { icon: FiStar,    title: "Excellence",    description: "We hold ourselves to the highest standards in every course, instructor, and learning experience we deliver.", gradient: "bg-gradient-to-br from-yellow-400 to-orange-500",   delay: 0 },
     { icon: FiZap,     title: "Innovation",    description: "We constantly evolve our teaching methods and technology to deliver the most effective learning environment.", gradient: "bg-gradient-to-br from-blue-400 to-primary-600",   delay: 0.08 },
     { icon: FiGlobe,   title: "Accessibility", description: "Quality education should be available to everyone, regardless of location, background, or financial status.", gradient: "bg-gradient-to-br from-green-400 to-teal-600",     delay: 0.16 },
@@ -228,6 +274,15 @@ export default function AboutPage() {
     { icon: FiHeart,   title: "Community",     description: "We foster a vibrant, supportive community of learners who grow together and help each other succeed.", gradient: "bg-gradient-to-br from-pink-400 to-rose-600",       delay: 0.32 },
     { icon: FiTarget,  title: "Impact",        description: "Our measure of success is the tangible impact our education has on learners' careers and lives.", gradient: "bg-gradient-to-br from-orange-400 to-red-500",      delay: 0.4 },
   ];
+
+  const values = valuesData?.extra_data?.values
+    ? valuesData.extra_data.values.map((v: any, i: number) => ({
+        ...defaultValues[i % defaultValues.length],
+        icon: (v.icon && iconMap[v.icon]) || defaultValues[i % defaultValues.length].icon,
+        title: v.title || defaultValues[i % defaultValues.length].title,
+        description: v.description || defaultValues[i % defaultValues.length].description,
+      }))
+    : defaultValues;
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
@@ -263,15 +318,20 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
             <motion.div initial={{ opacity: 0, y: -20, scale: 0.85 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.55 }} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 px-5 py-2.5 rounded-full text-sm font-semibold mb-10 shadow-lg">
-              <span className="text-xl">🏆</span>The Leader in Online Learning
+              <span className="text-xl">🏆</span>{heroData?.extra_data?.badge || "The Leader in Online Learning"}
             </motion.div>
 
             {/* Title — line by line reveal */}
             <div className="mb-6 space-y-1">
-              {[
-                { text: "Read About Our", className: "text-white" },
-                { text: "Mission & Vision", className: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300" },
-              ].map(({ text, className }, i) => (
+              {(heroData?.title
+                ? [
+                    { text: heroData.title, className: "text-white" },
+                  ]
+                : [
+                    { text: "Read About Our", className: "text-white" },
+                    { text: "Mission & Vision", className: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300" },
+                  ]
+              ).map(({ text, className }, i) => (
                 <div key={i} className="overflow-hidden">
                   <motion.h1
                     className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight ${className}`}
@@ -287,14 +347,14 @@ export default function AboutPage() {
 
             {/* Description */}
             <motion.p initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.55 }} className="text-white/65 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-              Dive in and learn from scratch! Comprehensive courses in Technology, Design, Business and more — empowering you to achieve your biggest goals.
+              {heroData?.content || "Dive in and learn from scratch! Comprehensive courses in Technology, Design, Business and more — empowering you to achieve your biggest goals."}
             </motion.p>
 
             {/* CTAs */}
             <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7 }} className="flex flex-wrap gap-4 justify-center">
               <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.96 }}>
                 <Link href="/courses" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-700 text-white font-bold rounded-xl shadow-lg hover:shadow-primary-500/30 hover:shadow-2xl transition-shadow duration-300 text-sm">
-                  Our Courses <FiArrowRight className="w-4 h-4" />
+                  {heroData?.extra_data?.cta_text || "Our Courses"} <FiArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.96 }}>
@@ -318,7 +378,7 @@ export default function AboutPage() {
       <section className="py-14 bg-white dark:bg-gray-900">
         <Container>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-            {stats.map(({ label, value, suffix, icon: Icon, gradient }, i) => (
+            {stats.map(({ label, value, suffix, icon: Icon, gradient }: any, i: number) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 28 }}
@@ -413,14 +473,14 @@ export default function AboutPage() {
             >
               <span className="inline-block px-4 py-1.5 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-full text-xs font-bold uppercase tracking-widest mb-5">Our Vision</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-5 leading-tight">
-                Empowering Learners <br className="hidden sm:block" />
-                <span className="gradient-text">Worldwide</span>
+                {visionData?.title || <>Empowering Learners <br className="hidden sm:block" />
+                <span className="gradient-text">Worldwide</span></>}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">
-                We envision a world where high-quality education is accessible to everyone. Through innovative technology and world-class instructors, we&apos;re making that vision a reality — one learner at a time.
+                {visionData?.content || "We envision a world where high-quality education is accessible to everyone. Through innovative technology and world-class instructors, we're making that vision a reality — one learner at a time."}
               </p>
               <div className="space-y-6">
-                {visionFeatures.map((f, i) => <FeatureItem key={f.title} {...f} delay={i * 0.1} />)}
+                {visionFeatures.map((f: any, i: number) => <FeatureItem key={f.title} {...f} delay={i * 0.1} />)}
               </div>
               {/* Highlight bar */}
               <motion.div
@@ -456,14 +516,14 @@ export default function AboutPage() {
             >
               <span className="inline-block px-4 py-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full text-xs font-bold uppercase tracking-widest mb-5">Our Mission</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-5 leading-tight">
-                Transform Education, <br className="hidden sm:block" />
-                <span className="gradient-text">Inspire Growth</span>
+                {missionData?.title || <>Transform Education, <br className="hidden sm:block" />
+                <span className="gradient-text">Inspire Growth</span></>}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">
-                Our mission is to bridge the gap between education and industry by delivering practical, skills-first learning experiences that transform how people acquire knowledge and build meaningful careers.
+                {missionData?.content || "Our mission is to bridge the gap between education and industry by delivering practical, skills-first learning experiences that transform how people acquire knowledge and build meaningful careers."}
               </p>
               <div className="space-y-6">
-                {missionFeatures.map((f, i) => <FeatureItem key={f.title} {...f} delay={i * 0.1} />)}
+                {missionFeatures.map((f: any, i: number) => <FeatureItem key={f.title} {...f} delay={i * 0.1} />)}
               </div>
               {/* Stat highlight */}
               <motion.div
@@ -514,15 +574,15 @@ export default function AboutPage() {
           >
             <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-xs font-bold uppercase tracking-widest mb-4">What We Stand For</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
-              Our Core <span className="gradient-text">Values</span>
+              {valuesData?.title || <>Our Core <span className="gradient-text">Values</span></>}
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-base">
-              The principles that guide everything we do — from how we design courses to how we support every learner.
+              {valuesData?.content || "The principles that guide everything we do — from how we design courses to how we support every learner."}
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {values.map(v => <ValueCard key={v.title} {...v} />)}
+            {values.map((v: any) => <ValueCard key={v.title} {...v} />)}
           </div>
         </Container>
       </section>
@@ -539,7 +599,7 @@ export default function AboutPage() {
           >
             <span className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-xs font-bold uppercase tracking-widest mb-4">Our Journey</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
-              Key <span className="gradient-text">Milestones</span>
+              {milestonesData?.title || <>Key <span className="gradient-text">Milestones</span></>}
             </h2>
           </motion.div>
 
@@ -548,13 +608,26 @@ export default function AboutPage() {
             <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-200 via-primary-400 to-primary-200 dark:from-primary-800 dark:via-primary-600 dark:to-primary-800 -translate-x-1/2" />
 
             <div className="space-y-10 md:space-y-0">
-              {[
-                { year: "2014", title: "Founded with a Vision",    desc: "DigitalNexStep was born with a mission to make quality digital education accessible to every learner.", side: "left",  icon: FiTarget,  color: "from-blue-400 to-primary-600" },
-                { year: "2017", title: "Reached 5,000 Students",   desc: "Our community grew to 5,000+ active learners with a 95% course completion rate — a milestone we're proud of.", side: "right", icon: FiUsers,   color: "from-green-400 to-teal-600" },
-                { year: "2019", title: "Launched 50+ Courses",     desc: "Expanded our catalog to 50+ premium courses across web development, design, data science, and business.", side: "left",  icon: FiBookOpen, color: "from-purple-400 to-indigo-600" },
-                { year: "2022", title: "Industry Partnerships",    desc: "Partnered with top tech companies for placements, live projects, and industry-aligned curriculum development.", side: "right", icon: FiAward,   color: "from-orange-400 to-orange-600" },
-                { year: "2024", title: "50,000+ Learners Strong",  desc: "A thriving community of 50,000+ students, 200+ courses, and counting — with a 98% satisfaction rate.", side: "left",  icon: FiStar,    color: "from-yellow-400 to-orange-500" },
-              ].map((item, i) => (
+              {(() => {
+                const defaultMilestones = [
+                  { year: "2014", title: "Founded with a Vision",    desc: "DigitalNexStep was born with a mission to make quality digital education accessible to every learner.", side: "left",  icon: FiTarget,  color: "from-blue-400 to-primary-600" },
+                  { year: "2017", title: "Reached 5,000 Students",   desc: "Our community grew to 5,000+ active learners with a 95% course completion rate — a milestone we're proud of.", side: "right", icon: FiUsers,   color: "from-green-400 to-teal-600" },
+                  { year: "2019", title: "Launched 50+ Courses",     desc: "Expanded our catalog to 50+ premium courses across web development, design, data science, and business.", side: "left",  icon: FiBookOpen, color: "from-purple-400 to-indigo-600" },
+                  { year: "2022", title: "Industry Partnerships",    desc: "Partnered with top tech companies for placements, live projects, and industry-aligned curriculum development.", side: "right", icon: FiAward,   color: "from-orange-400 to-orange-600" },
+                  { year: "2024", title: "50,000+ Learners Strong",  desc: "A thriving community of 50,000+ students, 200+ courses, and counting — with a 98% satisfaction rate.", side: "left",  icon: FiStar,    color: "from-yellow-400 to-orange-500" },
+                ];
+                const milestones = milestonesData?.extra_data?.milestones
+                  ? milestonesData.extra_data.milestones.map((m: any, i: number) => ({
+                      ...defaultMilestones[i % defaultMilestones.length],
+                      year: m.year || defaultMilestones[i % defaultMilestones.length].year,
+                      title: m.title || defaultMilestones[i % defaultMilestones.length].title,
+                      desc: m.description || defaultMilestones[i % defaultMilestones.length].desc,
+                      side: i % 2 === 0 ? "left" : "right",
+                      icon: (m.icon && iconMap[m.icon]) || defaultMilestones[i % defaultMilestones.length].icon,
+                    }))
+                  : defaultMilestones;
+                return milestones;
+              })().map((item: any, i: number) => (
                 <div key={item.year} className={`md:flex md:items-center ${item.side === "right" ? "md:flex-row-reverse" : ""} md:gap-0`}>
                   <motion.div
                     initial={{ opacity: 0, x: item.side === "left" ? -40 : 40 }}

@@ -79,6 +79,8 @@ const OurPartners: React.FC = () => {
   ];
 
   const { data: apiPartners } = useApi(() => api.getPartners(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "partners_header");
 
   const displayPartners: typeof partners = apiPartners.length > 0
     ? apiPartners.map((p: any, i: number) => ({
@@ -122,17 +124,16 @@ const OurPartners: React.FC = () => {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full text-sm font-semibold uppercase tracking-wider mb-5"
           >
-            Our Partners
+            {sectionData?.subtitle || "Our Partners"}
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Powered by{" "}
+            {(sectionData?.title || "Powered by Strategic Partnerships").split("Strategic")[0]}
             <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
-              Strategic Partnerships
+              {(sectionData?.title || "Powered by Strategic Partnerships").includes("Strategic") ? "Strategic Partnerships" : sectionData?.title || "Strategic Partnerships"}
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            We collaborate with industry leaders and institutions to deliver world-class
-            educational assessment solutions.
+            {sectionData?.content || "We collaborate with industry leaders and institutions to deliver world-class educational assessment solutions."}
           </p>
         </motion.div>
 

@@ -7,6 +7,8 @@ import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle, F
 import MobileMenu from "./MobileMenu";
 import Button from "../ui/Button";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 /* ── All nav items in display order ── */
 const allNavItems = [
@@ -47,6 +49,7 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -131,9 +134,9 @@ const Header: React.FC = () => {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors-smooth">
-                  DigitalNexStep
+                  {settings?.site_name || "DigitalNexStep"}
                 </h1>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Educational Excellence</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{settings?.site_tagline || "Educational Excellence"}</p>
               </div>
             </Link>
 

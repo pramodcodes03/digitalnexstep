@@ -69,6 +69,8 @@ const defaultAchieverColors = [
 
 const OurAchievers: React.FC = () => {
   const { data: apiAchievements } = useApi(() => api.getAchievements(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "achievers_header");
 
   const displayAchievers: typeof achievers = apiAchievements.length > 0
     ? apiAchievements.map((a: any, i: number) => ({
@@ -114,17 +116,16 @@ const OurAchievers: React.FC = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full text-sm font-semibold uppercase tracking-wider mb-5"
           >
             <FiAward className="w-4 h-4" />
-            Our Achievers
+            {sectionData?.subtitle || "Our Achievers"}
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Stars Who{" "}
+            {(sectionData?.title || "Stars Who Shine Bright").split("Shine")[0]}
             <span className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
-              Shine Bright
+              {(sectionData?.title || "Stars Who Shine Bright").includes("Shine") ? "Shine Bright" : ""}
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Meet the extraordinary individuals who achieved their dreams with our platform.
-            Their success stories inspire millions.
+            {sectionData?.content || "Meet the extraordinary individuals who achieved their dreams with our platform. Their success stories inspire millions."}
           </p>
         </motion.div>
 

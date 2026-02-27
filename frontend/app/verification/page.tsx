@@ -81,9 +81,19 @@ const defaultBranchColors = [
 ];
 
 export default function VerificationPage() {
+  const { data: apiSections } = useApi(() => api.getPageSections("verification"), [] as any[]);
   const { data: apiCenters } = useApi(() => api.getCenters(), [] as any[]);
+  const heroData = apiSections.find((s: any) => s.section_key === "verification_hero");
 
-  const displayBranches: typeof branches = apiCenters.length > 0
+  const displayBranches: typeof branches = heroData?.extra_data?.branches?.length > 0
+    ? heroData.extra_data.branches.map((b: any, i: number) => ({
+        name: b.name || "",
+        address: b.address || "",
+        phone: b.phone || "",
+        email: b.email || "",
+        color: defaultBranchColors[i % defaultBranchColors.length],
+      }))
+    : apiCenters.length > 0
     ? apiCenters.map((c: any, i: number) => ({
         name: c.name,
         address: c.address || "",
@@ -92,6 +102,8 @@ export default function VerificationPage() {
         color: defaultBranchColors[i % defaultBranchColors.length],
       }))
     : branches;
+
+  const partnerPortals = heroData?.extra_data?.partner_portals;
 
   const [activeTab, setActiveTab] = useState<VerificationType>("student");
   const [formData, setFormData] = useState({
@@ -183,14 +195,13 @@ export default function VerificationPage() {
               Verification Portal
             </motion.span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-              Verify Your{" "}
+              {heroData?.title || "Verify Your"}{" "}
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Credentials
+                {heroData?.subtitle || "Credentials"}
               </span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Instantly verify student certificates and Authorized Training Center
-              (ATC) status with our secure verification system.
+              {heroData?.content || "Instantly verify student certificates and Authorized Training Center (ATC) status with our secure verification system."}
             </p>
           </motion.div>
 

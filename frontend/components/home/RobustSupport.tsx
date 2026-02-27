@@ -4,6 +4,17 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiCloud, FiTool, FiHeadphones, FiClock, FiShield, FiZap } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
+
+const iconMap: Record<string, React.ElementType> = {
+  FiCloud,
+  FiTool,
+  FiHeadphones,
+  FiClock,
+  FiShield,
+  FiZap,
+};
 
 const supportFeatures = [
   {
@@ -62,8 +73,38 @@ const supportFeatures = [
   },
 ];
 
+const defaultGradients = [
+  { gradient: "from-blue-500 via-blue-600 to-cyan-600", iconBg: "bg-blue-500/20", iconColor: "text-blue-400" },
+  { gradient: "from-orange-500 via-orange-600 to-red-600", iconBg: "bg-orange-500/20", iconColor: "text-orange-400" },
+  { gradient: "from-green-500 via-emerald-600 to-teal-600", iconBg: "bg-green-500/20", iconColor: "text-green-400" },
+  { gradient: "from-purple-500 via-purple-600 to-pink-600", iconBg: "bg-purple-500/20", iconColor: "text-purple-400" },
+  { gradient: "from-indigo-500 via-indigo-600 to-blue-600", iconBg: "bg-indigo-500/20", iconColor: "text-indigo-400" },
+  { gradient: "from-yellow-500 via-amber-600 to-orange-600", iconBg: "bg-yellow-500/20", iconColor: "text-yellow-400" },
+];
+
 const RobustSupport: React.FC = () => {
   const [activeFeature, setActiveFeature] = useState(0);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "robust_support");
+
+  const displayFeatures = sectionData?.extra_data?.items?.length > 0
+    ? sectionData.extra_data.items.map((item: any, i: number) => ({
+        icon: iconMap[item.icon] || FiCloud,
+        title: item.title,
+        description: item.description,
+        gradient: defaultGradients[i % defaultGradients.length].gradient,
+        iconBg: defaultGradients[i % defaultGradients.length].iconBg,
+        iconColor: defaultGradients[i % defaultGradients.length].iconColor,
+      }))
+    : supportFeatures;
+
+  const displayStats = sectionData?.extra_data?.stats?.length > 0
+    ? sectionData.extra_data.stats
+    : [
+        { label: "Uptime Guarantee", value: "99.9%" },
+        { label: "Response Time", value: "<5min" },
+        { label: "Support Rating", value: "4.9/5" },
+      ];
 
   return (
     <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
@@ -85,20 +126,19 @@ const RobustSupport: React.FC = () => {
         >
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mb-6">
             <span className="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 dark:from-orange-400 dark:via-red-400 dark:to-pink-400 bg-clip-text text-transparent">
-              Robust Operational
+              {sectionData?.title || "Robust Operational"}
             </span>
             <br />
-            Support
+            {sectionData?.subtitle || "Support"}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Comprehensive support services to ensure your educational platform runs
-            smoothly 24/7. We're committed to your success every step of the way.
+            {sectionData?.content || "Comprehensive support services to ensure your educational platform runs smoothly 24/7. We're committed to your success every step of the way."}
           </p>
         </motion.div>
 
         {/* Support Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {supportFeatures.map((feature, index) => {
+          {displayFeatures.map((feature: any, index: number) => {
             const Icon = feature.icon;
             const isActive = activeFeature === index;
 
@@ -158,11 +198,7 @@ const RobustSupport: React.FC = () => {
           className="mt-16"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { label: "Uptime Guarantee", value: "99.9%" },
-              { label: "Response Time", value: "<5min" },
-              { label: "Support Rating", value: "4.9/5" },
-            ].map((stat, index) => (
+            {displayStats.map((stat: any, index: number) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.9 }}

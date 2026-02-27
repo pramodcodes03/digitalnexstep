@@ -63,6 +63,8 @@ const Testimonials: React.FC = () => {
   ];
 
   const { data: apiTestimonials } = useApi(() => api.getTestimonials(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "testimonials_header");
 
   const displayTestimonials: typeof testimonials = apiTestimonials.length > 0
     ? apiTestimonials.map((t: any, i: number) => ({
@@ -118,18 +120,17 @@ const Testimonials: React.FC = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-full text-sm font-semibold uppercase tracking-wider mb-5"
           >
             <FiMessageCircle className="w-4 h-4" />
-            What People Say
+            {sectionData?.subtitle || "What People Say"}
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Trusted by{" "}
+            {(sectionData?.title || "Trusted by Educators Nationwide").split(/(?=Educators)/)[0]}
             <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-              Educators
+              {(sectionData?.title || "Trusted by Educators Nationwide").includes("Educators") ? "Educators" : ""}
             </span>{" "}
-            Nationwide
+            {(sectionData?.title || "Trusted by Educators Nationwide").split("Educators")[1] || ""}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Hear from the educators and institutions who have transformed their
-            assessment experience with our platform.
+            {sectionData?.content || "Hear from the educators and institutions who have transformed their assessment experience with our platform."}
           </p>
         </motion.div>
 

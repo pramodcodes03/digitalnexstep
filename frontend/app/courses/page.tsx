@@ -7,8 +7,10 @@ import { FiStar, FiUsers, FiArrowRight, FiBookOpen, FiSearch, FiFilter } from "r
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
-const categories = ["All", "Web Development", "Data Science", "Design", "Business", "Marketing", "AI & ML"];
+const staticCategories = ["All", "Web Development", "Data Science", "Design", "Business", "Marketing", "AI & ML"];
 
 const courses = [
   {
@@ -286,7 +288,7 @@ function CourseCard({ course, index }: { course: typeof courses[0]; index: numbe
         </div>
 
         {/* Learn More Button */}
-        <Link href={`/courses/${course.id}`}>
+        <Link href={`/courses/${(course as any).slug || course.id}`}>
           <motion.div
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl text-sm transition-colors duration-200 group/btn cursor-pointer"
             whileHover={{ scale: 1.02 }}
@@ -314,12 +316,43 @@ export default function CoursesPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredCourses = courses.filter((course) => {
+  const { data: apiCourses } = useApi(() => api.getCourses(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("courses"), [] as any[]);
+  const heroData = apiSections.find((s: any) => s.section_key === "courses_hero");
+
+  const displayCourses = apiCourses.length > 0
+    ? apiCourses.map((c: any) => ({
+        id: c.id,
+        title: c.title,
+        slug: c.slug,
+        description: c.description,
+        category: c.category,
+        badge: c.badge || "",
+        badgeColor: c.badge === "Bestseller" ? "bg-orange-500" : c.badge === "Top Rated" ? "bg-primary-600" : c.badge === "New" ? "bg-success-600" : c.badge === "Hot" ? "bg-error-600" : "",
+        instructor: c.instructor_name || "",
+        instructorRole: c.instructor_role || "",
+        thumbnail: c.thumbnail || "",
+        image: c.thumbnail || "",
+        mrp: c.mrp,
+        price: c.price,
+        duration: c.duration,
+        rating: c.rating,
+        reviews: c.reviews_count,
+        enrolled: c.enrolled_count,
+        lectures: c.lectures_count,
+        level: c.level || "",
+        tags: c.tags || [],
+      }))
+    : courses;
+
+  const categories = heroData?.extra_data?.categories || staticCategories;
+
+  const filteredCourses = displayCourses.filter((course: any) => {
     const matchesCategory = activeCategory === "All" || course.category === activeCategory;
     const matchesSearch =
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
+      (course.instructor || "").toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -358,7 +391,7 @@ export default function CoursesPage() {
               transition={{ duration: 0.5 }}
             >
               <span className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm text-white/90 rounded-full text-sm font-semibold uppercase tracking-widest mb-6 border border-white/20">
-                World-Class Learning
+                {heroData?.subtitle || "World-Class Learning"}
               </span>
             </motion.div>
 
@@ -368,12 +401,12 @@ export default function CoursesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              Explore Our{" "}
+              {heroData?.title ? heroData.title : (<>Explore Our{" "}
               <span className="relative">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
                   Premium Courses
                 </span>
-              </span>
+              </span></>)}
             </motion.h1>
 
             <motion.p
@@ -382,8 +415,7 @@ export default function CoursesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Unlock your potential with expert-led courses. Learn at your own pace
-              and gain industry-recognized skills.
+              {heroData?.content || "Unlock your potential with expert-led courses. Learn at your own pace and gain industry-recognized skills."}
             </motion.p>
 
             {/* Stats Row */}
@@ -428,7 +460,7 @@ export default function CoursesPage() {
             <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto scrollbar-hide">
               <FiFilter className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <div className="flex gap-2 flex-nowrap">
-                {categories.map((cat) => (
+                {categories.map((cat: any) => (
                   <motion.button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
@@ -483,7 +515,7 @@ export default function CoursesPage() {
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7"
               >
-                {filteredCourses.map((course, index) => (
+                {filteredCourses.map((course: any, index: number) => (
                   <CourseCard key={course.id} course={course} index={index} />
                 ))}
               </motion.div>

@@ -19,11 +19,13 @@ import {
 import Container from "../ui/Container";
 import { getCurrentYear } from "@/lib/utils";
 import api from "@/lib/api";
+import { useApi } from "@/lib/useApi";
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success" | "error">("idle");
+  const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,11 +48,11 @@ const Footer: React.FC = () => {
   };
 
   const socialLinks = [
-    { icon: FiYoutube, href: "#", label: "YouTube", color: "hover:bg-red-600" },
-    { icon: FiFacebook, href: "#", label: "Facebook", color: "hover:bg-blue-600" },
-    { icon: FiTwitter, href: "#", label: "Twitter", color: "hover:bg-sky-500" },
-    { icon: FiLinkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" },
-    { icon: FiInstagram, href: "#", label: "Instagram", color: "hover:bg-pink-600" },
+    { icon: FiYoutube, href: settings?.youtube_url || "#", label: "YouTube", color: "hover:bg-red-600" },
+    { icon: FiFacebook, href: settings?.facebook_url || "#", label: "Facebook", color: "hover:bg-blue-600" },
+    { icon: FiTwitter, href: settings?.twitter_url || "#", label: "Twitter", color: "hover:bg-sky-500" },
+    { icon: FiLinkedin, href: settings?.linkedin_url || "#", label: "LinkedIn", color: "hover:bg-blue-700" },
+    { icon: FiInstagram, href: settings?.instagram_url || "#", label: "Instagram", color: "hover:bg-pink-600" },
   ];
 
   const quickLinks = [
@@ -163,23 +165,23 @@ const Footer: React.FC = () => {
             <ul className="space-y-4 mb-6">
               <li className="flex items-start gap-3 text-primary-100 dark:text-gray-400">
                 <FiMapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span>123 Education Street, Suite 456, New York, NY 10001</span>
+                <span>{settings?.contact_address || "123 Education Street, Suite 456, New York, NY 10001"}</span>
               </li>
               <li className="flex items-center gap-3 text-primary-100 dark:text-gray-400">
                 <FiPhone className="w-5 h-5 flex-shrink-0" />
-                <a href="tel:+1234567890" className="hover:text-white transition-colors-smooth">
-                  (123) 456-7890
+                <a href={`tel:${settings?.contact_phone || "+1234567890"}`} className="hover:text-white transition-colors-smooth">
+                  {settings?.contact_phone || "(123) 456-7890"}
                 </a>
               </li>
               <li className="flex items-center gap-3 text-primary-100 dark:text-gray-400">
                 <FiMail className="w-5 h-5 flex-shrink-0" />
-                <a href="mailto:info@digitalnexstep.com" className="hover:text-white transition-colors-smooth">
-                  info@digitalnexstep.com
+                <a href={`mailto:${settings?.contact_email || "info@digitalnexstep.com"}`} className="hover:text-white transition-colors-smooth">
+                  {settings?.contact_email || "info@digitalnexstep.com"}
                 </a>
               </li>
               <li className="flex items-start gap-3 text-primary-100 dark:text-gray-400">
                 <FiClock className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span>Mon - Fri: 9:00 AM - 6:00 PM</span>
+                <span>{settings?.business_hours || "Mon - Fri: 9:00 AM - 6:00 PM"}</span>
               </li>
             </ul>
 
@@ -221,7 +223,7 @@ const Footer: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
             <p className="text-primary-200 dark:text-gray-400 text-sm text-center md:text-left">
-              © {getCurrentYear()} DigitalNexStep. All rights reserved.
+              © {getCurrentYear()} {settings?.site_name || "DigitalNexStep"}. All rights reserved.
             </p>
 
             {/* Payment Methods */}

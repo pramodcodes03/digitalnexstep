@@ -62,15 +62,17 @@ const plans = [
 
 const PricingSection: React.FC = () => {
   const { data: apiPlans } = useApi(() => api.getPricing(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "pricing_header");
 
   const displayPlans: typeof plans = apiPlans.length > 0
     ? apiPlans.map((p: any) => ({
         name: p.name || p.title,
         price: p.price != null ? Number(p.price) : null,
-        period: p.period || "month",
+        period: p.duration || p.period || "month",
         description: p.description || "",
         features: Array.isArray(p.features) ? p.features : [],
-        featured: p.is_featured || p.featured || false,
+        featured: p.is_popular || p.is_featured || p.featured || false,
       }))
     : plans;
 
@@ -88,15 +90,14 @@ const PricingSection: React.FC = () => {
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-16">
           <span className="inline-block px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
-            Pricing Plans
+            {sectionData?.subtitle || "Pricing Plans"}
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Choose Your{" "}
-            <span className="gradient-text">Perfect Plan</span>
+            {(sectionData?.title || "Choose Your Perfect Plan").replace("Perfect Plan", "")}{" "}
+            <span className="gradient-text">{(sectionData?.title || "Choose Your Perfect Plan").includes("Perfect Plan") ? "Perfect Plan" : ""}</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Flexible pricing designed to scale with your needs. All plans include our core features
-            with no hidden fees.
+            {sectionData?.content || "Flexible pricing designed to scale with your needs. All plans include our core features with no hidden fees."}
           </p>
         </AnimatedSection>
 

@@ -14,6 +14,19 @@ import {
   FiChevronRight,
 } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
+
+const iconMap: Record<string, React.ElementType> = {
+  FiUsers,
+  FiBook,
+  FiMonitor,
+  FiCalendar,
+  FiClock,
+  FiCheckSquare,
+  FiSun,
+  FiFileText,
+};
 
 const features = [
   {
@@ -81,8 +94,32 @@ const features = [
   },
 ];
 
+const defaultGradients = [
+  { gradient: "from-blue-500 via-blue-600 to-cyan-600", bgGlow: "blue" },
+  { gradient: "from-purple-500 via-purple-600 to-pink-600", bgGlow: "purple" },
+  { gradient: "from-green-500 via-emerald-600 to-teal-600", bgGlow: "green" },
+  { gradient: "from-orange-500 via-orange-600 to-red-600", bgGlow: "orange" },
+  { gradient: "from-yellow-500 via-amber-600 to-orange-600", bgGlow: "yellow" },
+  { gradient: "from-pink-500 via-rose-600 to-red-600", bgGlow: "pink" },
+  { gradient: "from-indigo-500 via-indigo-600 to-purple-600", bgGlow: "indigo" },
+  { gradient: "from-teal-500 via-cyan-600 to-blue-600", bgGlow: "teal" },
+  { gradient: "from-violet-500 via-purple-600 to-fuchsia-600", bgGlow: "violet" },
+];
+
 const ExploreFeatures: React.FC = () => {
   const [activeFeature, setActiveFeature] = useState(0);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "explore_features");
+
+  const displayFeatures = sectionData?.extra_data?.items?.length > 0
+    ? sectionData.extra_data.items.map((item: any, i: number) => ({
+        icon: iconMap[item.icon] || FiCheckSquare,
+        title: item.title,
+        description: item.description,
+        gradient: defaultGradients[i % defaultGradients.length].gradient,
+        bgGlow: defaultGradients[i % defaultGradients.length].bgGlow,
+      }))
+    : features;
 
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
@@ -103,19 +140,19 @@ const ExploreFeatures: React.FC = () => {
           className="text-center mb-16"
         >
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Explore Our{" "}
+            {sectionData?.title || "Explore Our"}{" "}
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-              Top Features
+              {sectionData?.subtitle || "Top Features"}
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Powerful management tools designed to streamline every aspect of your educational institution
+            {sectionData?.content || "Powerful management tools designed to streamline every aspect of your educational institution"}
           </p>
         </motion.div>
 
         {/* Features Grid - Bento Box Style */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => {
+          {displayFeatures.map((feature: any, index: number) => {
             const Icon = feature.icon;
             const isActive = activeFeature === index;
 

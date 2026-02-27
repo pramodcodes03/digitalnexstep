@@ -341,6 +341,9 @@ const stats = [
 export default function ProductsPage() {
   const [enquiryProduct, setEnquiryProduct] = useState<string | null>(null);
 
+  const { data: apiSections } = useApi(() => api.getPageSections("products"), [] as any[]);
+  const heroData = apiSections.find((s: any) => s.section_key === "products_hero");
+
   const { data: apiProducts } = useApi(() => api.getProducts(), [] as any[]);
 
   const displayProducts: Product[] = apiProducts.length > 0
@@ -406,10 +409,10 @@ export default function ProductsPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6"
             >
-              Digital Solutions That{" "}
+              {heroData?.title || "Digital Solutions That"}{" "}
               <span className="relative">
                 <span className="bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Transform
+                  {heroData?.subtitle || "Transform"}
                 </span>
                 <motion.svg
                   className="absolute -bottom-2 left-0 w-full"
@@ -437,7 +440,7 @@ export default function ProductsPage() {
                   </defs>
                 </motion.svg>
               </span>
-              {" "}Education
+              {" "}{heroData?.extra_data?.highlight || "Education"}
             </motion.h1>
 
             <motion.p
@@ -446,8 +449,7 @@ export default function ProductsPage() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto"
             >
-              Explore our comprehensive suite of cutting-edge products designed to
-              empower educational institutions with technology.
+              {heroData?.content || "Explore our comprehensive suite of cutting-edge products designed to empower educational institutions with technology."}
             </motion.p>
 
             {/* Stats strip */}

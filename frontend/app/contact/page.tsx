@@ -19,6 +19,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
 import api from "@/lib/api";
+import { useApi } from "@/lib/useApi";
 import { isValidEmail } from "@/lib/utils";
 
 interface ContactFormData {
@@ -29,7 +30,7 @@ interface ContactFormData {
   message: string;
 }
 
-const contactInfo = [
+const defaultContactInfo = [
   {
     icon: FiMapPin,
     title: "Visit Us",
@@ -71,6 +72,25 @@ export default function ContactPage() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">(
     "idle"
   );
+
+  const { data: apiSections } = useApi(() => api.getPageSections("contact"), [] as any[]);
+  const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
+  const heroData = apiSections.find((s: any) => s.section_key === "contact_hero");
+  const apiContactInfo = heroData?.extra_data?.contact_info;
+
+  const contactIconMap: Record<string, React.ElementType> = {
+    FiMapPin, FiPhone, FiMail, FiClock,
+  };
+
+  const contactInfo = apiContactInfo
+    ? apiContactInfo.map((c: any, i: number) => ({
+        ...defaultContactInfo[i % defaultContactInfo.length],
+        icon: (c.icon && contactIconMap[c.icon]) || defaultContactInfo[i % defaultContactInfo.length].icon,
+        title: c.title || defaultContactInfo[i % defaultContactInfo.length].title,
+        lines: c.lines || defaultContactInfo[i % defaultContactInfo.length].lines,
+        href: c.href ?? defaultContactInfo[i % defaultContactInfo.length].href,
+      }))
+    : defaultContactInfo;
 
   const {
     register,
@@ -137,24 +157,23 @@ export default function ContactPage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-sm font-semibold uppercase tracking-wider mb-5"
             >
               <FiMessageSquare className="w-4 h-4" />
-              Contact Us
+              {heroData?.extra_data?.badge || "Contact Us"}
             </motion.span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-              Get in{" "}
+              {heroData?.title || <>Get in{" "}
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Touch
               </span>{" "}
-              With Us
+              With Us</>}
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Have questions, need a demo, or want to partner with us? We&apos;d love to
-              hear from you. Our team is ready to help.
+              {heroData?.content || "Have questions, need a demo, or want to partner with us? We'd love to hear from you. Our team is ready to help."}
             </p>
           </motion.div>
 
           {/* Contact Info Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
-            {contactInfo.map((info, index) => {
+            {contactInfo.map((info: any, index: number) => {
               const Icon = info.icon;
               return (
                 <motion.div
@@ -175,7 +194,7 @@ export default function ContactPage() {
                     <h3 className="font-bold text-gray-900 dark:text-white mb-2">
                       {info.title}
                     </h3>
-                    {info.lines.map((line, i) =>
+                    {info.lines.map((line: any, i: number) =>
                       info.href && i === 0 ? (
                         <a
                           key={i}
@@ -466,7 +485,7 @@ export default function ContactPage() {
               {/* Map */}
               <div className="rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 h-[350px] lg:h-[400px]">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830921927!2d-74.11976378897398!3d40.69766374859258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
+                  src={settings?.google_maps_embed || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830921927!2d-74.11976378897398!3d40.69766374859258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

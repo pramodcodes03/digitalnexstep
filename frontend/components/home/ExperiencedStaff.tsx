@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FiLinkedin, FiMail, FiBookOpen } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const staff = [
   {
@@ -64,7 +66,38 @@ const staff = [
   },
 ];
 
+const staffColors = [
+  "from-blue-500 to-indigo-600",
+  "from-purple-500 to-pink-600",
+  "from-green-500 to-emerald-600",
+  "from-orange-500 to-red-600",
+  "from-cyan-500 to-blue-600",
+  "from-rose-500 to-pink-600",
+  "from-teal-500 to-cyan-600",
+  "from-amber-500 to-orange-600",
+];
+
 const ExperiencedStaff: React.FC = () => {
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "staff_header");
+
+  const { data: apiTeamMembers } = useApi(() => api.getTeamMembers(), [] as any[]);
+
+  const staffList = apiTeamMembers.length > 0
+    ? apiTeamMembers.map((member: any, i: number) => {
+        // Extract expertise and experience from bio if available
+        const bio = member.bio || "";
+        const experienceMatch = bio.match(/(\d+\+?\s*Years?)/i);
+        return {
+          name: member.name,
+          designation: member.designation || member.role || "",
+          expertise: member.expertise || member.specialization || "",
+          experience: member.experience || (experienceMatch ? experienceMatch[1] : ""),
+          color: staffColors[i % staffColors.length],
+        };
+      })
+    : staff;
+
   return (
     <section className="py-24 bg-gradient-to-b from-white via-blue-50/40 to-indigo-50/40 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Background */}
@@ -101,21 +134,27 @@ const ExperiencedStaff: React.FC = () => {
             Our Experienced Staff
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Meet the{" "}
-            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Experts
-            </span>{" "}
-            Behind Our Success
+            {sectionData?.title ? (
+              <span dangerouslySetInnerHTML={{ __html: sectionData.title }} />
+            ) : (
+              <>
+                Meet the{" "}
+                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Experts
+                </span>{" "}
+                Behind Our Success
+              </>
+            )}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Our team of seasoned professionals brings decades of combined experience
-            in education, technology, and assessment innovation.
+            {sectionData?.subtitle ||
+              "Our team of seasoned professionals brings decades of combined experience in education, technology, and assessment innovation."}
           </p>
         </motion.div>
 
         {/* Staff Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {staff.map((member, index) => (
+          {staffList.map((member: any, index: number) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 40 }}
@@ -134,7 +173,7 @@ const ExperiencedStaff: React.FC = () => {
                   <div className="relative">
                     <div className={`w-24 h-24 bg-gradient-to-br ${member.color} rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                       <span className="text-white text-2xl font-bold">
-                        {member.name.split(" ").filter(n => !n.includes(".")).map((n) => n[0]).join("")}
+                        {member.name.split(" ").filter((n: string) => !n.includes(".")).map((n: string) => n[0]).join("")}
                       </span>
                     </div>
                     {/* Online Indicator */}

@@ -82,6 +82,8 @@ const iconMap: Record<string, React.ElementType> = {
 
 const FeaturesSection: React.FC = () => {
   const { data: apiFeatures } = useApi(() => api.getFeatures(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "features_header");
 
   const displayFeatures: typeof features = apiFeatures.length > 0
     ? apiFeatures.map((f: any, i: number) => ({
@@ -98,15 +100,14 @@ const FeaturesSection: React.FC = () => {
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-16">
           <span className="inline-block px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
-            Our Features
+            {sectionData?.extra_data?.badge || "Our Features"}
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Everything You Need for{" "}
-            <span className="gradient-text">Modern Assessment</span>
+            {sectionData?.title || "Everything You Need for"}{" "}
+            <span className="gradient-text">{sectionData?.subtitle || "Modern Assessment"}</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Comprehensive tools designed to streamline your assessment workflow,
-            enhance student engagement, and provide meaningful insights.
+            {sectionData?.content || "Comprehensive tools designed to streamline your assessment workflow, enhance student engagement, and provide meaningful insights."}
           </p>
         </AnimatedSection>
 

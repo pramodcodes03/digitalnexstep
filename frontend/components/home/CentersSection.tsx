@@ -27,6 +27,8 @@ const mockCenters = [
 
 const CentersSection: React.FC = () => {
   const { data: apiCenters } = useApi(() => api.getCenters(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "centers_header");
 
   const centers: typeof mockCenters = apiCenters.length > 0
     ? apiCenters.map((c: any) => ({
@@ -56,15 +58,14 @@ const CentersSection: React.FC = () => {
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-12">
           <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold uppercase tracking-wide mb-4">
-            Our Network
+            {sectionData?.subtitle || "Our Network"}
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
-            Assessment Centers{" "}
-            <span className="gradient-text">Nationwide</span>
+            {(sectionData?.title || "Assessment Centers Nationwide").replace("Nationwide", "")}{" "}
+            <span className="gradient-text">{(sectionData?.title || "Assessment Centers Nationwide").includes("Nationwide") ? "Nationwide" : ""}</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Find a trusted assessment center near you. Our network spans across the country,
-            bringing quality assessments to your community.
+            {sectionData?.content || "Find a trusted assessment center near you. Our network spans across the country, bringing quality assessments to your community."}
           </p>
 
           {/* Filter Dropdown */}

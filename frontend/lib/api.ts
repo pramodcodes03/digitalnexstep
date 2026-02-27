@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://nextstep.ditrpindia.org/api";
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 /**
  * Axios instance for API requests
@@ -70,6 +70,11 @@ export const api = {
     apiClient.get("/gallery-items", {
       params: category && category !== "all" ? { category } : {},
     }),
+  getCourses: (category?: string) =>
+    apiClient.get("/courses", {
+      params: category && category !== "All" ? { category } : {},
+    }),
+  getCourse: (id: string | number) => apiClient.get(`/courses/${id}`),
   getProducts: () => apiClient.get("/products"),
   getJobUpdates: () => apiClient.get("/job-updates"),
   getCenters: () => apiClient.get("/centers"),

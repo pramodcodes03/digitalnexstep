@@ -87,6 +87,8 @@ const defaultJobColors = [
 
 const JobUpdates: React.FC = () => {
   const { data: apiJobs } = useApi(() => api.getJobUpdates(), [] as any[]);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "jobs_header");
 
   const displayJobs: typeof jobs = apiJobs.length > 0
     ? apiJobs.map((j: any, i: number) => ({
@@ -130,17 +132,22 @@ const JobUpdates: React.FC = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full text-sm font-semibold uppercase tracking-wider mb-5"
           >
             <FiBriefcase className="w-4 h-4" />
-            Job Updates
+            {sectionData?.subtitle || "Job Updates"}
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Join Our{" "}
-            <span className="bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent">
-              Growing Team
-            </span>
+            {sectionData?.title ? (
+              <span dangerouslySetInnerHTML={{ __html: sectionData.title }} />
+            ) : (
+              <>
+                Join Our{" "}
+                <span className="bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent">
+                  Growing Team
+                </span>
+              </>
+            )}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Explore exciting career opportunities and be part of the team that&apos;s
-            revolutionizing education technology.
+            {sectionData?.content || "Explore exciting career opportunities and be part of the team that's revolutionizing education technology."}
           </p>
         </motion.div>
 

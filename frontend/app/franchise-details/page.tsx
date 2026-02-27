@@ -12,6 +12,8 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 /* ─── Animated counter ─── */
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
@@ -159,6 +161,15 @@ const whyChoose = [
    PAGE
    ═══════════════════════════════════════════════════════════════════════ */
 export default function FranchiseDetailsPage() {
+  const { data: apiSections } = useApi(() => api.getPageSections("franchise-details"), [] as any[]);
+
+  const getSection = (key: string) => apiSections.find((s: any) => s.section_key === key);
+  const heroData = getSection("franchise_hero");
+  const aboutData = getSection("franchise_about");
+  const certsData = getSection("franchise_certifications");
+  const whyData = getSection("franchise_why_choose");
+  const processData = getSection("franchise_process");
+
   return (
     <>
       <Header />
@@ -191,7 +202,7 @@ export default function FranchiseDetailsPage() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500" />
               </span>
               <span className="text-primary-300 text-sm font-semibold tracking-wide">
-                Franchise Details
+                {heroData?.subtitle || "Franchise Details"}
               </span>
             </motion.div>
 
@@ -201,35 +212,41 @@ export default function FranchiseDetailsPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6"
             >
-              Partner With{" "}
-              <span className="relative">
-                <span className="bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  DITRP
-                </span>
-                <motion.svg
-                  className="absolute -bottom-2 left-0 w-full"
-                  viewBox="0 0 200 12"
-                >
-                  <motion.path
-                    d="M2 8 C50 2, 150 2, 198 8"
-                    stroke="url(#detail-underline)"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1, delay: 0.8 }}
-                  />
-                  <defs>
-                    <linearGradient id="detail-underline" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#60a5fa" />
-                      <stop offset="50%" stopColor="#a78bfa" />
-                      <stop offset="100%" stopColor="#f472b6" />
-                    </linearGradient>
-                  </defs>
-                </motion.svg>
-              </span>{" "}
-              India
+              {heroData?.title ? (
+                <>{heroData.title}</>
+              ) : (
+                <>
+                  Partner With{" "}
+                  <span className="relative">
+                    <span className="bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      DITRP
+                    </span>
+                    <motion.svg
+                      className="absolute -bottom-2 left-0 w-full"
+                      viewBox="0 0 200 12"
+                    >
+                      <motion.path
+                        d="M2 8 C50 2, 150 2, 198 8"
+                        stroke="url(#detail-underline)"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1, delay: 0.8 }}
+                      />
+                      <defs>
+                        <linearGradient id="detail-underline" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#60a5fa" />
+                          <stop offset="50%" stopColor="#a78bfa" />
+                          <stop offset="100%" stopColor="#f472b6" />
+                        </linearGradient>
+                      </defs>
+                    </motion.svg>
+                  </span>{" "}
+                  India
+                </>
+              )}
             </motion.h1>
 
             <motion.p
@@ -238,10 +255,14 @@ export default function FranchiseDetailsPage() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto"
             >
-              DITRP (Digital Information Technology & Research for Professionals) is an{" "}
-              <span className="text-primary-400 font-semibold">ISO 9001:2008 Certified</span>{" "}
-              Educational Organisation engaged in designing vocational & career-focused courses for
-              institutes countrywide.
+              {heroData?.content || (
+                <>
+                  DITRP (Digital Information Technology & Research for Professionals) is an{" "}
+                  <span className="text-primary-400 font-semibold">ISO 9001:2008 Certified</span>{" "}
+                  Educational Organisation engaged in designing vocational & career-focused courses for
+                  institutes countrywide.
+                </>
+              )}
             </motion.p>
 
             {/* Stats */}
@@ -251,8 +272,8 @@ export default function FranchiseDetailsPage() {
               transition={{ duration: 0.5, delay: 0.45 }}
               className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-5"
             >
-              {stats.map((s, i) => {
-                const Icon = s.icon;
+              {(heroData?.extra_data?.stats || stats).map((s: any, i: number) => {
+                const Icon = s.icon || stats[i]?.icon || FiStar;
                 return (
                   <motion.div
                     key={i}
@@ -262,7 +283,11 @@ export default function FranchiseDetailsPage() {
                     className="relative group p-5 rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-sm hover:bg-white/[0.06] transition-all duration-300"
                   >
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500/20 to-purple-500/20 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform">
-                      <Icon className="w-5 h-5 text-primary-400" />
+                      {typeof Icon === "function" ? (
+                        <Icon className="w-5 h-5 text-primary-400" />
+                      ) : (
+                        <FiStar className="w-5 h-5 text-primary-400" />
+                      )}
                     </div>
                     <p className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent">
                       <Counter end={s.value} suffix={s.suffix} />
@@ -286,13 +311,19 @@ export default function FranchiseDetailsPage() {
               <div className="text-center mb-14">
                 <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-400 mb-3">
                   <FiZap className="w-4 h-4" />
-                  ABOUT DITRP
+                  {aboutData?.title || "ABOUT DITRP"}
                 </span>
                 <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
-                  Empowering Education{" "}
-                  <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
-                    Nationwide
-                  </span>
+                  {aboutData?.content ? (
+                    <>{aboutData.content}</>
+                  ) : (
+                    <>
+                      Empowering Education{" "}
+                      <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
+                        Nationwide
+                      </span>
+                    </>
+                  )}
                 </h2>
               </div>
             </FadeInSection>
@@ -397,7 +428,7 @@ export default function FranchiseDetailsPage() {
           <FadeInSection className="text-center mb-14">
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-400 mb-3">
               <FiAward className="w-4 h-4" />
-              CERTIFICATIONS
+              {certsData?.title || "CERTIFICATIONS"}
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
               Internationally{" "}
@@ -408,8 +439,8 @@ export default function FranchiseDetailsPage() {
           </FadeInSection>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {certifications.map((cert, i) => {
-              const Icon = cert.icon;
+            {(certsData?.extra_data?.certifications || certifications).map((cert: any, i: number) => {
+              const Icon = cert.icon || certifications[i]?.icon || FiAward;
               return (
                 <FadeInSection key={i} delay={i * 0.12}>
                   <div className="group relative h-full" style={{ perspective: "1000px" }}>
@@ -451,7 +482,7 @@ export default function FranchiseDetailsPage() {
           <FadeInSection className="text-center mb-14">
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-400 mb-3">
               <FiStar className="w-4 h-4" />
-              WHY CHOOSE DITRP
+              {whyData?.title || "WHY CHOOSE DITRP"}
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
               What Makes Us{" "}
@@ -462,8 +493,8 @@ export default function FranchiseDetailsPage() {
           </FadeInSection>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {whyChoose.map((item, i) => {
-              const Icon = item.icon;
+            {(whyData?.extra_data?.benefits || whyChoose).map((item: any, i: number) => {
+              const Icon = item.icon || whyChoose[i]?.icon || FiStar;
               return (
                 <FadeInSection key={i} delay={i * 0.08}>
                   <div className="group relative p-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -472,10 +503,14 @@ export default function FranchiseDetailsPage() {
 
                     <div className="relative">
                       <div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                        {typeof Icon === "function" ? (
+                          <Icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                        ) : (
+                          <FiStar className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                        )}
                       </div>
                       <h4 className="font-bold text-gray-900 dark:text-white mb-1.5">{item.title}</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc || item.description}</p>
                     </div>
                   </div>
                 </FadeInSection>
@@ -491,7 +526,7 @@ export default function FranchiseDetailsPage() {
           <FadeInSection className="text-center mb-16">
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-400 mb-3">
               <FiLayers className="w-4 h-4" />
-              FRANCHISEE PROCESS
+              {processData?.title || "FRANCHISEE PROCESS"}
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
               How It{" "}
@@ -510,8 +545,8 @@ export default function FranchiseDetailsPage() {
             {/* Vertical line */}
             <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[3px] bg-gray-200 dark:bg-gray-800 md:-translate-x-[1.5px]" />
 
-            {processSteps.map((step, i) => {
-              const Icon = step.icon;
+            {(processData?.extra_data?.steps || processSteps).map((step: any, i: number) => {
+              const Icon = step.icon || processSteps[i]?.icon || FiCheckCircle;
               const isEven = i % 2 === 0;
               const colorMap: Record<string, string> = {
                 primary: "from-primary-500 to-primary-600",
@@ -519,7 +554,8 @@ export default function FranchiseDetailsPage() {
                 pink: "from-pink-500 to-pink-600",
                 emerald: "from-emerald-500 to-emerald-600",
               };
-              const gradient = colorMap[step.color];
+              const defaultColors = ["primary", "purple", "pink", "emerald"];
+              const gradient = colorMap[step.color || defaultColors[i % defaultColors.length]];
 
               return (
                 <FadeInSection
@@ -539,7 +575,7 @@ export default function FranchiseDetailsPage() {
                         <h4 className="font-bold text-gray-900 dark:text-white">{step.title}</h4>
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                        {step.desc}
+                        {step.desc || step.description}
                       </p>
                     </div>
                   </div>
@@ -553,7 +589,11 @@ export default function FranchiseDetailsPage() {
                       transition={{ duration: 0.4, delay: i * 0.15 + 0.2, type: "spring" }}
                       className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg`}
                     >
-                      <Icon className="w-5 h-5 text-white" />
+                      {typeof Icon === "function" ? (
+                        <Icon className="w-5 h-5 text-white" />
+                      ) : (
+                        <FiCheckCircle className="w-5 h-5 text-white" />
+                      )}
                     </motion.div>
                   </div>
 

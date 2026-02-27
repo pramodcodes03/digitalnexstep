@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FiEye, FiTarget, FiStar, FiCompass, FiHeart, FiGlobe } from "react-icons/fi";
 import Container from "../ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const visionPoints = [
   {
@@ -42,6 +44,23 @@ const floatingShapes = [
 ];
 
 const VisionMissionSection: React.FC = () => {
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "vision_mission");
+
+  const extraData = sectionData?.extra_data || {};
+
+  const apiVisionPoints: { icon: React.ComponentType<any>; text: string }[] =
+    extraData.vision_points?.map((text: string, i: number) => ({
+      icon: visionPoints[i]?.icon || FiStar,
+      text,
+    })) || visionPoints;
+
+  const apiMissionPoints: { icon: React.ComponentType<any>; text: string }[] =
+    extraData.mission_points?.map((text: string, i: number) => ({
+      icon: missionPoints[i]?.icon || FiTarget,
+      text,
+    })) || missionPoints;
+
   return (
     <section className="py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Animated Background Shapes */}
@@ -93,18 +112,24 @@ const VisionMissionSection: React.FC = () => {
             Who We Are
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-            Driven by{" "}
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Purpose
-            </span>
-            , Guided by{" "}
-            <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-              Vision
-            </span>
+            {sectionData?.title ? (
+              <span dangerouslySetInnerHTML={{ __html: sectionData.title }} />
+            ) : (
+              <>
+                Driven by{" "}
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Purpose
+                </span>
+                , Guided by{" "}
+                <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
+                  Vision
+                </span>
+              </>
+            )}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            We are committed to transforming the educational landscape through innovation,
-            accessibility, and excellence in every step we take.
+            {sectionData?.subtitle ||
+              "We are committed to transforming the educational landscape through innovation, accessibility, and excellence in every step we take."}
           </p>
         </motion.div>
 
@@ -155,10 +180,16 @@ const VisionMissionSection: React.FC = () => {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="relative text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4"
               >
-                Our{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Vision
-                </span>
+                {extraData.vision_title ? (
+                  <span dangerouslySetInnerHTML={{ __html: extraData.vision_title }} />
+                ) : (
+                  <>
+                    Our{" "}
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Vision
+                    </span>
+                  </>
+                )}
               </motion.h3>
 
               {/* Description */}
@@ -169,14 +200,13 @@ const VisionMissionSection: React.FC = () => {
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="relative text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-8"
               >
-                To be the world&apos;s most trusted platform in educational assessment,
-                enabling every institution to unlock the full potential of their students
-                through technology-driven insights and innovation.
+                {extraData.vision_description ||
+                  "To be the world\u2019s most trusted platform in educational assessment, enabling every institution to unlock the full potential of their students through technology-driven insights and innovation."}
               </motion.p>
 
               {/* Points */}
               <div className="relative space-y-5">
-                {visionPoints.map((point, index) => {
+                {apiVisionPoints.map((point, index) => {
                   const Icon = point.icon;
                   return (
                     <motion.div
@@ -245,10 +275,16 @@ const VisionMissionSection: React.FC = () => {
                 transition={{ duration: 0.5, delay: 0.5 }}
                 className="relative text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4"
               >
-                Our{" "}
-                <span className="bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
-                  Mission
-                </span>
+                {extraData.mission_title ? (
+                  <span dangerouslySetInnerHTML={{ __html: extraData.mission_title }} />
+                ) : (
+                  <>
+                    Our{" "}
+                    <span className="bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">
+                      Mission
+                    </span>
+                  </>
+                )}
               </motion.h3>
 
               {/* Description */}
@@ -259,14 +295,13 @@ const VisionMissionSection: React.FC = () => {
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="relative text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-8"
               >
-                To empower educators and institutions with intelligent, accessible,
-                and reliable assessment solutions that inspire growth, celebrate
-                achievements, and transform the way we measure learning.
+                {extraData.mission_description ||
+                  "To empower educators and institutions with intelligent, accessible, and reliable assessment solutions that inspire growth, celebrate achievements, and transform the way we measure learning."}
               </motion.p>
 
               {/* Points */}
               <div className="relative space-y-5">
-                {missionPoints.map((point, index) => {
+                {apiMissionPoints.map((point, index) => {
                   const Icon = point.icon;
                   return (
                     <motion.div

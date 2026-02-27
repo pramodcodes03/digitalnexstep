@@ -7,6 +7,7 @@ use App\Models\AboutSection;
 use App\Models\Achievement;
 use App\Models\Center;
 use App\Models\ContactSubmission;
+use App\Models\Course;
 use App\Models\Enquiry;
 use App\Models\Faq;
 use App\Models\Feature;
@@ -128,6 +129,28 @@ class PublicController extends Controller
         return response()->json(
             Achievement::where('is_active', true)->orderBy('sort_order')->get()
         );
+    }
+
+    public function courses(Request $request): JsonResponse
+    {
+        $query = Course::where('is_active', true)->orderBy('sort_order');
+
+        if ($request->has('category') && $request->category !== 'All') {
+            $query->where('category', $request->category);
+        }
+
+        return response()->json($query->get());
+    }
+
+    public function course(string $id): JsonResponse
+    {
+        $course = Course::where('is_active', true)
+            ->where(function ($q) use ($id) {
+                $q->where('id', $id)->orWhere('slug', $id);
+            })
+            ->firstOrFail();
+
+        return response()->json($course);
     }
 
     public function pageSections(Request $request): JsonResponse

@@ -219,6 +219,9 @@ export default function GalleryPage() {
     videos: { color: "from-purple-500 to-pink-600", accent: "purple" },
   };
 
+  const { data: apiSections } = useApi(() => api.getPageSections("gallery"), [] as any[]);
+  const heroData = apiSections.find((s: any) => s.section_key === "gallery_hero");
+
   const { data: apiItems } = useApi(() => api.getGalleryItems(), [] as any[]);
 
   const items: GalleryItem[] = apiItems.length > 0
@@ -286,14 +289,13 @@ export default function GalleryPage() {
               Gallery
             </motion.span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
-              Our{" "}
+              {heroData?.title || "Our"}{" "}
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                Gallery
+                {heroData?.subtitle || "Gallery"}
               </span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Explore our journey through images, latest news, prestigious awards,
-              and insightful videos.
+              {heroData?.content || "Explore our journey through images, latest news, prestigious awards, and insightful videos."}
             </p>
           </motion.div>
 

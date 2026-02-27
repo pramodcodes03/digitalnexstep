@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const showcaseData = {
   "Teacher Assistant": [
@@ -168,6 +170,8 @@ const FeaturesShowcase: React.FC = () => {
     "Teacher Assistant"
   );
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "features_showcase");
 
   const slides = showcaseData[activeTab];
   const currentData = slides[currentSlide];
@@ -190,11 +194,11 @@ const FeaturesShowcase: React.FC = () => {
       <Container>
         <AnimatedSection animation="slide-up" className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
-            Pioneering Next-gen Education with{" "}
-            <span className="gradient-text">AI-based Solutions</span>
+            {sectionData?.title || "Pioneering Next-gen Education with"}{" "}
+            <span className="gradient-text">{sectionData?.subtitle || "AI-based Solutions"}</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
-            Discover the latest upgrades for schools
+            {sectionData?.content || "Discover the latest upgrades for schools"}
           </p>
 
           {/* Tab Navigation */}

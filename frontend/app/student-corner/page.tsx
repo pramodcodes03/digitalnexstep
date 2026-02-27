@@ -28,6 +28,8 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 /* ═══════════════════════════════════════════════════════
    COUNTER COMPONENT — animated number on scroll
@@ -237,8 +239,73 @@ function AnimatedBlock({
 /* ═══════════════════════════════════════════════════════
    PAGE
    ═══════════════════════════════════════════════════════ */
+/* ─── Icon map for API data ─── */
+const iconMap: Record<string, React.ElementType> = {
+  FiBookOpen, FiAward, FiTrendingUp, FiClock, FiCheckCircle,
+  FiBarChart2, FiTarget, FiUsers, FiZap, FiShield,
+  FiSmartphone, FiGlobe, FiStar, FiLayers, FiCpu, FiRefreshCw,
+  FiMessageCircle,
+};
+
 export default function StudentCornerPage() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  const { data: apiSections } = useApi(() => api.getPageSections("student-corner"), [] as any[]);
+  const getSection = (key: string) => apiSections.find((s: any) => s.section_key === key);
+  const heroData = getSection("student_hero");
+  const benefitsData = getSection("student_benefits");
+  const howItWorksData = getSection("student_how_it_works");
+  const featuresData = getSection("student_features");
+  const testimonialsData = getSection("student_testimonials");
+
+  /* Dynamic data with static fallbacks */
+  const displayHeroStats = heroData?.extra_data?.stats?.length > 0
+    ? heroData.extra_data.stats.map((stat: any, i: number) => ({
+        label: stat.label || heroStats[i]?.label || "",
+        value: Number(stat.value) || heroStats[i]?.value || 0,
+        suffix: stat.suffix || heroStats[i]?.suffix || "",
+        icon: iconMap[stat.icon] || heroStats[i]?.icon || FiUsers,
+        color: heroStats[i]?.color || "from-blue-500 to-indigo-600",
+      }))
+    : heroStats;
+
+  const displayBenefits = benefitsData?.extra_data?.benefits?.length > 0
+    ? benefitsData.extra_data.benefits.map((b: any, i: number) => ({
+        icon: iconMap[b.icon] || benefits[i]?.icon || FiTarget,
+        title: b.title || benefits[i]?.title || "",
+        description: b.description || benefits[i]?.description || "",
+        color: benefits[i]?.color || "from-blue-500 to-indigo-600",
+        accent: benefits[i]?.accent || "blue",
+      }))
+    : benefits;
+
+  const displaySteps = howItWorksData?.extra_data?.steps?.length > 0
+    ? howItWorksData.extra_data.steps.map((s: any, i: number) => ({
+        step: s.step || i + 1,
+        title: s.title || steps[i]?.title || "",
+        description: s.description || steps[i]?.description || "",
+        icon: iconMap[s.icon] || steps[i]?.icon || FiUsers,
+        color: steps[i]?.color || "from-blue-500 to-indigo-600",
+      }))
+    : steps;
+
+  const displayFeatures = featuresData?.extra_data?.features?.length > 0
+    ? featuresData.extra_data.features.map((f: any, i: number) => ({
+        icon: iconMap[f.icon] || features[i]?.icon || FiSmartphone,
+        title: f.title || features[i]?.title || "",
+        desc: f.description || features[i]?.desc || "",
+      }))
+    : features;
+
+  const displayTestimonials = testimonialsData?.extra_data?.testimonials?.length > 0
+    ? testimonialsData.extra_data.testimonials.map((t: any, i: number) => ({
+        name: t.name || testimonials[i]?.name || "",
+        role: t.achievement || testimonials[i]?.role || "",
+        quote: t.quote || testimonials[i]?.quote || "",
+        avatar: (t.name || "").split(" ").map((w: string) => w[0]).join("").slice(0, 2) || testimonials[i]?.avatar || "",
+        color: testimonials[i]?.color || "from-blue-500 to-indigo-600",
+      }))
+    : testimonials;
 
   return (
     <>
@@ -296,9 +363,9 @@ export default function StudentCornerPage() {
               transition={{ duration: 0.75, ease: [0.33, 1, 0.68, 1] }}
               className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight"
             >
-              Your Success Starts{" "}
+              {heroData?.title || "Your Success Starts"}{" "}
               <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-500 bg-clip-text text-transparent">
-                Here
+                {heroData?.extra_data?.highlight || "Here"}
               </span>
             </motion.h1>
           </div>
@@ -309,8 +376,7 @@ export default function StudentCornerPage() {
               transition={{ duration: 0.75, delay: 0.15, ease: [0.33, 1, 0.68, 1] }}
               className="text-lg md:text-xl text-blue-100/80 max-w-3xl mx-auto leading-relaxed"
             >
-              Everything you need to prepare smarter, practice harder, and score
-              higher — all in one powerful student panel.
+              {heroData?.content || "Everything you need to prepare smarter, practice harder, and score higher — all in one powerful student panel."}
             </motion.p>
           </div>
 
@@ -338,7 +404,7 @@ export default function StudentCornerPage() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
-            {heroStats.map((stat, i) => {
+            {displayHeroStats.map((stat: any, i: number) => {
               const Icon = stat.icon;
               return (
                 <motion.div
@@ -399,7 +465,7 @@ export default function StudentCornerPage() {
           </AnimatedBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {benefits.map((benefit, i) => {
+            {displayBenefits.map((benefit: any, i: number) => {
               const Icon = benefit.icon;
               return (
                 <AnimatedBlock key={benefit.title} delay={i * 0.08}>
@@ -471,7 +537,7 @@ export default function StudentCornerPage() {
             {/* Vertical line */}
             <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-orange-500 opacity-20 md:-translate-x-px" />
 
-            {steps.map((item, i) => {
+            {displaySteps.map((item: any, i: number) => {
               const Icon = item.icon;
               const isLeft = i % 2 === 0;
               return (
@@ -543,7 +609,7 @@ export default function StudentCornerPage() {
           </AnimatedBlock>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map((feat, i) => {
+            {displayFeatures.map((feat: any, i: number) => {
               const Icon = feat.icon;
               return (
                 <AnimatedBlock key={feat.title} delay={i * 0.06}>
@@ -594,7 +660,7 @@ export default function StudentCornerPage() {
           <div className="max-w-4xl mx-auto">
             {/* Tabs */}
             <div className="flex justify-center gap-3 mb-8 flex-wrap">
-              {testimonials.map((t, i) => (
+              {displayTestimonials.map((t: any, i: number) => (
                 <button
                   key={t.name}
                   onClick={() => setActiveTestimonial(i)}
@@ -641,21 +707,21 @@ export default function StudentCornerPage() {
               >
                 <div className="flex items-start gap-4 mb-6">
                   <div
-                    className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br ${testimonials[activeTestimonial].color} flex items-center justify-center text-white font-bold text-lg shadow-lg`}
+                    className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br ${displayTestimonials[activeTestimonial].color} flex items-center justify-center text-white font-bold text-lg shadow-lg`}
                   >
-                    {testimonials[activeTestimonial].avatar}
+                    {displayTestimonials[activeTestimonial].avatar}
                   </div>
                   <div>
                     <h4 className="text-lg font-bold text-gray-900 dark:text-white">
-                      {testimonials[activeTestimonial].name}
+                      {displayTestimonials[activeTestimonial].name}
                     </h4>
                     <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-                      {testimonials[activeTestimonial].role}
+                      {displayTestimonials[activeTestimonial].role}
                     </p>
                   </div>
                 </div>
                 <blockquote className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed italic">
-                  &ldquo;{testimonials[activeTestimonial].quote}&rdquo;
+                  &ldquo;{displayTestimonials[activeTestimonial].quote}&rdquo;
                 </blockquote>
                 <div className="flex gap-1 mt-5">
                   {[...Array(5)].map((_, j) => (

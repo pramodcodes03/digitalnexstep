@@ -4,8 +4,23 @@ import React from "react";
 import { FiMapPin, FiPhone, FiMail, FiClock, FiExternalLink } from "react-icons/fi";
 import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 const MapSection: React.FC = () => {
+  const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
+  const sectionData = apiSections.find((s: any) => s.section_key === "map");
+
+  const { data: siteSettings } = useApi(() => api.getSiteSettings(), {} as any);
+
+  // Extract contact info from site settings with fallbacks
+  const address = siteSettings?.address || "123 Education Street, Suite 456\nNew York, NY 10001\nUnited States";
+  const phone = siteSettings?.phone || "(123) 456-7890";
+  const email = siteSettings?.email || "info@digitalnexstep.com";
+  const businessHours = siteSettings?.business_hours || siteSettings?.hours || null;
+  const mapUrl = siteSettings?.map_url || siteSettings?.google_map_url || siteSettings?.map_embed_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830921927!2d-74.11976378897398!3d40.69766374859258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus";
+  const directionsUrl = siteSettings?.directions_url || "https://www.google.com/maps/dir//New+York,+NY";
+
   return (
     <section className="py-20 bg-white dark:bg-gray-900">
       <Container>
@@ -14,7 +29,7 @@ const MapSection: React.FC = () => {
           <AnimatedSection animation="slide-right">
             <div className="h-full min-h-[400px] lg:min-h-[500px] rounded-2xl overflow-hidden shadow-strong border border-gray-200 dark:border-gray-700">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830921927!2d-74.11976378897398!3d40.69766374859258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
+                src={mapUrl}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -35,12 +50,18 @@ const MapSection: React.FC = () => {
                   Visit Us
                 </span>
                 <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
-                  Our{" "}
-                  <span className="gradient-text">Location</span>
+                  {sectionData?.title ? (
+                    <span dangerouslySetInnerHTML={{ __html: sectionData.title }} />
+                  ) : (
+                    <>
+                      Our{" "}
+                      <span className="gradient-text">Location</span>
+                    </>
+                  )}
                 </h2>
                 <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                  We're conveniently located in the heart of the city. Stop by for a demo,
-                  consultation, or just to say hello!
+                  {sectionData?.subtitle ||
+                    "We're conveniently located in the heart of the city. Stop by for a demo, consultation, or just to say hello!"}
                 </p>
               </div>
 
@@ -53,11 +74,12 @@ const MapSection: React.FC = () => {
                   <div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Address</h3>
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                      123 Education Street, Suite 456
-                      <br />
-                      New York, NY 10001
-                      <br />
-                      United States
+                      {address.split("\n").map((line: string, i: number) => (
+                        <React.Fragment key={i}>
+                          {i > 0 && <br />}
+                          {line}
+                        </React.Fragment>
+                      ))}
                     </p>
                   </div>
                 </div>
@@ -70,10 +92,10 @@ const MapSection: React.FC = () => {
                   <div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Phone</h3>
                     <a
-                      href="tel:+1234567890"
+                      href={`tel:${phone.replace(/[^+\d]/g, "")}`}
                       className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-lg transition-colors-smooth"
                     >
-                      (123) 456-7890
+                      {phone}
                     </a>
                     <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Mon-Fri, 9AM-6PM EST</p>
                   </div>
@@ -87,10 +109,10 @@ const MapSection: React.FC = () => {
                   <div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Email</h3>
                     <a
-                      href="mailto:info@digitalnexstep.com"
+                      href={`mailto:${email}`}
                       className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-lg transition-colors-smooth"
                     >
-                      info@digitalnexstep.com
+                      {email}
                     </a>
                     <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">We'll respond within 24 hours</p>
                   </div>
@@ -104,9 +126,29 @@ const MapSection: React.FC = () => {
                   <div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Business Hours</h3>
                     <div className="text-gray-600 dark:text-gray-300">
-                      <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                      <p>Saturday: 10:00 AM - 2:00 PM</p>
-                      <p>Sunday: Closed</p>
+                      {businessHours ? (
+                        typeof businessHours === "string" ? (
+                          businessHours.split("\n").map((line: string, i: number) => (
+                            <p key={i}>{line}</p>
+                          ))
+                        ) : Array.isArray(businessHours) ? (
+                          businessHours.map((line: string, i: number) => (
+                            <p key={i}>{line}</p>
+                          ))
+                        ) : (
+                          <>
+                            <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                            <p>Saturday: 10:00 AM - 2:00 PM</p>
+                            <p>Sunday: Closed</p>
+                          </>
+                        )
+                      ) : (
+                        <>
+                          <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                          <p>Saturday: 10:00 AM - 2:00 PM</p>
+                          <p>Sunday: Closed</p>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -115,7 +157,7 @@ const MapSection: React.FC = () => {
               {/* Directions Button */}
               <div className="pt-4">
                 <a
-                  href="https://www.google.com/maps/dir//New+York,+NY"
+                  href={directionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 dark:bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors-smooth shadow-md hover:shadow-lg"

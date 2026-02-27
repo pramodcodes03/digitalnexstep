@@ -10,9 +10,12 @@ import {
   FiArrowRight, FiPlay, FiSend, FiUsers, FiShoppingCart, FiEye,
   FiMail, FiMapPin, FiTag,
 } from "react-icons/fi";
+import { useParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
+import { useApi } from "@/lib/useApi";
+import api from "@/lib/api";
 
 // ─── Static Course Data ────────────────────────────────────────────────────────
 const courseData = {
@@ -109,7 +112,7 @@ function SyllabusItem({ item, index }: { item: typeof courseData.syllabus[0]; in
         {open && (
           <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} transition={{ duration: 0.3, ease: "easeInOut" }} className="overflow-hidden">
             <ul className="divide-y divide-gray-100 dark:divide-gray-700/50 bg-white dark:bg-gray-800/30">
-              {item.lessons.map((lesson, i) => (
+              {item.lessons.map((lesson: any, i: number) => (
                 <li key={i} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors-smooth">
                   <FiCheckCircle className="w-4 h-4 text-success-500 flex-shrink-0" />
                   <span className="text-sm text-gray-700 dark:text-gray-300">{lesson}</span>
@@ -318,11 +321,41 @@ function EnquiryModal({ isOpen, onClose, courseName }: { isOpen: boolean; onClos
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function CourseDetailPage() {
+  const params = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [showVideoOverlay, setShowVideoOverlay] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [sidebarSticky, setSidebarSticky] = useState(false);
+
+  const { data: apiCourse } = useApi(() => api.getCourse(params.id as string), null as any);
+
+  const displayCourse = apiCourse ? {
+    id: apiCourse.id,
+    title: apiCourse.title,
+    subtitle: apiCourse.subtitle || courseData.subtitle,
+    category: apiCourse.category,
+    badge: apiCourse.badge || "",
+    rating: apiCourse.rating,
+    reviews: apiCourse.reviews_count,
+    mrp: apiCourse.mrp,
+    price: apiCourse.price,
+    lastUpdated: apiCourse.last_updated || courseData.lastUpdated,
+    duration: apiCourse.duration,
+    enrolled: apiCourse.enrolled_count,
+    lectures: apiCourse.lectures_count,
+    videos: apiCourse.videos_count,
+    notes: apiCourse.notes_count,
+    certificate: apiCourse.has_certificate,
+    thumbnail: apiCourse.thumbnail || "",
+    description: apiCourse.description || "",
+    instructor: apiCourse.instructor_name || "",
+    instructorRole: apiCourse.instructor_role || "",
+    tags: apiCourse.tags || [],
+    syllabus: apiCourse.curriculum || apiCourse.syllabus || courseData.syllabus,
+    ratingBreakdown: apiCourse.rating_breakdown || courseData.ratingBreakdown,
+    reviewsList: apiCourse.reviews_list || courseData.reviewsList,
+  } : courseData;
 
   const sectionIds = ["overview", "coursecontent", "details", "review"];
 
@@ -354,8 +387,8 @@ export default function CourseDetailPage() {
     { id: "review", label: "Reviews" },
   ];
 
-  const discount = Math.round(((courseData.mrp - courseData.price) / courseData.mrp) * 100);
-  const visibleReviews = showAllReviews ? courseData.reviewsList : courseData.reviewsList.slice(0, 3);
+  const discount = Math.round(((displayCourse.mrp - displayCourse.price) / displayCourse.mrp) * 100);
+  const visibleReviews = showAllReviews ? displayCourse.reviewsList : displayCourse.reviewsList.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
@@ -374,30 +407,30 @@ export default function CourseDetailPage() {
             {/* Badges row */}
             <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-wrap items-center justify-center gap-3 mb-5">
               <span className="inline-flex items-center gap-1.5 bg-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow">
-                <FiTag className="w-3 h-3" />{courseData.badge}
+                <FiTag className="w-3 h-3" />{displayCourse.badge}
               </span>
               <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white/90 px-3 py-1.5 rounded-full text-xs font-medium border border-white/20">
-                <StarRating rating={courseData.rating} />
-                <span className="font-bold">{courseData.rating}</span>
+                <StarRating rating={displayCourse.rating} />
+                <span className="font-bold">{displayCourse.rating}</span>
               </div>
               <span className="bg-white/10 backdrop-blur-sm text-white/90 px-3 py-1.5 rounded-full text-xs font-medium border border-white/20">
-                {courseData.reviews.toLocaleString()} ratings
+                {displayCourse.reviews.toLocaleString()} ratings
               </span>
             </motion.div>
 
             {/* Title */}
             <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.08 }} className="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
-              {courseData.title}
+              {displayCourse.title}
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.14 }} className="text-white/75 text-base md:text-lg mb-6 leading-relaxed">
-              {courseData.subtitle}
+              {displayCourse.subtitle}
             </motion.p>
 
             {/* Meta */}
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.2 }} className="flex flex-wrap items-center justify-center gap-5 text-white/70 text-sm">
-              <span className="flex items-center gap-1.5"><FiCalendar className="w-4 h-4" />Last updated {courseData.lastUpdated}</span>
+              <span className="flex items-center gap-1.5"><FiCalendar className="w-4 h-4" />Last updated {displayCourse.lastUpdated}</span>
               <span className="flex items-center gap-1.5"><FiAward className="w-4 h-4" />Certified Course</span>
-              <span className="flex items-center gap-1.5"><FiUsers className="w-4 h-4" />{courseData.enrolled.toLocaleString()} students enrolled</span>
+              <span className="flex items-center gap-1.5"><FiUsers className="w-4 h-4" />{displayCourse.enrolled.toLocaleString()} students enrolled</span>
             </motion.div>
           </div>
         </Container>
@@ -408,7 +441,7 @@ export default function CourseDetailPage() {
         <Container>
           {/* Video Preview */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative rounded-2xl overflow-hidden shadow-strong mb-10 max-w-4xl mx-auto cursor-pointer group" onClick={() => setShowVideoOverlay(true)}>
-            <img src={courseData.thumbnail} alt={courseData.title} className="w-full h-52 sm:h-72 md:h-96 object-cover" />
+            <img src={displayCourse.thumbnail} alt={displayCourse.title} className="w-full h-52 sm:h-72 md:h-96 object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 transition-all duration-300" />
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
               <motion.div className="w-16 h-16 bg-white/90 dark:bg-white rounded-full flex items-center justify-center shadow-xl" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
@@ -445,8 +478,8 @@ export default function CourseDetailPage() {
                 {/* Price */}
                 <div className="p-5 border-b border-gray-100 dark:border-gray-700">
                   <div className="flex items-baseline gap-3 mb-1">
-                    <span className="text-3xl font-extrabold text-gray-900 dark:text-white">₹{courseData.price.toLocaleString()}</span>
-                    <span className="text-lg text-gray-400 line-through font-medium">₹{courseData.mrp.toLocaleString()}</span>
+                    <span className="text-3xl font-extrabold text-gray-900 dark:text-white">₹{displayCourse.price.toLocaleString()}</span>
+                    <span className="text-lg text-gray-400 line-through font-medium">₹{displayCourse.mrp.toLocaleString()}</span>
                     <span className="bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-400 text-xs font-bold px-2 py-0.5 rounded-full">{discount}% OFF</span>
                   </div>
                   <p className="text-xs text-error-500 font-medium">🔥 Limited time offer — Don&apos;t miss out!</p>
@@ -467,11 +500,11 @@ export default function CourseDetailPage() {
                   <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-4">This Course Includes</h4>
                   <ul className="space-y-3">
                     {[
-                      { icon: FiBookOpen, label: "Duration", value: courseData.duration },
-                      { icon: FiUsers, label: "Enrolled", value: courseData.enrolled.toLocaleString() + " students" },
-                      { icon: FiFileText, label: "Lectures", value: courseData.lectures + " lectures" },
-                      { icon: FiVideo, label: "Videos", value: courseData.videos + " video lessons" },
-                      { icon: FiFileText, label: "Notes", value: courseData.notes + " study notes" },
+                      { icon: FiBookOpen, label: "Duration", value: displayCourse.duration },
+                      { icon: FiUsers, label: "Enrolled", value: displayCourse.enrolled.toLocaleString() + " students" },
+                      { icon: FiFileText, label: "Lectures", value: displayCourse.lectures + " lectures" },
+                      { icon: FiVideo, label: "Videos", value: displayCourse.videos + " video lessons" },
+                      { icon: FiFileText, label: "Notes", value: displayCourse.notes + " study notes" },
                       { icon: FiAward, label: "Certificate", value: "Yes, upon completion" },
                     ].map(({ icon: Icon, label, value }) => (
                       <li key={label} className="flex items-center justify-between text-sm">
@@ -504,7 +537,7 @@ export default function CourseDetailPage() {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <span className="w-1 h-6 bg-primary-600 rounded-full" />What You&apos;ll Learn
                 </h3>
-                <div className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: courseData.description }} />
+                <div className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: displayCourse.description }} />
               </motion.div>
 
               {/* Syllabus */}
@@ -512,9 +545,9 @@ export default function CourseDetailPage() {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                   <span className="w-1 h-6 bg-primary-600 rounded-full" />Course Syllabus
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">{courseData.syllabus.length} modules · {courseData.lectures} lectures · {courseData.duration}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">{displayCourse.syllabus.length} modules · {displayCourse.lectures} lectures · {displayCourse.duration}</p>
                 <div className="space-y-3">
-                  {courseData.syllabus.map((item, i) => <SyllabusItem key={i} item={item} index={i} />)}
+                  {displayCourse.syllabus.map((item: any, i: number) => <SyllabusItem key={i} item={item} index={i} />)}
                 </div>
               </motion.div>
 
@@ -525,10 +558,10 @@ export default function CourseDetailPage() {
                 </h3>
                 <div className="divide-y divide-gray-100 dark:divide-gray-700">
                   {[
-                    { label: "Course Fees (MRP)", value: `₹${courseData.mrp.toLocaleString()}/-`, cls: "text-error-600 dark:text-error-400 font-bold text-base line-through" },
-                    { label: "Discounted Fees", value: `₹${courseData.price.toLocaleString()}/-`, cls: "text-success-600 dark:text-success-400 font-bold text-base" },
-                    { label: "You Save", value: `₹${(courseData.mrp - courseData.price).toLocaleString()} (${discount}% OFF)`, cls: "text-orange-500 font-bold text-base" },
-                    { label: "Course Duration", value: courseData.duration, cls: "text-gray-900 dark:text-white font-bold text-base" },
+                    { label: "Course Fees (MRP)", value: `₹${displayCourse.mrp.toLocaleString()}/-`, cls: "text-error-600 dark:text-error-400 font-bold text-base line-through" },
+                    { label: "Discounted Fees", value: `₹${displayCourse.price.toLocaleString()}/-`, cls: "text-success-600 dark:text-success-400 font-bold text-base" },
+                    { label: "You Save", value: `₹${(displayCourse.mrp - displayCourse.price).toLocaleString()} (${discount}% OFF)`, cls: "text-orange-500 font-bold text-base" },
+                    { label: "Course Duration", value: displayCourse.duration, cls: "text-gray-900 dark:text-white font-bold text-base" },
                   ].map(({ label, value, cls }) => (
                     <div key={label} className="flex items-center justify-between py-3.5">
                       <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">{label}</span>
@@ -549,15 +582,15 @@ export default function CourseDetailPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center mb-6">
                   {/* Overall */}
                   <div className="text-center sm:border-r border-gray-100 dark:border-gray-700 sm:pr-6">
-                    <p className="text-6xl font-extrabold text-primary-600 dark:text-primary-400 leading-none mb-2">{courseData.rating}</p>
-                    <StarRating rating={courseData.rating} size="md" />
+                    <p className="text-6xl font-extrabold text-primary-600 dark:text-primary-400 leading-none mb-2">{displayCourse.rating}</p>
+                    <StarRating rating={displayCourse.rating} size="md" />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Course Rating</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">({courseData.reviews.toLocaleString()} reviews)</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">({displayCourse.reviews.toLocaleString()} reviews)</p>
                   </div>
                   {/* Breakdown */}
                   <div className="sm:col-span-2 space-y-2">
                     {([5, 4, 3, 2, 1] as const).map((star) => {
-                      const pct = courseData.ratingBreakdown[star] ?? 0;
+                      const pct = displayCourse.ratingBreakdown[star] ?? 0;
                       return (
                         <div key={star} className="flex items-center gap-3">
                           <div className="flex items-center gap-0.5 w-20 flex-shrink-0">
@@ -579,13 +612,13 @@ export default function CourseDetailPage() {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                   <span className="w-1 h-6 bg-primary-600 rounded-full" />Featured Reviews
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{courseData.reviewsList.length} reviews from verified students</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{displayCourse.reviewsList.length} reviews from verified students</p>
                 <div>
-                  {visibleReviews.map((r) => <ReviewCard key={r.id} review={r} />)}
+                  {visibleReviews.map((r: any) => <ReviewCard key={r.id} review={r} />)}
                 </div>
-                {courseData.reviewsList.length > 3 && (
+                {displayCourse.reviewsList.length > 3 && (
                   <motion.button onClick={() => setShowAllReviews(!showAllReviews)} className="mt-4 flex items-center gap-2 text-primary-600 dark:text-primary-400 text-sm font-semibold hover:underline" whileTap={{ scale: 0.97 }}>
-                    {showAllReviews ? "Show Less" : `Show All ${courseData.reviewsList.length} Reviews`}
+                    {showAllReviews ? "Show Less" : `Show All ${displayCourse.reviewsList.length} Reviews`}
                     <motion.span animate={{ rotate: showAllReviews ? 180 : 0 }} transition={{ duration: 0.2 }}>
                       <FiChevronDown className="w-4 h-4" />
                     </motion.span>
@@ -650,7 +683,7 @@ export default function CourseDetailPage() {
         </Container>
       </section>
 
-      <EnquiryModal isOpen={showEnquiry} onClose={() => setShowEnquiry(false)} courseName={courseData.title} />
+      <EnquiryModal isOpen={showEnquiry} onClose={() => setShowEnquiry(false)} courseName={displayCourse.title} />
       <Footer />
     </div>
   );
