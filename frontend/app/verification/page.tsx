@@ -6,6 +6,7 @@ import {
   FiUser,
   FiShield,
   FiSearch,
+  FiCheckCircle,
   FiMapPin,
   FiPhone,
   FiMail,
