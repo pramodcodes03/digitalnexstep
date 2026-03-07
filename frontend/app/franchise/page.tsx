@@ -245,6 +245,13 @@ export default function FranchisePage() {
       setSubmittedData({ id: res.data?.request_id, name: data.owner_name, email: verifiedEmail });
       setIsSubmitted(true);
     } catch (err: any) {
+      // If the request timed out but the server may have processed it
+      // (e.g. slow email sending), show success rather than a false error
+      if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout")) {
+        setSubmittedData({ name: data.owner_name, email: verifiedEmail });
+        setIsSubmitted(true);
+        return;
+      }
       const msg =
         err?.response?.data?.message ??
         (Object.values(err?.response?.data?.errors ?? {}).flat()[0] as string) ??

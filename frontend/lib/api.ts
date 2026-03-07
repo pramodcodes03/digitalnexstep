@@ -138,7 +138,7 @@ export const api = {
   franchiseVerifyOtp: (email: string, otp: string) =>
     tenantApiClient.post('/franchise-registration/verify-otp', { email, otp }),
   franchiseSubmit: (data: Record<string, unknown>) =>
-    tenantApiClient.post('/franchise-registration/store', data),
+    tenantApiClient.post('/franchise-registration/store', data, { timeout: 30000 }),
 };
 
 export default api;
