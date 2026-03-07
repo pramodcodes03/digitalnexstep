@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PublicController;
+use App\Http\Controllers\Api\StudentVerificationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -40,3 +41,6 @@ Route::get('/award-images', [PublicController::class, 'awardImages']);
 Route::post('/contact', [PublicController::class, 'submitContact']);
 Route::post('/enquiries', [PublicController::class, 'submitEnquiry']);
 Route::post('/franchise-registrations', [PublicController::class, 'submitFranchise']);
+
+// Dynamic student verification — proxies to the tenant API (domain configured via TENANT_API_BASE_URL)
+Route::get('/student-verification/{id}', [StudentVerificationController::class, 'verify']);
