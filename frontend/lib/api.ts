@@ -3,6 +3,18 @@ import axios from "axios";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://nextstep.ditrpindia.org/api";
 
+const TENANT_API_BASE_URL =
+  process.env.NEXT_PUBLIC_TENANT_API_URL || "https://hdi.ditrpindia.org/api";
+
+export const tenantApiClient = axios.create({
+  baseURL: TENANT_API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+  timeout: 10000,
+});
+
 /**
  * Axios instance for API requests
  */
@@ -110,8 +122,9 @@ export const api = {
 
   subscribe: (email: string) => apiClient.post("/subscribe", { email }),
 
-  // Student verification
-  verifyStudent: (id: string) => apiClient.get(`/student-verification/${id}`),
+  // Student verification — calls TENANT_API_BASE_URL directly (configurable via NEXT_PUBLIC_TENANT_API_URL)
+  verifyStudent: (certificateNumber: string) =>
+    tenantApiClient.get(`/student-verification/${encodeURIComponent(certificateNumber)}`),
 };
 
 export default api;
