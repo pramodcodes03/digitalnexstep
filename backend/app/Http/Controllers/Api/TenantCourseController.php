@@ -23,7 +23,7 @@ class TenantCourseController extends Controller
             $params['category_id'] = $request->category_id;
         }
 
-        $response = Http::get("{$this->baseUrl}/api/website/courses", $params);
+        $response = Http::get("{$this->baseUrl}/api/all-courses", $params);
 
         if ($response->failed()) {
             return response()->json(['success' => false, 'message' => 'Failed to fetch courses.'], 502);
@@ -34,7 +34,7 @@ class TenantCourseController extends Controller
 
     public function show(string $id): JsonResponse
     {
-        $response = Http::get("{$this->baseUrl}/api/website/courses/{$id}");
+        $response = Http::get("{$this->baseUrl}/api/course_details/{$id}");
 
         if ($response->notFound()) {
             return response()->json(['success' => false, 'message' => 'Course not found.'], 404);
@@ -49,7 +49,7 @@ class TenantCourseController extends Controller
 
     public function enquiryDropdowns(Request $request): JsonResponse
     {
-        $response = Http::post("{$this->baseUrl}/api/website/enquiry/dropdowns", [
+        $response = Http::post("{$this->baseUrl}/api/enquiry/dropdowns", [
             'course_id' => $request->course_id,
         ]);
 
