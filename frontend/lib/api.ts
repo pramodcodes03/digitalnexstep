@@ -125,6 +125,10 @@ export const api = {
   // Student verification — calls TENANT_API_BASE_URL directly (configurable via NEXT_PUBLIC_TENANT_API_URL)
   verifyStudent: (certificateNumber: string) =>
     tenantApiClient.get(`/student-verification/${encodeURIComponent(certificateNumber)}`),
+
+  // ATC (franchise) verification
+  verifyAtc: (atcCode: string) =>
+    tenantApiClient.get(`/atc-verification/${encodeURIComponent(atcCode)}`),
 };
 
 export default api;

@@ -21,6 +21,7 @@ import Container from "@/components/ui/Container";
 import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
 import CertificateResult, { type VerificationData } from "@/components/verification/CertificateResult";
+import AtcResult, { type AtcVerificationData } from "@/components/verification/AtcResult";
 
 /* ─── Types ─── */
 type VerificationType = "student" | "atc";
@@ -113,11 +114,13 @@ export default function VerificationPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [verificationResult, setVerificationResult] = useState<VerificationData | null>(null);
+  const [atcResult, setAtcResult] = useState<AtcVerificationData | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setVerificationResult(null);
+    setAtcResult(null);
     setVerificationError(null);
   };
 
@@ -125,6 +128,7 @@ export default function VerificationPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setVerificationResult(null);
+    setAtcResult(null);
     setVerificationError(null);
 
     try {
@@ -132,13 +136,17 @@ export default function VerificationPage() {
         const { data } = await api.verifyStudent(formData.certificateNumber.trim());
         setVerificationResult(data);
       } else {
-        // ATC verification — placeholder until ATC API is available
-        setVerificationError("ATC verification is coming soon. Please contact support.");
+        const { data } = await api.verifyAtc(formData.atcCode.trim());
+        setAtcResult(data);
       }
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 404) {
-        setVerificationError("No student found with this ID. Please check and try again.");
+        setVerificationError(
+          activeTab === "student"
+            ? "No student found with this certificate number. Please check and try again."
+            : "No ATC found with this code. Please check and try again."
+        );
       } else {
         setVerificationError("Verification service is currently unavailable. Please try again later.");
       }
@@ -240,6 +248,7 @@ export default function VerificationPage() {
                   onClick={() => {
                     setActiveTab(tab.id);
                     setVerificationResult(null);
+                    setAtcResult(null);
                     setVerificationError(null);
                   }}
                   className={`relative flex-1 flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left ${
@@ -425,7 +434,7 @@ export default function VerificationPage() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Full Certificate Result Card */}
+          {/* Student Certificate Result */}
           <AnimatePresence>
             {verificationResult && (
               <motion.div
@@ -436,6 +445,21 @@ export default function VerificationPage() {
                 className="max-w-4xl mx-auto"
               >
                 <CertificateResult data={verificationResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ATC Result */}
+          <AnimatePresence>
+            {atcResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <AtcResult data={atcResult} />
               </motion.div>
             )}
           </AnimatePresence>
