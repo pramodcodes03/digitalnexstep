@@ -140,15 +140,15 @@ export const api = {
   franchiseSubmit: (data: Record<string, unknown>) =>
     tenantApiClient.post('/franchise-registration/store', data, { timeout: 30000 }),
 
-  // Tenant courses — proxied through digitalnexstep backend to hdi.ditrpindia.org
+  // Tenant courses — direct to hdi.ditrpindia.org (same pattern as verification & franchise)
   getTenantCourses: (category_id?: number) =>
-    apiClient.get('/tenant-courses', { params: category_id ? { category_id } : {} }),
+    tenantApiClient.get('/all-courses', { params: category_id ? { category_id } : {} }),
   getTenantCourse: (id: string | number) =>
-    apiClient.get(`/tenant-courses/${id}`),
+    tenantApiClient.get(`/course_details/${id}`),
   getTenantEnquiryDropdowns: (course_id: number) =>
-    apiClient.post('/tenant-enquiry/dropdowns', { course_id }),
+    tenantApiClient.post('/enquiry/dropdowns', { course_id }),
   submitTenantEnquiry: (data: Record<string, unknown>) =>
-    apiClient.post('/tenant-enquiry/store', data),
+    tenantApiClient.post('/enquiry/store', data),
 };
 
 export default api;
