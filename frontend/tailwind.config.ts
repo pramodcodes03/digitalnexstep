@@ -79,16 +79,29 @@ const config: Config = {
       },
       animation: {
         "bounce-gentle": "bounce-gentle 2s ease-in-out infinite",
-        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "glow-pulse":    "glow-pulse 2s ease-in-out infinite",
+        "spin-slow":     "spin 8s linear infinite",
+        "spin-slow-rev": "spin 12s linear infinite reverse",
+        "rainbow":       "rainbow 5s ease infinite",
+        "pulse-ring":    "pulse-ring 2.6s ease-in-out infinite",
       },
       keyframes: {
         "bounce-gentle": {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
+          "50%":       { transform: "translateY(-10px)" },
         },
         "glow-pulse": {
           "0%, 100%": { boxShadow: "0 0 20px rgba(40, 22, 111, 0.2)" },
-          "50%": { boxShadow: "0 0 40px rgba(40, 22, 111, 0.35)" },
+          "50%":       { boxShadow: "0 0 40px rgba(40, 22, 111, 0.35)" },
+        },
+        "rainbow": {
+          "0%":   { backgroundPosition: "0% 50%" },
+          "50%":  { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        "pulse-ring": {
+          "0%, 100%": { opacity: "0.3", transform: "scale(1)" },
+          "50%":       { opacity: "0.6", transform: "scale(1.07)" },
         },
       },
     },

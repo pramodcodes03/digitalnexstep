@@ -6,7 +6,6 @@ import {
   FiUser,
   FiShield,
   FiSearch,
-  FiCheckCircle,
   FiMapPin,
   FiPhone,
   FiMail,
@@ -20,6 +19,7 @@ import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
 import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
+import CertificateResult, { type VerificationData } from "@/components/verification/CertificateResult";
 
 /* ─── Types ─── */
 type VerificationType = "student" | "atc";
@@ -111,7 +111,7 @@ export default function VerificationPage() {
     atcCode: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [verificationResult, setVerificationResult] = useState<any>(null);
+  const [verificationResult, setVerificationResult] = useState<VerificationData | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -398,85 +398,8 @@ export default function VerificationPage() {
                   </motion.button>
                 </form>
 
-                {/* Verification Result */}
+                {/* Error State */}
                 <AnimatePresence>
-                  {verificationResult && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                      className="mt-6 space-y-4"
-                    >
-                      {/* Header */}
-                      <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl">
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.1 }}
-                          className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0"
-                        >
-                          <FiCheckCircle className="w-5 h-5 text-white" />
-                        </motion.div>
-                        <div>
-                          <h4 className="font-bold text-green-800 dark:text-green-300">
-                            Verification Successful!
-                          </h4>
-                          <p className="text-sm text-green-600 dark:text-green-400">
-                            Student credentials verified from the tenant portal.
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Student Details */}
-                      <div className="p-5 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-2xl space-y-3 text-sm">
-                        {verificationResult.student?.full_name && (
-                          <div className="flex items-center gap-2">
-                            <FiUser className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-gray-500 dark:text-gray-400 w-28 flex-shrink-0">Name</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">{verificationResult.student.full_name}</span>
-                          </div>
-                        )}
-                        {verificationResult.student?.mobile && (
-                          <div className="flex items-center gap-2">
-                            <FiPhone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-gray-500 dark:text-gray-400 w-28 flex-shrink-0">Mobile</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">{verificationResult.student.mobile}</span>
-                          </div>
-                        )}
-                        {verificationResult.student?.email && (
-                          <div className="flex items-center gap-2">
-                            <FiMail className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-gray-500 dark:text-gray-400 w-28 flex-shrink-0">Email</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">{verificationResult.student.email}</span>
-                          </div>
-                        )}
-                        {verificationResult.course?.name && (
-                          <div className="flex items-center gap-2">
-                            <FiAward className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-gray-500 dark:text-gray-400 w-28 flex-shrink-0">Course</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">{verificationResult.course.name}</span>
-                          </div>
-                        )}
-                        {verificationResult.course?.batch && (
-                          <div className="flex items-center gap-2">
-                            <FiShield className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-gray-500 dark:text-gray-400 w-28 flex-shrink-0">Batch</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">{verificationResult.course.batch}</span>
-                          </div>
-                        )}
-                        {verificationResult.institute?.name && (
-                          <div className="flex items-center gap-2">
-                            <FiGlobe className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-gray-500 dark:text-gray-400 w-28 flex-shrink-0">Institute</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">{verificationResult.institute.name}</span>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Error State */}
                   {verificationError && (
                     <motion.div
                       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -490,12 +413,8 @@ export default function VerificationPage() {
                           <FiSearch className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-red-800 dark:text-red-300">
-                            Verification Failed
-                          </h4>
-                          <p className="text-sm text-red-600 dark:text-red-400">
-                            {verificationError}
-                          </p>
+                          <h4 className="font-bold text-red-800 dark:text-red-300">Verification Failed</h4>
+                          <p className="text-sm text-red-600 dark:text-red-400">{verificationError}</p>
                         </div>
                       </div>
                     </motion.div>
@@ -503,6 +422,21 @@ export default function VerificationPage() {
                 </AnimatePresence>
               </div>
             </motion.div>
+          </AnimatePresence>
+
+          {/* Full Certificate Result Card */}
+          <AnimatePresence>
+            {verificationResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <CertificateResult data={verificationResult} />
+              </motion.div>
+            )}
           </AnimatePresence>
 
           {/* Domain-Based Verification Portals */}
