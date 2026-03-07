@@ -54,6 +54,11 @@ export default function CertificateResult({ data }: { data: VerificationData }) 
   const initial = (data.student?.full_name ?? "S").charAt(0).toUpperCase();
   const marksNum = data.course?.marks_percent ? parseFloat(data.course.marks_percent) : null;
 
+  // course_period may be null if the PHP accessor couldn't compute it;
+  // display issue_date alone as a readable fallback so the field never shows N/A
+  // when issue_date is available.
+  const displayPeriod = data.course?.period ?? data.course?.issue_date ?? null;
+
   return (
     <div className="space-y-5 mt-8">
 
@@ -241,7 +246,7 @@ export default function CertificateResult({ data }: { data: VerificationData }) 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <StatCard label="Certificate Number" value={data.certificate_number}  icon={<FiFileText />} color="indigo"  />
                 <StatCard label="Course Duration"    value={data.course.duration}     icon={<FiClock />}    color="violet"  />
-                <StatCard label="Certificate Period" value={data.course.period}       icon={<FiCalendar />} color="cyan"    />
+                <StatCard label="Certificate Period" value={displayPeriod}            icon={<FiCalendar />} color="cyan"    />
                 <StatCard label="Issue Date"         value={data.course.issue_date}   icon={<FiCalendar />} color="emerald" />
               </div>
 
