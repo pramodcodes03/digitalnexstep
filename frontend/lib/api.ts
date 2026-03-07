@@ -129,6 +129,16 @@ export const api = {
   // ATC (franchise) verification
   verifyAtc: (atcCode: string) =>
     tenantApiClient.get(`/atc-verification/${encodeURIComponent(atcCode)}`),
+
+  // Franchise registration (all calls go to tenant API)
+  franchiseFormData: () =>
+    tenantApiClient.get('/franchise-registration/form-data'),
+  franchiseSendOtp: (email: string) =>
+    tenantApiClient.post('/franchise-registration/send-otp', { email }),
+  franchiseVerifyOtp: (email: string, otp: string) =>
+    tenantApiClient.post('/franchise-registration/verify-otp', { email, otp }),
+  franchiseSubmit: (data: Record<string, unknown>) =>
+    tenantApiClient.post('/franchise-registration/store', data),
 };
 
 export default api;
