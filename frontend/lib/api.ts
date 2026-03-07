@@ -109,6 +109,9 @@ export const api = {
     apiClient.post("/franchise-registrations", data),
 
   subscribe: (email: string) => apiClient.post("/subscribe", { email }),
+
+  // Student verification
+  verifyStudent: (id: string) => apiClient.get(`/student-verification/${id}`),
 };
 
 export default api;
