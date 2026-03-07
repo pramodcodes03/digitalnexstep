@@ -139,6 +139,16 @@ export const api = {
     tenantApiClient.post('/franchise-registration/verify-otp', { email, otp }),
   franchiseSubmit: (data: Record<string, unknown>) =>
     tenantApiClient.post('/franchise-registration/store', data, { timeout: 30000 }),
+
+  // Tenant courses — proxied through digitalnexstep backend to hdi.ditrpindia.org
+  getTenantCourses: (category_id?: number) =>
+    apiClient.get('/tenant-courses', { params: category_id ? { category_id } : {} }),
+  getTenantCourse: (id: string | number) =>
+    apiClient.get(`/tenant-courses/${id}`),
+  getTenantEnquiryDropdowns: (course_id: number) =>
+    apiClient.post('/tenant-enquiry/dropdowns', { course_id }),
+  submitTenantEnquiry: (data: Record<string, unknown>) =>
+    apiClient.post('/tenant-enquiry/store', data),
 };
 
 export default api;
