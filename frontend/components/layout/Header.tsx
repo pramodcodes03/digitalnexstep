@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle, FiPackage, FiAward } from "react-icons/fi";
 import MobileMenu from "./MobileMenu";
@@ -128,16 +129,15 @@ const Header: React.FC = () => {
         <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform-smooth">
-                <span className="text-white font-bold text-xl">DN</span>
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors-smooth">
-                  {settings?.site_name || "DigitalNexStep"}
-                </h1>
-                <p className="text-xs text-gray-600 dark:text-gray-400">{settings?.site_tagline || "Educational Excellence"}</p>
-              </div>
+            <Link href="/" className="flex items-center flex-shrink-0 group">
+              <Image
+                src={theme === "dark" ? "/logo/logo-light.png" : "/logo/logo-dark.png"}
+                alt={settings?.site_name || "DiTRP"}
+                width={180}
+                height={50}
+                className="h-10 sm:h-12 w-auto object-contain group-hover:scale-105 transition-transform-smooth"
+                priority
+              />
             </Link>
 
             {/* ═══ Desktop Navigation: XL+ (1280px+) — ALL items flat ═══ */}

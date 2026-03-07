@@ -4,17 +4,22 @@
 
 /* Custom CSS Variables */
 :root {
-  /* Color Palette - Professional Blues */
-  --primary-50: #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-200: #bfdbfe;
-  --primary-300: #93c5fd;
-  --primary-400: #60a5fa;
-  --primary-500: #3b82f6;
-  --primary-600: #2563eb;
-  --primary-700: #1d4ed8;
-  --primary-800: #1e40af;
-  --primary-900: #1e3a8a;
+  /* Color Palette - Brand Purple */
+  --primary-50: #f0ecf9;
+  --primary-100: #d9d0f0;
+  --primary-200: #b3a1e1;
+  --primary-300: #8d72d2;
+  --primary-400: #6743c3;
+  --primary-500: #4a2a9e;
+  --primary-600: #3a1f85;
+  --primary-700: #28166f;
+  --primary-800: #1e1058;
+  --primary-900: #140b3d;
+
+  /* Secondary - Brand Red */
+  --secondary-400: #d43327;
+  --secondary-500: #b82b21;
+  --secondary-600: #9c231b;
 
   /* Success Greens */
   --success-50: #f0fdf4;

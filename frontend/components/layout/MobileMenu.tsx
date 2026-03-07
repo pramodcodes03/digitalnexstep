@@ -3,7 +3,9 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { FiX, FiHome, FiGrid, FiInfo, FiHelpCircle, FiMail, FiBookOpen, FiCheckCircle, FiImage, FiUsers, FiPackage, FiAward } from "react-icons/fi";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -25,6 +27,8 @@ const navItems = [
 ];
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { theme } = useTheme();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -66,7 +70,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Menu</h2>
+                <Link href="/" onClick={onClose}>
+                  <Image
+                    src={theme === "dark" ? "/logo/logo-light.png" : "/logo/logo-dark.png"}
+                    alt="DiTRP"
+                    width={140}
+                    height={40}
+                    className="h-9 w-auto object-contain"
+                  />
+                </Link>
                 <button
                   onClick={onClose}
                   className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors-smooth"

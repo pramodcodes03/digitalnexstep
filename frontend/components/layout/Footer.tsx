@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   FiYoutube,
@@ -87,14 +88,16 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 py-16">
           {/* Column 1: Brand & Mission */}
           <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center">
-                <span className="text-primary-600 dark:text-primary-400 font-bold text-2xl">DN</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">DigitalNexStep</h3>
-                <p className="text-sm text-primary-200 dark:text-gray-400">Educational Excellence</p>
-              </div>
+            <div className="flex items-center">
+              <Link href="/">
+                <Image
+                  src="/logo/logo-light.png"
+                  alt={settings?.site_name || "DiTRP"}
+                  width={200}
+                  height={56}
+                  className="h-14 w-auto object-contain"
+                />
+              </Link>
             </div>
             <p className="text-primary-100 dark:text-gray-300 leading-relaxed">
               Empowering educational institutions with cutting-edge assessment solutions.

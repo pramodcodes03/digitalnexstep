@@ -1,314 +1,434 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  FiPlay,
-  FiArrowDown,
-  FiCheck,
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiMessageSquare,
+  FiSend,
   FiZap,
-  FiShield,
-  FiAward,
-  FiTrendingUp,
-  FiUsers,
-  FiStar
+  FiCheckCircle,
+  FiBookOpen,
+  FiArrowRight,
 } from "react-icons/fi";
 import Container from "../ui/Container";
 import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
 
-// Animated counter component
-const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({
-  end,
-  duration = 2,
-  suffix = ""
-}) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let startTime: number;
-    let animationFrame: number;
-
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / (duration * 1000), 1);
-      const currentCount = Math.floor(progress * end);
-      setCount(currentCount);
-
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      }
-    };
-
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration]);
-
-  return <span>{count}{suffix}</span>;
-};
-
-// Floating feature cards
-const defaultFloatingFeatures = [
-  { icon: FiZap, text: "AI-Powered", color: "from-yellow-400 to-orange-500" },
-  { icon: FiShield, text: "Secure", color: "from-green-400 to-emerald-500" },
-  { icon: FiAward, text: "Award Winning", color: "from-blue-400 to-cyan-500" },
-  { icon: FiTrendingUp, text: "Analytics", color: "from-purple-400 to-pink-500" },
-];
-
 const HeroSection: React.FC = () => {
   const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
-  const { data: apiSlides } = useApi(() => api.getHeroSlides(), [] as any[]);
-
-  // Get hero section data from page sections
   const heroSection = apiSections.find((s: any) => s.section_key === "hero");
   const extraData = heroSection?.extra_data || {};
 
-  // Get first hero slide or use defaults
-  const slide = apiSlides.length > 0 ? apiSlides[0] : null;
-
   // Dynamic content with fallbacks
-  const badge = extraData.badge || slide?.subtitle || "#1 Educational Assessment Platform";
-  const title = slide?.title || heroSection?.title || "Transform Your Educational Journey";
-  const description = slide?.description || heroSection?.content || "Empower your institution with AI-powered assessments, real-time analytics, and seamless automation. Join 500+ leading educational centers worldwide.";
-  const ctaPrimary = extraData.cta_primary || slide?.button_text || "Start Free Trial";
-  const ctaPrimaryLink = extraData.cta_primary_link || slide?.button_link || "#contact";
-  const ctaSecondary = extraData.cta_secondary || "Watch Demo";
-  const highlights: string[] = extraData.highlights || ["AI-Powered Grading", "Real-time Analytics", "Automated Workflows", "99.9% Uptime"];
-  const trustEducators = extraData.trust_educators || "10,000+";
-  const trustRating = extraData.trust_rating || "4.9/5";
-  const stats: { label: string; value: string }[] = extraData.stats || [
-    { label: "Assessments Completed", value: "5M+" },
-    { label: "Success Rate", value: "98%" },
-    { label: "Time Saved", value: "15hrs/week" },
+  const badge = extraData.badge || "Empowering Education Across India";
+  const title = heroSection?.title || "Smarter Learning,";
+  const titleAccent = extraData.title_accent || "Brighter Future.";
+  const description =
+    heroSection?.content ||
+    "India's leading educational assessment & management platform. No paperwork, no delays, just pure results. Affordable, efficient, and smart solutions for everyone.";
+  const ctaPrimary = extraData.cta_primary || "Get Started";
+  const ctaPrimaryLink = extraData.cta_primary_link || "#contact";
+  const ctaSecondary = extraData.cta_secondary || "Explore Features";
+  const ctaSecondaryLink = extraData.cta_secondary_link || "/features";
+  const stats: { value: string; label: string }[] = extraData.stats || [
+    { value: "500+", label: "INSTITUTIONS" },
+    { value: "100%", label: "DIGITAL" },
+    { value: "50K+", label: "STUDENTS" },
   ];
 
-  const handleGetStarted = () => {
-    if (ctaPrimaryLink.startsWith("#")) {
-      const section = document.getElementById(ctaPrimaryLink.slice(1));
-      section?.scrollIntoView({ behavior: "smooth" });
+  // Contact form state
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+    try {
+      await api.contact({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: "Hero Section Enquiry",
+        message: formData.message,
+      });
+      setSubmitStatus("success");
+      setFormData({ name: "", email: "", phone: "", message: "" });
+      setTimeout(() => setSubmitStatus("idle"), 5000);
+    } catch {
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleWatchDemo = () => {
-    alert("Demo video would play here!");
+  const handleCTA = (link: string) => {
+    if (link.startsWith("#")) {
+      const section = document.getElementById(link.slice(1));
+      section?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = link;
+    }
   };
-
-  const scrollToFeatures = () => {
-    const featuresSection = document.getElementById("features");
-    featuresSection?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  // Split title for gradient styling
-  const mainTitle = title.includes("Educational") || title.includes("Journey")
-    ? "Transform Your"
-    : title.split(" ").slice(0, Math.ceil(title.split(" ").length / 2)).join(" ");
-  const gradientTitle = title.includes("Educational") || title.includes("Journey")
-    ? "Educational Journey"
-    : title.split(" ").slice(Math.ceil(title.split(" ").length / 2)).join(" ");
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-black dark:to-gray-900">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Gradient Orbs */}
-        <motion.div
-          className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 dark:from-blue-500/30 dark:to-cyan-500/30 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+    <section
+      className="relative min-h-screen flex items-center overflow-hidden"
+      style={{ background: "linear-gradient(135deg, #0a0618 0%, #140b3d 30%, #28166f 70%, #1a0f4a 100%)" }}
+    >
+      {/* Subtle grid pattern */}
+      <div className="absolute inset-0 opacity-[0.04]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(to right, #fff 1px, transparent 1px),
+                              linear-gradient(to bottom, #fff 1px, transparent 1px)`,
+            backgroundSize: "60px 60px",
+          }}
         />
-        <motion.div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-500/30 to-pink-500/30 dark:from-purple-500/30 dark:to-pink-500/30 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-500/20 to-yellow-500/20 dark:from-orange-500/20 dark:to-yellow-500/20 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.1, 1], rotate: [0, 180, 360] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        />
-
-        {/* Animated Grid Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-                                linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          />
-        </div>
-
-        {/* Floating Particles */}
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-blue-500/30 dark:bg-white/30 rounded-full"
-            style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
-            animate={{ y: [0, -30, 0], opacity: [0.2, 0.8, 0.2] }}
-            transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, ease: "easeInOut", delay: Math.random() * 2 }}
-          />
-        ))}
       </div>
 
-      <Container className="relative z-10 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Main Content */}
-          <div className="text-left space-y-8">
+      {/* Gradient orbs */}
+      <motion.div
+        className="absolute top-20 -left-32 w-[500px] h-[500px] rounded-full blur-[120px]"
+        style={{ background: "rgba(40, 22, 111, 0.4)" }}
+        animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute -bottom-20 right-0 w-[400px] h-[400px] rounded-full blur-[100px]"
+        style={{ background: "rgba(212, 51, 39, 0.15)" }}
+        animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.3, 0.15] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      />
+
+      <Container className="relative z-10 py-24 lg:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left Column - Content */}
+          <div className="space-y-8">
             {/* Badge */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-white/10 backdrop-blur-md rounded-full text-gray-900 dark:text-blue-100 text-sm font-semibold border border-gray-200 dark:border-white/20">
-                <FiStar className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <span
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold"
+                style={{
+                  background: "rgba(40, 22, 111, 0.3)",
+                  border: "1px solid rgba(141, 114, 210, 0.3)",
+                  color: "#b3a1e1",
+                }}
+              >
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 {badge}
               </span>
             </motion.div>
 
-            {/* Main Headline */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 dark:text-white leading-tight">
-                {mainTitle}
-                <span className="block mt-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
-                  {gradientTitle}
+            {/* Headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight">
+                <span className="text-white">{title}</span>
+                <br />
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{ backgroundImage: "linear-gradient(to right, #d43327, #ff6b5e, #d43327)" }}
+                >
+                  {titleAccent}
                 </span>
               </h1>
             </motion.div>
 
-            {/* Subheadline */}
+            {/* Description */}
             <motion.p
-              className="text-xl text-gray-600 dark:text-blue-100 leading-relaxed max-w-xl"
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
+              className="text-lg text-gray-300 leading-relaxed max-w-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
             >
               {description}
             </motion.p>
 
-            {/* Feature Highlights */}
-            <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7 }}>
-              {highlights.map((feature: string, index: number) => (
-                <div key={index} className="flex items-center gap-2 text-gray-900 dark:text-white">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
-                    <FiCheck className="w-3 h-3 text-white" />
+            {/* CTA Buttons */}
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <button
+                onClick={() => handleCTA(ctaPrimaryLink)}
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-white font-bold rounded-xl hover:scale-[1.03] transition-all duration-300"
+                style={{
+                  background: "linear-gradient(135deg, #d43327, #e6453a)",
+                  boxShadow: "0 8px 25px rgba(212, 51, 39, 0.3)",
+                }}
+              >
+                <FiZap className="w-5 h-5" />
+                {ctaPrimary}
+              </button>
+              <button
+                onClick={() => handleCTA(ctaSecondaryLink)}
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-white font-bold rounded-xl transition-all duration-300"
+                style={{ border: "2px solid rgba(141, 114, 210, 0.4)" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#8d72d2";
+                  e.currentTarget.style.color = "#b3a1e1";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(141, 114, 210, 0.4)";
+                  e.currentTarget.style.color = "#fff";
+                }}
+              >
+                <FiCheckCircle className="w-5 h-5" />
+                {ctaSecondary}
+                <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              className="flex items-center gap-8 pt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.65 }}
+            >
+              {stats.map((stat, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && (
+                    <div className="w-px h-12" style={{ background: "rgba(141, 114, 210, 0.3)" }} />
+                  )}
+                  <div>
+                    <div className="text-3xl sm:text-4xl font-extrabold text-white">
+                      {stat.value}
+                    </div>
+                    <div className="text-xs font-semibold tracking-widest uppercase" style={{ color: "#8d72d2" }}>
+                      {stat.label}
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">{feature}</span>
-                </div>
+                </React.Fragment>
               ))}
             </motion.div>
-
-            {/* CTAs */}
-            <motion.div className="flex flex-col sm:flex-row gap-4 pt-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.9 }}>
-              <button
-                onClick={handleGetStarted}
-                className="group px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all-smooth flex items-center justify-center gap-2"
-              >
-                <span>{ctaPrimary}</span>
-                <motion.span className="inline-block" animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>→</motion.span>
-              </button>
-              <button
-                onClick={handleWatchDemo}
-                className="px-8 py-4 bg-white/80 dark:bg-white/10 backdrop-blur-md border-2 border-gray-200 dark:border-white/30 text-gray-900 dark:text-white font-bold rounded-xl hover:bg-white/90 dark:hover:bg-white/20 transition-all-smooth flex items-center justify-center gap-2"
-              >
-                <FiPlay className="w-5 h-5" />
-                <span>{ctaSecondary}</span>
-              </button>
-            </motion.div>
-
-            {/* Trust Indicators */}
-            <motion.div className="flex flex-wrap items-center gap-6 pt-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 1.1 }}>
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 border-2 border-gray-200 dark:border-white" />
-                  ))}
-                </div>
-                <span className="text-gray-600 dark:text-blue-100 text-sm">
-                  <strong className="text-gray-900 dark:text-white">{trustEducators}</strong> educators trust us
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <FiStar key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                ))}
-                <span className="ml-2 text-gray-600 dark:text-blue-100 text-sm font-semibold">{trustRating} Rating</span>
-              </div>
-            </motion.div>
           </div>
 
-          {/* Right Column - Floating Cards */}
-          <div className="relative hidden lg:block h-[600px]">
-            {/* Central Glassmorphic Card */}
-            <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-white/80 dark:bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-gray-200 dark:border-white/20 shadow-2xl"
-              initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.5 }}
+          {/* Right Column - Contact Form Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+          >
+            <div
+              className="backdrop-blur-xl rounded-2xl p-8 shadow-2xl"
+              style={{
+                background: "rgba(20, 11, 61, 0.7)",
+                border: "1px solid rgba(141, 114, 210, 0.2)",
+              }}
             >
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                    <FiUsers className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-600 dark:text-blue-100">Active Students</div>
-                    <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                      <AnimatedCounter end={1000000} suffix="+" />
-                    </div>
-                  </div>
+              {/* Form Header */}
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-white">Get in Touch</h2>
+                  <p className="text-sm mt-1" style={{ color: "#8d72d2" }}>
+                    Start your journey with us today
+                  </p>
                 </div>
-                <div className="h-px bg-gray-200 dark:bg-white/20" />
-                <div className="space-y-3">
-                  {stats.map((stat: { label: string; value: string }, index: number) => (
-                    <div key={index} className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-blue-100 text-sm">{stat.label}</span>
-                      <span className="text-gray-900 dark:text-white font-bold">{stat.value}</span>
-                    </div>
-                  ))}
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg, #d43327, #e6453a)" }}
+                >
+                  <FiMessageSquare className="w-5 h-5 text-white" />
                 </div>
               </div>
-            </motion.div>
 
-            {/* Floating Feature Cards */}
-            {defaultFloatingFeatures.map((feature, index) => {
-              const Icon = feature.icon;
-              const positions = [
-                { top: "10%", left: "10%", delay: 0.7 },
-                { top: "15%", right: "5%", delay: 0.9 },
-                { bottom: "20%", left: "5%", delay: 1.1 },
-                { bottom: "15%", right: "10%", delay: 1.3 },
-              ];
-              return (
-                <motion.div
-                  key={index}
-                  className="absolute"
-                  style={positions[index]}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: [0, -10, 0] }}
-                  transition={{
-                    opacity: { duration: 0.6, delay: positions[index].delay },
-                    y: { duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 0.5 },
-                  }}
-                >
-                  <div className="bg-white/80 dark:bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/20 shadow-xl flex items-center gap-3">
-                    <div className={`w-10 h-10 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center`}>
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="text-gray-900 dark:text-white font-semibold text-sm">{feature.text}</span>
+              {submitStatus === "success" ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 mx-auto bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                    <FiCheckCircle className="w-8 h-8 text-green-400" />
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
+                  <h3 className="text-lg font-bold text-white mb-2">Message Sent!</h3>
+                  <p className="text-sm" style={{ color: "#8d72d2" }}>We&apos;ll get back to you within 24 hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Name */}
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "#8d72d2" }}>
+                      Your Name
+                    </label>
+                    <div className="relative">
+                      <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#6743c3" }} />
+                      <input
+                        type="text"
+                        placeholder="Enter your name"
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        required
+                        className="w-full pl-10 pr-4 py-3 rounded-xl text-white text-sm transition-colors focus:outline-none"
+                        style={{
+                          background: "rgba(40, 22, 111, 0.4)",
+                          border: "1px solid rgba(141, 114, 210, 0.2)",
+                        }}
+                        onFocus={(e) => { e.currentTarget.style.borderColor = "#6743c3"; }}
+                        onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(141, 114, 210, 0.2)"; }}
+                      />
+                    </div>
+                  </div>
 
-        {/* Scroll Indicator */}
-        <motion.button
-          onClick={scrollToFeatures}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors-smooth"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 1.5 }}
-          aria-label="Scroll to features"
-        >
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-medium">Scroll to explore</span>
-            <FiArrowDown className="w-6 h-6 animate-bounce-gentle" />
-          </div>
-        </motion.button>
+                  {/* Email & Phone */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "#8d72d2" }}>
+                        Email
+                      </label>
+                      <div className="relative">
+                        <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#6743c3" }} />
+                        <input
+                          type="email"
+                          placeholder="your@email.com"
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
+                          required
+                          className="w-full pl-10 pr-4 py-3 rounded-xl text-white text-sm transition-colors focus:outline-none"
+                          style={{
+                            background: "rgba(40, 22, 111, 0.4)",
+                            border: "1px solid rgba(141, 114, 210, 0.2)",
+                          }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = "#6743c3"; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(141, 114, 210, 0.2)"; }}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "#8d72d2" }}>
+                        Phone
+                      </label>
+                      <div className="relative">
+                        <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#6743c3" }} />
+                        <input
+                          type="tel"
+                          placeholder="+91 12345 67890"
+                          value={formData.phone}
+                          onChange={(e) =>
+                            setFormData({ ...formData, phone: e.target.value })
+                          }
+                          className="w-full pl-10 pr-4 py-3 rounded-xl text-white text-sm transition-colors focus:outline-none"
+                          style={{
+                            background: "rgba(40, 22, 111, 0.4)",
+                            border: "1px solid rgba(141, 114, 210, 0.2)",
+                          }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = "#6743c3"; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(141, 114, 210, 0.2)"; }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "#8d72d2" }}>
+                      Message
+                    </label>
+                    <textarea
+                      placeholder="Tell us about your requirements..."
+                      value={formData.message}
+                      onChange={(e) =>
+                        setFormData({ ...formData, message: e.target.value })
+                      }
+                      rows={3}
+                      className="w-full px-4 py-3 rounded-xl text-white text-sm resize-none transition-colors focus:outline-none"
+                      style={{
+                        background: "rgba(40, 22, 111, 0.4)",
+                        border: "1px solid rgba(141, 114, 210, 0.2)",
+                      }}
+                      onFocus={(e) => { e.currentTarget.style.borderColor = "#6743c3"; }}
+                      onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(141, 114, 210, 0.2)"; }}
+                    />
+                  </div>
+
+                  {/* Error message */}
+                  {submitStatus === "error" && (
+                    <p className="text-sm" style={{ color: "#d43327" }}>
+                      Something went wrong. Please try again.
+                    </p>
+                  )}
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-3.5 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    style={{
+                      background: "linear-gradient(135deg, #d43327, #e6453a)",
+                      boxShadow: "0 8px 25px rgba(212, 51, 39, 0.25)",
+                    }}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send Message
+                        <FiSend className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </Container>
+
+      {/* Bottom decorative line */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <div className="relative h-20 overflow-hidden">
+          <svg
+            className="absolute bottom-4 w-full h-8"
+            viewBox="0 0 1440 32"
+            preserveAspectRatio="none"
+            fill="none"
+          >
+            <path
+              d="M0 16 C 200 16, 200 28, 400 28 S 600 4, 800 4 S 1000 28, 1200 28 S 1400 16, 1440 16"
+              stroke="rgba(40, 22, 111, 0.4)"
+              strokeWidth="2"
+              strokeDasharray="12 8"
+              fill="none"
+            />
+          </svg>
+          <motion.div
+            className="absolute bottom-2 left-16"
+            animate={{ x: [0, 20, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center"
+              style={{ background: "rgba(40, 22, 111, 0.4)" }}
+            >
+              <FiBookOpen className="w-5 h-5" style={{ color: "#8d72d2" }} />
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </section>
   );
 };
