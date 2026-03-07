@@ -22,6 +22,7 @@ use App\Models\Product;
 use App\Models\SiteSetting;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
+use App\Models\AwardImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -162,6 +163,13 @@ class PublicController extends Controller
         }
 
         return response()->json($query->get());
+    }
+
+    public function awardImages(): JsonResponse
+    {
+        return response()->json(
+            AwardImage::where('is_active', true)->orderBy('sort_order')->get()
+        );
     }
 
     public function siteSettings(): JsonResponse

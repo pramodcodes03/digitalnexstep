@@ -2,6 +2,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import PromoPopup from "@/components/home/PromoPopup";
 import HeroSection from "@/components/home/HeroSection";
+import AwardsShowcase from "@/components/home/AwardsShowcase";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import AboutSection from "@/components/home/AboutSection";
 import VisionMissionSection from "@/components/home/VisionMissionSection";
@@ -32,6 +33,7 @@ export default function Home() {
       {/* Main Content */}
       <main id="main-content">
         <HeroSection />
+        <AwardsShowcase />
         <FeaturesSection />
         <AboutSection />
         <VisionMissionSection />

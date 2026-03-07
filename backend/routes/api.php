@@ -35,6 +35,7 @@ Route::get('/courses', [PublicController::class, 'courses']);
 Route::get('/courses/{id}', [PublicController::class, 'course']);
 Route::get('/page-sections', [PublicController::class, 'pageSections']);
 Route::get('/site-settings', [PublicController::class, 'siteSettings']);
+Route::get('/award-images', [PublicController::class, 'awardImages']);
 
 Route::post('/contact', [PublicController::class, 'submitContact']);
 Route::post('/enquiries', [PublicController::class, 'submitEnquiry']);

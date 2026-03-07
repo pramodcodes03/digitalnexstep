@@ -30,8 +30,8 @@
 
         {{-- Home Page --}}
         <x-admin-nav-group label="Home Page" icon="home" key="home"
-            :active="request()->routeIs('admin.hero-slides.*') || request()->routeIs('admin.features.*') || request()->routeIs('admin.achievements.*') || request()->routeIs('admin.testimonials.*') || request()->routeIs('admin.partners.*') || request()->routeIs('admin.faqs.*') || request()->routeIs('admin.pricing-plans.*') || request()->routeIs('admin.job-updates.*') || request()->routeIs('admin.centers.*')">
-            <x-admin-nav-child href="{{ route('admin.hero-slides.index') }}" :active="request()->routeIs('admin.hero-slides.*')">Hero Slides</x-admin-nav-child>
+            :active="request()->routeIs('admin.features.*') || request()->routeIs('admin.achievements.*') || request()->routeIs('admin.testimonials.*') || request()->routeIs('admin.partners.*') || request()->routeIs('admin.faqs.*') || request()->routeIs('admin.pricing-plans.*') || request()->routeIs('admin.job-updates.*') || request()->routeIs('admin.centers.*') || request()->routeIs('admin.award-images.*')">
+            <x-admin-nav-child href="{{ route('admin.award-images.index') }}" :active="request()->routeIs('admin.award-images.*')">Award Images</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.features.index') }}" :active="request()->routeIs('admin.features.*')">Features</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.achievements.index') }}" :active="request()->routeIs('admin.achievements.*')">Achievements</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.testimonials.index') }}" :active="request()->routeIs('admin.testimonials.*')">Testimonials</x-admin-nav-child>

@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\PricingPlanController;
 use App\Http\Controllers\Admin\AchievementController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\PageSectionController;
+use App\Http\Controllers\Admin\AwardImageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,6 +53,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('pricing-plans', PricingPlanController::class)->except(['show']);
     Route::resource('achievements', AchievementController::class)->except(['show']);
     Route::resource('page-sections', PageSectionController::class)->except(['show']);
+    Route::resource('award-images', AwardImageController::class)->except(['show']);
 
     // Read-only submissions
     Route::get('enquiries', [EnquiryController::class, 'index'])->name('enquiries.index');

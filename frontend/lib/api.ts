@@ -83,6 +83,7 @@ export const api = {
   getPageSections: (page?: string) =>
     apiClient.get("/page-sections", { params: page ? { page } : {} }),
   getSiteSettings: () => apiClient.get("/site-settings"),
+  getAwardImages: () => apiClient.get("/award-images"),
 
   // Form submissions
   contact: (data: {
