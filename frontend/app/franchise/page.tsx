@@ -113,10 +113,11 @@ function StepHeader({ icon: Icon, title, sub, color }: { icon: React.ElementType
 export default function FranchisePage() {
   const [currentStep, setCurrentStep]     = useState(1);
   const [direction, setDirection]         = useState(1);
-  const [isSubmitted, setIsSubmitted]     = useState(false);
-  const [submittedData, setSubmittedData] = useState<{ id?: number; name?: string; email?: string } | null>(null);
-  const [submitError, setSubmitError]     = useState<string | null>(null);
-  const [states, setStates]               = useState<State[]>([]);
+  const [isSubmitted, setIsSubmitted]         = useState(false);
+  const [submittedData, setSubmittedData]     = useState<{ id?: number; name?: string; email?: string } | null>(null);
+  const [submitError, setSubmitError]         = useState<string | null>(null);
+  const [states, setStates]                   = useState<State[]>([]);
+  const [isPreparingReview, setIsPreparingReview] = useState(false);
 
   /* OTP state */
   const [otpStatus, setOtpStatus]               = useState<OtpStatus>("idle");
@@ -127,6 +128,7 @@ export default function FranchisePage() {
   const [resendCooldown, setResendCooldown]     = useState(0);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const { register, handleSubmit, trigger, watch, getValues, setValue, formState: { errors, isSubmitting } } =
     useForm<FranchiseFormData>({});
@@ -189,17 +191,35 @@ export default function FranchisePage() {
     3: ["total_computers", "total_staff", "agreeTerms"],
   };
 
+  const scrollToCard = () => {
+    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const goNext = useCallback(async () => {
     if (currentStep === 1 && otpStatus !== "verified") {
       setOtpError("Please verify your email before proceeding."); return;
     }
     const fields = stepFields[currentStep];
     if (fields) { const valid = await trigger(fields); if (!valid) return; }
+
+    if (currentStep === 3) {
+      // Brief "Preparing review" transition before showing Review & Submit
+      setDirection(1);
+      setIsPreparingReview(true);
+      scrollToCard();
+      setTimeout(() => {
+        setIsPreparingReview(false);
+        setCurrentStep(4);
+      }, 750);
+      return;
+    }
+
     setCurrentStep((s) => Math.min(s + 1, 4));
+    scrollToCard();
   }, [currentStep, trigger, otpStatus]);
 
   const handleNext = () => { setDirection(1);  goNext(); };
-  const handleBack = () => { setDirection(-1); setCurrentStep((s) => Math.max(s - 1, 1)); };
+  const handleBack = () => { setDirection(-1); setCurrentStep((s) => Math.max(s - 1, 1)); scrollToCard(); };
 
   /* ── Submit ── */
   const onSubmit = async (data: FranchiseFormData) => {
@@ -319,7 +339,7 @@ export default function FranchisePage() {
             )}
 
             {/* Card */}
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative">
+            <motion.div ref={cardRef} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative">
               <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-pink-500/20 blur-lg" />
               <div className="relative rounded-3xl p-[2px] bg-gradient-to-br from-primary-500/50 via-purple-500/30 to-pink-500/50">
                 <div className="rounded-3xl bg-white dark:bg-gray-900 overflow-hidden">
@@ -374,7 +394,28 @@ export default function FranchisePage() {
                   ) : (
                     <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
                       <div className="p-6 sm:p-8 min-h-[420px]">
-                        <AnimatePresence mode="wait" custom={direction}>
+
+                        {/* ── Preparing Review Screen ── */}
+                        <AnimatePresence mode="wait">
+                          {isPreparingReview && (
+                            <motion.div key="preparing"
+                              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+                              transition={{ duration: 0.3 }}
+                              className="flex flex-col items-center justify-center py-24 gap-5">
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                className="w-14 h-14 rounded-full border-4 border-primary-100 dark:border-primary-900 border-t-primary-500 dark:border-t-primary-400"
+                              />
+                              <div className="text-center">
+                                <p className="text-base font-bold text-gray-800 dark:text-white mb-1">Preparing your review…</p>
+                                <p className="text-sm text-gray-400">Almost there, verifying your details</p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        {!isPreparingReview && <AnimatePresence mode="wait" custom={direction}>
 
                           {/* ═══ STEP 1 ═══ */}
                           {currentStep === 1 && (
@@ -588,10 +629,12 @@ export default function FranchisePage() {
                             </motion.div>
                           )}
 
-                        </AnimatePresence>
+                        </AnimatePresence>}
+
                       </div>
 
                       {/* Navigation */}
+                      {!isPreparingReview && (
                       <div className="px-6 sm:px-8 pb-8 flex items-center justify-between gap-4">
                         {currentStep > 1 ? (
                           <button type="button" onClick={handleBack}
@@ -611,6 +654,7 @@ export default function FranchisePage() {
                           </button>
                         )}
                       </div>
+                      )}
                     </form>
                   )}
 
