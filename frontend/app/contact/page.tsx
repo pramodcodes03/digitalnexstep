@@ -133,6 +133,7 @@ export default function ContactPage() {
     try {
       await api.contact({
         ...data,
+        service: selectedService || undefined,
         subject: data.subject || (selectedService ? `Enquiry: ${selectedService}` : "General Enquiry"),
       });
       setSubmitStatus("success");
