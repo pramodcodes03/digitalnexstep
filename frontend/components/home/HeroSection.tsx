@@ -43,11 +43,8 @@ const HeroSection: React.FC = () => {
     { value: "50K+", label: "STUDENTS" },
   ];
 
-  // Products for service dropdown
-  const { data: productsData } = useApi(() => api.getProducts(), { data: [] } as any);
-  const products: { id: number; name: string }[] = (productsData?.data || []).filter(
-    (p: any) => p.status === "active" || p.is_active
-  );
+  // Products for service dropdown (API already filters is_active=true)
+  const { data: products } = useApi(() => api.getProducts(), [] as any[]);
 
   // Contact form state
   const [formData, setFormData] = useState({
@@ -67,7 +64,7 @@ const HeroSection: React.FC = () => {
   const serviceRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(serviceSearch.toLowerCase())
+    p.title.toLowerCase().includes(serviceSearch.toLowerCase())
   );
 
   useEffect(() => {
@@ -436,21 +433,21 @@ const HeroSection: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      setFormData({ ...formData, service: p.name });
+                                      setFormData({ ...formData, service: p.title });
                                       setServiceOpen(false);
                                       setServiceSearch("");
                                     }}
                                     className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left transition-colors"
                                     style={{
-                                      color: formData.service === p.name ? "#b3a1e1" : "rgba(255,255,255,0.8)",
-                                      background: formData.service === p.name ? "rgba(103, 67, 195, 0.2)" : "transparent",
+                                      color: formData.service === p.title ? "#b3a1e1" : "rgba(255,255,255,0.8)",
+                                      background: formData.service === p.title ? "rgba(103, 67, 195, 0.2)" : "transparent",
                                     }}
                                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(103, 67, 195, 0.15)"; }}
-                                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = formData.service === p.name ? "rgba(103, 67, 195, 0.2)" : "transparent"; }}
+                                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = formData.service === p.title ? "rgba(103, 67, 195, 0.2)" : "transparent"; }}
                                   >
                                     <FiTag className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#6743c3" }} />
-                                    {p.name}
-                                    {formData.service === p.name && (
+                                    {p.title}
+                                    {formData.service === p.title && (
                                       <FiCheckCircle className="ml-auto w-3.5 h-3.5" style={{ color: "#6743c3" }} />
                                     )}
                                   </button>

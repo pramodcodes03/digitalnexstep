@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,6 +14,11 @@ import {
   FiMessageSquare,
   FiHeadphones,
   FiExternalLink,
+  FiGrid,
+  FiSearch,
+  FiChevronDown,
+  FiTag,
+  FiCheckCircle,
 } from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -26,6 +31,7 @@ interface ContactFormData {
   name: string;
   email: string;
   phone?: string;
+  service?: string;
   subject: string;
   message: string;
 }
@@ -75,6 +81,27 @@ export default function ContactPage() {
 
   const { data: apiSections } = useApi(() => api.getPageSections("contact"), [] as any[]);
   const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
+  const { data: products } = useApi(() => api.getProducts(), [] as any[]);
+
+  // Searchable service dropdown
+  const [serviceOpen, setServiceOpen] = useState(false);
+  const [serviceSearch, setServiceSearch] = useState("");
+  const [selectedService, setSelectedService] = useState("");
+  const serviceRef = useRef<HTMLDivElement>(null);
+
+  const filteredServices = (Array.isArray(products) ? products : []).filter((p: any) =>
+    p.title.toLowerCase().includes(serviceSearch.toLowerCase())
+  );
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (serviceRef.current && !serviceRef.current.contains(e.target as Node)) {
+        setServiceOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
   const heroData = apiSections.find((s: any) => s.section_key === "contact_hero");
   const apiContactInfo = heroData?.extra_data?.contact_info;
 
@@ -104,9 +131,14 @@ export default function ContactPage() {
     setSubmitStatus("idle");
 
     try {
-      await api.contact(data);
+      await api.contact({
+        ...data,
+        subject: data.subject || (selectedService ? `Enquiry: ${selectedService}` : "General Enquiry"),
+      });
       setSubmitStatus("success");
       reset();
+      setSelectedService("");
+      setServiceSearch("");
       setTimeout(() => setSubmitStatus("idle"), 5000);
     } catch {
       setSubmitStatus("error");
@@ -369,6 +401,92 @@ export default function ContactPage() {
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  {/* Select Service */}
+                  <div ref={serviceRef} className="relative">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Select Service{" "}
+                      <span className="text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setServiceOpen((v) => !v)}
+                      className={`w-full px-4 py-3 rounded-xl border text-sm text-left flex items-center justify-between transition-all duration-200 focus:outline-none bg-white dark:bg-gray-700/50 ${
+                        serviceOpen
+                          ? "border-blue-500 ring-2 ring-blue-500/30"
+                          : "border-gray-200 dark:border-gray-600"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <FiGrid className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span className={selectedService ? "text-gray-900 dark:text-white" : "text-gray-400"}>
+                          {selectedService || "Choose a service…"}
+                        </span>
+                      </span>
+                      <FiChevronDown
+                        className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${serviceOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {serviceOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute z-30 mt-1 w-full rounded-xl overflow-hidden shadow-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600"
+                        >
+                          {/* Search */}
+                          <div className="p-2 border-b border-gray-100 dark:border-gray-700">
+                            <div className="relative">
+                              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                              <input
+                                autoFocus
+                                type="text"
+                                placeholder="Search services…"
+                                value={serviceSearch}
+                                onChange={(e) => setServiceSearch(e.target.value)}
+                                className="w-full pl-8 pr-3 py-2 rounded-lg text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none placeholder-gray-400"
+                              />
+                            </div>
+                          </div>
+                          {/* Options */}
+                          <ul className="max-h-44 overflow-y-auto py-1">
+                            {filteredServices.length === 0 ? (
+                              <li className="px-4 py-3 text-sm text-center text-gray-400">
+                                No services found
+                              </li>
+                            ) : (
+                              filteredServices.map((p: any) => (
+                                <li key={p.id}>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedService(p.title);
+                                      setServiceOpen(false);
+                                      setServiceSearch("");
+                                    }}
+                                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left transition-colors hover:bg-blue-50 dark:hover:bg-blue-900/20 ${
+                                      selectedService === p.title
+                                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-medium"
+                                        : "text-gray-700 dark:text-gray-200"
+                                    }`}
+                                  >
+                                    <FiTag className="w-3.5 h-3.5 flex-shrink-0 text-blue-500" />
+                                    {p.title}
+                                    {selectedService === p.title && (
+                                      <FiCheckCircle className="ml-auto w-3.5 h-3.5 text-blue-500" />
+                                    )}
+                                  </button>
+                                </li>
+                              ))
+                            )}
+                          </ul>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* Message */}
