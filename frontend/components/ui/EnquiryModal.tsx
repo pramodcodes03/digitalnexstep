@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import {
@@ -39,23 +39,26 @@ const inputCls =
   "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 outline-none transition-all duration-200 text-sm";
 
 const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productName }) => {
+  const [submitted, setSubmitted] = useState(false);
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: { errors, isSubmitting },
   } = useForm<EnquiryFormData>();
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      setSubmitted(false);
+      reset();
     } else {
       document.body.style.overflow = "unset";
     }
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isOpen]);
+  }, [isOpen, reset]);
 
   const onSubmit = async (data: EnquiryFormData) => {
     try {
@@ -72,8 +75,8 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productNam
     } catch {
       // Silently fail — still show success UI
     }
-    reset();
-    setTimeout(onClose, 1200);
+    setSubmitted(true);
+    setTimeout(onClose, 2500);
   };
 
   return (
@@ -140,7 +143,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productNam
                 </div>
 
                 {/* ── Success state ── */}
-                {isSubmitSuccessful ? (
+                {submitted ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
