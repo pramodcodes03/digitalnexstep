@@ -63,7 +63,7 @@ const HeroSection: React.FC = () => {
   const [serviceSearch, setServiceSearch] = useState("");
   const serviceRef = useRef<HTMLDivElement>(null);
 
-  const filteredProducts = products.filter((p) =>
+  const filteredProducts = (products as any[]).filter((p: any) =>
     p.title.toLowerCase().includes(serviceSearch.toLowerCase())
   );
 
