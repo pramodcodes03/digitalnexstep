@@ -181,9 +181,10 @@ class PublicController extends Controller
     public function submitContact(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
+            'phone'   => 'nullable|string|max:20',
+            'service' => 'nullable|string|max:255',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:5000',
         ]);

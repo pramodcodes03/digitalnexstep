@@ -18,6 +18,7 @@ class ContactSubmission extends Model
         'name',
         'email',
         'phone',
+        'service',
         'subject',
         'message',
         'status',

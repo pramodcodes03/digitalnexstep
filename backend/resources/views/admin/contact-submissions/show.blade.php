@@ -41,6 +41,12 @@
                     <p class="text-sm text-gray-900">{{ $message->phone ?? '—' }}</p>
                 </div>
 
+                {{-- Service --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Service</label>
+                    <p class="text-sm text-gray-900">{{ $message->service ?? '—' }}</p>
+                </div>
+
                 {{-- Subject --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Subject</label>

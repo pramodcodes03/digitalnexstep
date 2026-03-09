@@ -41,6 +41,7 @@
                         <th class="px-6 py-3">Name</th>
                         <th class="px-6 py-3">Email</th>
                         <th class="px-6 py-3">Phone</th>
+                        <th class="px-6 py-3">Service</th>
                         <th class="px-6 py-3">Subject</th>
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3">Date</th>
@@ -53,6 +54,7 @@
                             <td class="px-6 py-4 font-medium text-gray-900">{{ $message->name }}</td>
                             <td class="px-6 py-4 text-gray-600">{{ $message->email }}</td>
                             <td class="px-6 py-4 text-gray-600">{{ $message->phone ?? '—' }}</td>
+                            <td class="px-6 py-4 text-gray-600">{{ $message->service ?? '—' }}</td>
                             <td class="px-6 py-4 text-gray-600">{{ Str::limit($message->subject, 40) }}</td>
                             <td class="px-6 py-4">
                                 @switch($message->status)
@@ -85,7 +87,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-400">
                                 No contact messages found.
                             </td>
                         </tr>
