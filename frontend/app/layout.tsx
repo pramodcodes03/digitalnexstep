@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const metadata: Metadata = {
-  title: "DigitalNexStep - Educational Assessment Excellence",
+  title: "DITRP INDIA - Educational Assessment Excellence",
   description: "Transform assessment, elevate learning with our premium educational assessment platform. Trusted by institutions nationwide.",
 };
 

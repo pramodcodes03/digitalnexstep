@@ -206,7 +206,7 @@ export default function FeaturesPage() {
               Ready to Transform Your Institution?
             </h2>
             <p className="mt-4 text-lg text-white/70 max-w-2xl mx-auto">
-              Get started with DigitalNexStep and unlock every feature for your
+              Get started with DITRP INDIA and unlock every feature for your
               educational management needs.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">

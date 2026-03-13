@@ -70,12 +70,12 @@ const AboutSection: React.FC = () => {
 
   const displayStats: typeof stats = apiAchievements.length > 0
     ? apiAchievements.map((a: any, i: number) => ({
-        icon: iconMap[a.icon] || stats[i % stats.length].icon,
-        label: a.title,
-        value: Number(a.value) || 0,
-        suffix: a.suffix || "",
-        isLarge: Number(a.value) >= 10000,
-      }))
+      icon: iconMap[a.icon] || stats[i % stats.length].icon,
+      label: a.title,
+      value: Number(a.value) || 0,
+      suffix: a.suffix || "",
+      isLarge: Number(a.value) >= 10000,
+    }))
     : stats;
 
   const aboutContent = apiAbout.length > 0 ? apiAbout[0] : null;
@@ -93,14 +93,21 @@ const AboutSection: React.FC = () => {
             className="relative"
           >
             <div className="relative aspect-square rounded-2xl overflow-hidden shadow-strong">
-              {/* Placeholder gradient - replace with actual image */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-500 to-primary-400 flex items-center justify-center">
-                <div className="text-white text-center p-8">
-                  <FiUsers className="w-32 h-32 mx-auto mb-4 opacity-20" />
-                  <p className="text-2xl font-bold">Educational Excellence</p>
-                  <p className="text-primary-100 mt-2">Team Photo Placeholder</p>
+              {aboutContent?.image ? (
+                <img
+                  src={aboutContent.image}
+                  alt={aboutContent.title || "About Us"}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-500 to-primary-400 flex items-center justify-center">
+                  <div className="text-white text-center p-8">
+                    <FiUsers className="w-32 h-32 mx-auto mb-4 opacity-20" />
+                    <p className="text-2xl font-bold">Educational Excellence</p>
+                    <p className="text-primary-100 mt-2">Team Photo Placeholder</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Decorative Element */}
@@ -130,7 +137,7 @@ const AboutSection: React.FC = () => {
               ) : (
                 <>
                   <p>
-                    Founded with a vision to revolutionize educational assessments, DigitalNexStep
+                    Founded with a vision to revolutionize educational assessments, DITRP INDIA
                     has been at the forefront of educational technology for over a decade. We believe
                     that assessment should be more than just testing—it should be a tool for growth,
                     insight, and continuous improvement.
@@ -177,9 +184,11 @@ const AboutSection: React.FC = () => {
             </div>
 
             <div className="pt-4">
-              <Button variant="primary" size="lg">
-                Learn More About Us
-              </Button>
+              <a href="/about">
+                <Button variant="primary" size="lg">
+                  Learn More About Us
+                </Button>
+              </a>
             </div>
           </motion.div>
         </div>

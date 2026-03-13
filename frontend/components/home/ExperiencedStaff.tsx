@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { FiLinkedin, FiMail, FiBookOpen } from "react-icons/fi";
+import { FiBookOpen } from "react-icons/fi";
 import Container from "../ui/Container";
 import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
@@ -93,6 +93,7 @@ const ExperiencedStaff: React.FC = () => {
           designation: member.designation || member.role || "",
           expertise: member.expertise || member.specialization || "",
           experience: member.experience || (experienceMatch ? experienceMatch[1] : ""),
+          image: member.image || null,
           color: staffColors[i % staffColors.length],
         };
       })
@@ -171,11 +172,19 @@ const ExperiencedStaff: React.FC = () => {
                 {/* Avatar */}
                 <div className="pt-8 pb-4 flex justify-center">
                   <div className="relative">
-                    <div className={`w-24 h-24 bg-gradient-to-br ${member.color} rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <span className="text-white text-2xl font-bold">
-                        {member.name.split(" ").filter((n: string) => !n.includes(".")).map((n: string) => n[0]).join("")}
-                      </span>
-                    </div>
+                    {member.image ? (
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-24 h-24 rounded-full object-cover shadow-lg group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className={`w-24 h-24 bg-gradient-to-br ${member.color} rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <span className="text-white text-2xl font-bold">
+                          {member.name.split(" ").filter((n: string) => !n.includes(".")).map((n: string) => n[0]).join("")}
+                        </span>
+                      </div>
+                    )}
                     {/* Online Indicator */}
                     <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-[3px] border-white dark:border-gray-800" />
                     {/* Glow */}
@@ -201,15 +210,6 @@ const ExperiencedStaff: React.FC = () => {
                     {member.experience} Experience
                   </div>
 
-                  {/* Social Links */}
-                  <div className="flex justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
-                      <FiLinkedin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    </button>
-                    <button className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                      <FiMail className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
-                    </button>
-                  </div>
                 </div>
               </div>
             </motion.div>

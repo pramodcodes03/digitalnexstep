@@ -16,8 +16,17 @@ class PageSectionController extends Controller
     {
         $query = PageSection::query();
 
-        if ($request->filled('page')) {
-            $query->where('page', $request->input('page'));
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('section_key', 'like', "%{$search}%")
+                  ->orWhere('subtitle', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('filter_page')) {
+            $query->where('page', $request->input('filter_page'));
         }
 
         $items = $query->orderBy('page')->orderBy('sort_order')->paginate(15)->withQueryString();

@@ -1,10 +1,10 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://nextstep.ditrpindia.org/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://ditrpindia.org/api";
 
 const TENANT_API_BASE_URL =
-  process.env.NEXT_PUBLIC_TENANT_API_URL || "https://hdi.ditrpindia.org/api";
+  process.env.NEXT_PUBLIC_TENANT_API_URL || "https://hdi.digitalnexstep.com/api";
 
 export const tenantApiClient = axios.create({
   baseURL: TENANT_API_BASE_URL,
@@ -140,7 +140,7 @@ export const api = {
   franchiseSubmit: (data: Record<string, unknown>) =>
     tenantApiClient.post('/franchise-registration/store', data, { timeout: 30000 }),
 
-  // Tenant courses — direct to hdi.ditrpindia.org (same pattern as verification & franchise)
+  // Tenant courses — direct to hdi.digitalnexstep.com (same pattern as verification & franchise)
   getTenantCourses: (category_id?: number) =>
     tenantApiClient.get('/all-courses', { params: category_id ? { category_id } : {} }),
   getTenantCourse: (id: string | number) =>

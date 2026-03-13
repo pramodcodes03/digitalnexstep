@@ -79,7 +79,7 @@
                         <div class="md:col-span-2">
                             <label for="extra_data" class="block text-sm font-semibold text-gray-700 mb-1">Extra Data</label>
                             <textarea name="extra_data" id="extra_data" rows="3"
-                                      class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('extra_data', $pageSection->extra_data) }}</textarea>
+                                      class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('extra_data', is_array($pageSection->extra_data) ? json_encode($pageSection->extra_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $pageSection->extra_data) }}</textarea>
                             <p class="mt-1 text-xs text-gray-400">JSON format for additional data</p>
                         </div>
 

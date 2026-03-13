@@ -266,31 +266,6 @@ const WhyChooseUs: React.FC = () => {
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-16 text-center"
-        >
-          <div className="inline-flex flex-col sm:flex-row gap-4 items-center justify-center">
-            <a
-              href="#contact"
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all-smooth"
-            >
-              Start Your Free Trial
-            </a>
-            <a
-              href="#pricing"
-              className="px-8 py-4 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-bold rounded-xl shadow-md hover:shadow-lg border-2 border-blue-600 dark:border-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all-smooth"
-            >
-              View Pricing Plans
-            </a>
-          </div>
-          <p className="mt-6 text-gray-600 dark:text-gray-300">
-            No credit card required • 14-day free trial • Cancel anytime
-          </p>
-        </motion.div>
       </Container>
     </section>
   );

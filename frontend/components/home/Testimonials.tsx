@@ -11,7 +11,7 @@ const testimonials = [
   {
     name: "Dr. Anita Desai",
     role: "Principal, DPS International",
-    quote: "DigitalNexStep has completely transformed how we conduct assessments. The AI-powered analytics give us insights we never had before. Our student outcomes improved by 35% in just one year.",
+    quote: "DITRP INDIA has completely transformed how we conduct assessments. The AI-powered analytics give us insights we never had before. Our student outcomes improved by 35% in just one year.",
     rating: 5,
     color: "from-blue-500 to-indigo-600",
   },
@@ -25,14 +25,14 @@ const testimonials = [
   {
     name: "Shalini Gupta",
     role: "Founder, LearnBridge Academy",
-    quote: "As a growing ed-tech startup, we needed a robust assessment solution. DigitalNexStep provided exactly that – scalable, user-friendly, and backed by brilliant technology.",
+    quote: "As a growing ed-tech startup, we needed a robust assessment solution. DITRP INDIA provided exactly that – scalable, user-friendly, and backed by brilliant technology.",
     rating: 5,
     color: "from-green-500 to-emerald-600",
   },
   {
     name: "Karthik Venkatesh",
     role: "COO, EduStar Group",
-    quote: "We manage 50+ centers and DigitalNexStep handles our assessments flawlessly across all locations. The real-time reporting saves us hundreds of hours every month.",
+    quote: "We manage 50+ centers and DITRP INDIA handles our assessments flawlessly across all locations. The real-time reporting saves us hundreds of hours every month.",
     rating: 5,
     color: "from-orange-500 to-red-500",
   },

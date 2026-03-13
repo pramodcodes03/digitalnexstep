@@ -91,7 +91,7 @@ const Footer: React.FC = () => {
             <div className="flex items-center">
               <Link href="/">
                 <Image
-                  src="/logo/logo-light.png"
+                  src="/logo/logo-light-v2.png"
                   alt={settings?.site_name || "DiTRP"}
                   width={200}
                   height={56}
@@ -226,7 +226,7 @@ const Footer: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
             <p className="text-primary-200 dark:text-gray-400 text-sm text-center md:text-left">
-              © {getCurrentYear()} {settings?.site_name || "DigitalNexStep"}. All rights reserved.
+              © {getCurrentYear()} {settings?.site_name || "DITRP INDIA"}. All rights reserved.
             </p>
 
             {/* Payment Methods */}

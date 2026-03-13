@@ -46,7 +46,7 @@ Route::post('/franchise-registrations', [PublicController::class, 'submitFranchi
 // Dynamic student verification — proxies to the tenant API (domain configured via TENANT_API_BASE_URL)
 Route::get('/student-verification/{id}', [StudentVerificationController::class, 'verify']);
 
-// Tenant courses — proxies to hdi.ditrpindia.org (TENANT_API_BASE_URL)
+// Tenant courses — proxies to hdi.digitalnexstep.com (TENANT_API_BASE_URL)
 Route::get('/tenant-courses', [TenantCourseController::class, 'index']);
 Route::get('/tenant-courses/{id}', [TenantCourseController::class, 'show']);
 Route::post('/tenant-enquiry/dropdowns', [TenantCourseController::class, 'enquiryDropdowns']);

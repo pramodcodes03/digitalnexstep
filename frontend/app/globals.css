@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent horizontal overflow from decorative elements */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 /* Custom CSS Variables */
 :root {
   /* Color Palette - Brand Purple */

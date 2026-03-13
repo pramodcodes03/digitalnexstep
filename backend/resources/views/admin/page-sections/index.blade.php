@@ -13,6 +13,24 @@
             </a>
         </div>
 
+        {{-- Search & Filter --}}
+        <div class="px-6 py-4 border-b border-gray-100">
+            <form method="GET" action="{{ route('admin.page-sections.index') }}" class="flex flex-wrap items-center gap-3">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by title, key..."
+                       class="w-64 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
+                <select name="filter_page" class="rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">All Pages</option>
+                    @foreach($pages as $pg)
+                        <option value="{{ $pg }}" {{ request('filter_page') == $pg ? 'selected' : '' }}>{{ $pg }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition">Search</button>
+                @if(request('search') || request('filter_page'))
+                    <a href="{{ route('admin.page-sections.index') }}" class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition">Clear</a>
+                @endif
+            </form>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="bg-gray-50 text-gray-500 uppercase text-xs tracking-wider">

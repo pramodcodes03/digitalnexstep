@@ -36,7 +36,7 @@ return [
     ],
 
     'tenant_api' => [
-        'base_url' => env('TENANT_API_BASE_URL', 'https://hdi.ditrpindia.org'),
+        'base_url' => env('TENANT_API_BASE_URL', 'https://hdi.digitalnexstep.com'),
     ],
 
 ];

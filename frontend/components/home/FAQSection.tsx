@@ -10,7 +10,7 @@ import api from "@/lib/api";
 
 const faqs = [
   {
-    question: "What types of assessments can I create with DigitalNexStep?",
+    question: "What types of assessments can I create with DITRP INDIA?",
     answer:
       "Our platform supports a wide variety of assessment types including multiple-choice questions, true/false, short answer, essay questions, fill-in-the-blank, matching, coding challenges, and multimedia submissions. You can mix and match question types to create comprehensive assessments tailored to your needs.",
   },
@@ -20,7 +20,7 @@ const faqs = [
       "Security is our top priority. We use bank-level encryption (AES-256) for all data at rest and in transit. Our platform is hosted on enterprise-grade servers with 99.9% uptime guarantee, regular security audits, and compliance with FERPA, COPPA, and GDPR regulations. We also offer features like secure browser lockdown and plagiarism detection.",
   },
   {
-    question: "Can I integrate DigitalNexStep with my existing LMS?",
+    question: "Can I integrate DITRP INDIA with my existing LMS?",
     answer:
       "Yes! We offer seamless integration with popular Learning Management Systems including Canvas, Blackboard, Moodle, Google Classroom, and Schoology. Our API also allows for custom integrations with proprietary systems. Data syncs automatically, and single sign-on (SSO) is supported for a smooth user experience.",
   },

@@ -74,7 +74,7 @@ const galleryItems: GalleryItem[] = [
   // News
   {
     id: 5,
-    title: "DigitalNexStep Expands to 5 New Cities",
+    title: "DITRP INDIA Expands to 5 New Cities",
     description: "We are thrilled to announce expansion to Pune, Jaipur, Lucknow, Chandigarh, and Kochi.",
     category: "news",
     date: "Jan 10, 2025",
@@ -176,7 +176,7 @@ const galleryItems: GalleryItem[] = [
   {
     id: 16,
     title: "Annual Conference Highlights",
-    description: "Best moments from the DigitalNexStep Annual Conference 2024 with 500+ attendees.",
+    description: "Best moments from the DITRP INDIA Annual Conference 2024 with 500+ attendees.",
     category: "videos",
     date: "Oct 20, 2024",
     color: "from-violet-500 to-purple-600",

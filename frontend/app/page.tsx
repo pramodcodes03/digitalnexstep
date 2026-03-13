@@ -1,6 +1,5 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import PromoPopup from "@/components/home/PromoPopup";
 import HeroSection from "@/components/home/HeroSection";
 import AwardsShowcase from "@/components/home/AwardsShowcase";
 import FeaturesSection from "@/components/home/FeaturesSection";
@@ -53,9 +52,6 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
-
-      {/* Promo Popup */}
-      <PromoPopup />
     </>
   );
 }

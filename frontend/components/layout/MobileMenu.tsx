@@ -72,7 +72,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 <Link href="/" onClick={onClose}>
                   <Image
-                    src={theme === "dark" ? "/logo/logo-light.png" : "/logo/logo-dark.png"}
+                    src={theme === "dark" ? "/logo/logo-light-v2.png" : "/logo/logo-dark-v2.png"}
                     alt="DiTRP"
                     width={140}
                     height={40}

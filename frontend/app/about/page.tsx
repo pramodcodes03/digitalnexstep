@@ -419,7 +419,7 @@ export default function AboutPage() {
           >
             <motion.img
               src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1280&q=80"
-              alt="About DigitalNexStep"
+              alt="About DITRP INDIA"
               className="w-full h-60 sm:h-80 md:h-[420px] object-cover object-center"
               whileHover={{ scale: 1.04 }}
               transition={{ duration: 0.5 }}
@@ -610,7 +610,7 @@ export default function AboutPage() {
             <div className="space-y-10 md:space-y-0">
               {(() => {
                 const defaultMilestones = [
-                  { year: "2014", title: "Founded with a Vision",    desc: "DigitalNexStep was born with a mission to make quality digital education accessible to every learner.", side: "left",  icon: FiTarget,  color: "from-blue-400 to-primary-600" },
+                  { year: "2014", title: "Founded with a Vision",    desc: "DITRP INDIA was born with a mission to make quality digital education accessible to every learner.", side: "left",  icon: FiTarget,  color: "from-blue-400 to-primary-600" },
                   { year: "2017", title: "Reached 5,000 Students",   desc: "Our community grew to 5,000+ active learners with a 95% course completion rate — a milestone we're proud of.", side: "right", icon: FiUsers,   color: "from-green-400 to-teal-600" },
                   { year: "2019", title: "Launched 50+ Courses",     desc: "Expanded our catalog to 50+ premium courses across web development, design, data science, and business.", side: "left",  icon: FiBookOpen, color: "from-purple-400 to-indigo-600" },
                   { year: "2022", title: "Industry Partnerships",    desc: "Partnered with top tech companies for placements, live projects, and industry-aligned curriculum development.", side: "right", icon: FiAward,   color: "from-orange-400 to-orange-600" },
@@ -688,7 +688,7 @@ export default function AboutPage() {
               Ready to Begin Your Journey?
             </h2>
             <p className="text-white/70 text-lg mb-10">
-              Join 50,000+ learners who have transformed their careers with DigitalNexStep. Your future starts here.
+              Join 50,000+ learners who have transformed their careers with DITRP INDIA. Your future starts here.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>

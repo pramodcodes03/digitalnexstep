@@ -14,7 +14,8 @@ class SiteSettingController extends Controller
         $settings = SiteSetting::orderBy('group')->orderBy('key')->get();
         $grouped = $settings->groupBy('group');
 
-        return view('admin.site-settings.index', compact('grouped'));
+        $groups = $grouped;
+        return view('admin.site-settings.index', compact('groups'));
     }
 
     public function create()

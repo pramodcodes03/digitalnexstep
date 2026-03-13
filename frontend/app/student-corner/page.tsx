@@ -179,7 +179,7 @@ const testimonials = [
     name: "Priya Sharma",
     role: "JEE Advanced — AIR 342",
     quote:
-      "DigitalNexStep's mock tests were almost identical to the real paper. The analytics showed me exactly where I was losing marks, and I fixed those gaps in just 3 weeks.",
+      "DITRP INDIA's mock tests were almost identical to the real paper. The analytics showed me exactly where I was losing marks, and I fixed those gaps in just 3 weeks.",
     avatar: "PS",
     color: "from-blue-500 to-indigo-600",
   },
@@ -652,7 +652,7 @@ export default function StudentCornerPage() {
               </span>
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Real students, real scores, real results. See how DigitalNexStep made a difference.
+              Real students, real scores, real results. See how DITRP INDIA made a difference.
             </p>
           </AnimatedBlock>
 

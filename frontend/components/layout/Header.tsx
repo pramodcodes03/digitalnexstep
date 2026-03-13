@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle, FiPackage, FiAward } from "react-icons/fi";
+import { FiMenu, FiMoon, FiSun, FiChevronDown, FiImage, FiUsers, FiHelpCircle, FiPackage, FiAward, FiLogIn, FiSmartphone } from "react-icons/fi";
 import MobileMenu from "./MobileMenu";
 import Button from "../ui/Button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -120,22 +120,21 @@ const Header: React.FC = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-40 transition-all-smooth ${
-          isScrolled
+        className={`fixed top-0 left-0 right-0 z-40 transition-all-smooth ${isScrolled
             ? "backdrop-blur-navbar shadow-md dark:shadow-gray-800/50 py-3"
             : "bg-white/95 dark:bg-gray-900/95 py-4"
-        }`}
+          }`}
       >
-        <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-10 xl:px-16">
-          <div className="flex items-center justify-between">
+        <div className="mx-auto max-w-full px-3 sm:px-6 lg:px-10 xl:px-16">
+          <div className="flex items-center justify-between gap-2">
             {/* Logo */}
-            <Link href="/" className="flex items-center flex-shrink-0 group">
+            <Link href="/" className="flex items-center flex-shrink min-w-0 group">
               <Image
-                src={theme === "dark" ? "/logo/logo-light.png" : "/logo/logo-dark.png"}
+                src={theme === "dark" ? "/logo/logo-light-v2.png" : "/logo/logo-dark-v2.png"}
                 alt={settings?.site_name || "DiTRP"}
                 width={180}
                 height={50}
-                className="h-10 sm:h-12 w-auto object-contain group-hover:scale-105 transition-transform-smooth"
+                className="h-8 sm:h-10 lg:h-12 w-auto object-contain group-hover:scale-105 transition-transform-smooth"
                 priority
               />
             </Link>
@@ -164,9 +163,8 @@ const Header: React.FC = () => {
                 >
                   More
                   <FiChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${
-                      isMoreOpen ? "rotate-180" : ""
-                    }`}
+                    className={`w-4 h-4 transition-transform duration-200 ${isMoreOpen ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -213,38 +211,74 @@ const Header: React.FC = () => {
                 )}
               </button>
 
-              {/* Get Started Button */}
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => {
-                  const contactSection = document.getElementById("contact");
-                  contactSection?.scrollIntoView({ behavior: "smooth" });
-                }}
+              {/* Application Button */}
+              <a
+                href="https://hdi.digitalnexstep.com/pwa"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors-smooth"
+                aria-label="Application"
+                title="Application"
               >
-                Get Started
-              </Button>
+                <FiSmartphone className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              </a>
+
+              {/* Login Button */}
+              <a
+                href="https://hdi.digitalnexstep.com/login"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="primary" size="md">
+                  <span className="flex items-center gap-2">
+                    <FiLogIn className="w-4 h-4" />
+                    Login
+                  </span>
+                </Button>
+              </a>
             </div>
 
-            {/* Mobile Theme Toggle and Menu Button */}
-            <div className="lg:hidden flex items-center gap-2">
+            {/* Mobile Icons and Menu Button */}
+            <div className="lg:hidden flex items-center gap-1 flex-shrink-0">
+              {/* Application Button */}
+              <a
+                href="https://hdi.digitalnexstep.com/pwa"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors-smooth"
+                aria-label="Application"
+              >
+                <FiSmartphone className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+              </a>
+
+              {/* Login Button */}
+              <a
+                href="https://hdi.digitalnexstep.com/login"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 transition-colors-smooth"
+                aria-label="Login"
+              >
+                <FiLogIn className="w-4 h-4 text-white" />
+              </a>
+
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors-smooth"
+                className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors-smooth"
                 aria-label="Toggle theme"
               >
                 {theme === "light" ? (
-                  <FiMoon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <FiMoon className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                 ) : (
-                  <FiSun className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <FiSun className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                 )}
               </button>
 
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors-smooth"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors-smooth"
                 aria-label="Open menu"
               >
                 <FiMenu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
