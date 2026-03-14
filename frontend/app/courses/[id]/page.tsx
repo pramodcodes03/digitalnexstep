@@ -378,7 +378,7 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-white dark:bg-gray-900 overflow-x-hidden">
         <Header />
         <div className="flex items-center justify-center py-40">
           <div className="text-center">
@@ -393,7 +393,7 @@ export default function CourseDetailPage() {
 
   if (notFound || !course) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-white dark:bg-gray-900 overflow-x-hidden">
         <Header />
         <div className="flex items-center justify-center py-40">
           <div className="text-center">
@@ -414,7 +414,7 @@ export default function CourseDetailPage() {
   const syllabusHtml = course.syllabus?.syllabus;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900 overflow-x-hidden">
       <Header />
 
       <EnquiryModal

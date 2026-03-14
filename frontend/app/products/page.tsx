@@ -360,7 +360,7 @@ export default function ProductsPage() {
     : products;
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       {/* ── HERO ── */}
@@ -572,6 +572,6 @@ export default function ProductsPage() {
         onClose={() => setEnquiryProduct(null)}
         productName={enquiryProduct || ""}
       />
-    </>
+    </div>
   );
 }

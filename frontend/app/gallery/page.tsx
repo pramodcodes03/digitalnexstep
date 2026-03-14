@@ -244,7 +244,7 @@ export default function GalleryPage() {
   const activeTab = filterTabs.find((t) => t.id === activeFilter)!;
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       {/* Hero Section */}
@@ -489,6 +489,6 @@ export default function GalleryPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

@@ -269,7 +269,7 @@ export default function FranchisePage() {
   const fallbackStates = ["Andhra Pradesh","Bihar","Delhi","Goa","Gujarat","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Odisha","Punjab","Rajasthan","Tamil Nadu","Telangana","Uttar Pradesh","West Bengal"];
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       {/* Hero */}
@@ -673,6 +673,6 @@ export default function FranchisePage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

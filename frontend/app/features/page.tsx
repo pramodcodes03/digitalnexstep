@@ -130,7 +130,7 @@ export default function FeaturesPage() {
   }, []);
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       <main>
@@ -230,6 +230,6 @@ export default function FeaturesPage() {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }

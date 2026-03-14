@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 /* Prevent horizontal overflow from decorative elements */
-html, body {
+/* NOTE: Do NOT put overflow-x on html — it breaks position:fixed on mobile browsers */
+body {
   overflow-x: hidden;
   max-width: 100vw;
 }
@@ -192,6 +193,12 @@ body {
     top: 10px;
     left: 10px;
   }
+}
+
+/* Header slide-down animation (CSS instead of framer-motion to avoid transform breaking position:fixed) */
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: none; }
 }
 
 /* Responsive Typography */

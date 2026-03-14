@@ -89,21 +89,21 @@ export default function VerificationPage() {
 
   const displayBranches: typeof branches = heroData?.extra_data?.branches?.length > 0
     ? heroData.extra_data.branches.map((b: any, i: number) => ({
-        name: b.name || "",
-        address: b.address || "",
-        phone: b.phone || "",
-        email: b.email || "",
-        color: defaultBranchColors[i % defaultBranchColors.length],
-      }))
+      name: b.name || "",
+      address: b.address || "",
+      phone: b.phone || "",
+      email: b.email || "",
+      color: defaultBranchColors[i % defaultBranchColors.length],
+    }))
     : apiCenters.length > 0
-    ? apiCenters.map((c: any, i: number) => ({
+      ? apiCenters.map((c: any, i: number) => ({
         name: c.name,
         address: c.address || "",
         phone: c.phone || "",
         email: c.email || "",
         color: defaultBranchColors[i % defaultBranchColors.length],
       }))
-    : branches;
+      : branches;
 
   const partnerPortals = heroData?.extra_data?.partner_portals;
 
@@ -177,7 +177,7 @@ export default function VerificationPage() {
   const activeTabData = tabs.find((t) => t.id === activeTab)!;
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       {/* Hero Section */}
@@ -251,11 +251,10 @@ export default function VerificationPage() {
                     setAtcResult(null);
                     setVerificationError(null);
                   }}
-                  className={`relative flex-1 flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left ${
-                    isActive
+                  className={`relative flex-1 flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left ${isActive
                       ? "border-transparent shadow-xl scale-[1.02]"
                       : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
-                  }`}
+                    }`}
                 >
                   {isActive && (
                     <motion.div
@@ -266,36 +265,32 @@ export default function VerificationPage() {
                   )}
                   <div className="relative z-10 flex items-center gap-4">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                        isActive
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${isActive
                           ? "bg-white/20"
                           : tab.lightBg
-                      }`}
+                        }`}
                     >
                       <Icon
-                        className={`w-6 h-6 ${
-                          isActive
+                        className={`w-6 h-6 ${isActive
                             ? "text-white"
                             : tab.id === "student"
-                            ? "text-blue-600 dark:text-blue-400"
-                            : "text-orange-600 dark:text-orange-400"
-                        }`}
+                              ? "text-blue-600 dark:text-blue-400"
+                              : "text-orange-600 dark:text-orange-400"
+                          }`}
                       />
                     </div>
                     <div>
                       <h3
-                        className={`font-bold text-lg ${
-                          isActive ? "text-white" : "text-gray-900 dark:text-white"
-                        }`}
+                        className={`font-bold text-lg ${isActive ? "text-white" : "text-gray-900 dark:text-white"
+                          }`}
                       >
                         {tab.label}
                       </h3>
                       <p
-                        className={`text-sm ${
-                          isActive
+                        className={`text-sm ${isActive
                             ? "text-white/80"
                             : "text-gray-500 dark:text-gray-400"
-                        }`}
+                          }`}
                       >
                         {tab.description}
                       </p>
@@ -486,7 +481,7 @@ export default function VerificationPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {/* ditrindia.com Portal */}
+              {/* ditrpindia.com Portal */}
               <motion.div
                 initial={{ opacity: 0, x: -40 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -529,7 +524,7 @@ export default function VerificationPage() {
 
                   {/* Content */}
                   <h3 className="relative text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
-                    ditrindia.com
+                    ditrpindia.com
                   </h3>
                   <p className="relative text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                     Registered through DITR India? Verify your credentials directly
@@ -554,20 +549,20 @@ export default function VerificationPage() {
 
                   {/* CTA Button */}
                   <motion.a
-                    href="https://ditrindia.com"
+                    href="https://ditrpindia.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     className="relative w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-500 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    Verify on ditrindia.com
+                    Verify on ditrpindia.com
                     <FiExternalLink className="w-5 h-5" />
                   </motion.a>
                 </div>
               </motion.div>
 
-              {/* ditrpindiaindia.com Portal */}
+              {/* ditrppro.com Portal */}
               <motion.div
                 initial={{ opacity: 0, x: 40 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -610,7 +605,7 @@ export default function VerificationPage() {
 
                   {/* Content */}
                   <h3 className="relative text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
-                    ditrpindiaindia.com
+                    ditrppro.com
                   </h3>
                   <p className="relative text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                     Registered through DITRP India? Access the dedicated verification
@@ -635,14 +630,14 @@ export default function VerificationPage() {
 
                   {/* CTA Button */}
                   <motion.a
-                    href="https://ditrpindiaindia.com"
+                    href="https://ditrppro.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     className="relative w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    Verify on ditrpindiaindia.com
+                    Verify on ditrppro.com
                     <FiExternalLink className="w-5 h-5" />
                   </motion.a>
                 </div>
@@ -753,6 +748,6 @@ export default function VerificationPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

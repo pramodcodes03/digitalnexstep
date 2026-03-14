@@ -104,6 +104,7 @@ export const api = {
     phone?: string;
     subject: string;
     message: string;
+    service?: string;
   }) => apiClient.post("/contact", data),
 
   submitEnquiry: (data: {

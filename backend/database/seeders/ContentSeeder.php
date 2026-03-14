@@ -900,7 +900,7 @@ class ContentSeeder extends Seeder
                         ['name' => 'Kolkata', 'address' => '987, Salt Lake City, Kolkata - 700091', 'phone' => '+91-33-XXXX-XXXX', 'email' => 'kolkata@digitalnexstep.com'],
                     ],
                     'partner_portals' => [
-                        ['name' => 'DITR India', 'url' => 'https://ditrindia.com'],
+                        ['name' => 'DITR India', 'url' => 'https://ditrpindia.com'],
                         ['name' => 'DITRP India', 'url' => 'https://ditrpindia.com'],
                     ],
                 ]),

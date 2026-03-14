@@ -171,7 +171,7 @@ export default function FranchiseDetailsPage() {
   const processData = getSection("franchise_process");
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       {/* ── HERO ── */}
@@ -779,6 +779,6 @@ export default function FranchiseDetailsPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

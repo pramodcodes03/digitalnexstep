@@ -149,7 +149,7 @@ export default function ContactPage() {
   };
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       {/* Hero Section */}
@@ -670,6 +670,6 @@ export default function ContactPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

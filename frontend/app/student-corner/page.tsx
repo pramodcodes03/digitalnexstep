@@ -308,7 +308,7 @@ export default function StudentCornerPage() {
     : testimonials;
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       {/* ──────────────────── HERO ──────────────────── */}
@@ -782,6 +782,6 @@ export default function StudentCornerPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

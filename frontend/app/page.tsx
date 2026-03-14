@@ -30,7 +30,7 @@ export default function Home() {
       <Header />
 
       {/* Main Content */}
-      <main id="main-content">
+      <main id="main-content" className="overflow-x-hidden">
         <HeroSection />
         <AwardsShowcase />
         <FeaturesSection />
@@ -40,7 +40,7 @@ export default function Home() {
         <OurAchievers />
         <ExperiencedStaff />
         <ExploreFeatures />
-        <FeaturesShowcase />
+        {/* <FeaturesShowcase /> */}
         <RobustSupport />
         <JobUpdates />
         <Testimonials />

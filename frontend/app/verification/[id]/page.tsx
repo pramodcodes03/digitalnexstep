@@ -43,7 +43,7 @@ export default function VerificationByIdPage() {
   }, [id]);
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Header />
 
       <section className="relative pt-12 pb-20 min-h-[60vh] bg-gradient-to-br from-gray-50 via-blue-50/40 to-indigo-50/40 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
@@ -140,6 +140,6 @@ export default function VerificationByIdPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

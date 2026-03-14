@@ -116,11 +116,8 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-40 transition-all-smooth ${isScrolled
+      <header
+        className={`fixed top-0 left-0 right-0 z-[999] transition-all-smooth ${isScrolled
             ? "backdrop-blur-navbar shadow-md dark:shadow-gray-800/50 py-3"
             : "bg-white/95 dark:bg-gray-900/95 py-4"
           }`}
@@ -134,7 +131,7 @@ const Header: React.FC = () => {
                 alt={settings?.site_name || "DiTRP"}
                 width={180}
                 height={50}
-                className="h-8 sm:h-10 lg:h-12 w-auto object-contain group-hover:scale-105 transition-transform-smooth"
+                className="h-8 sm:h-10 lg:h-12 w-auto max-w-[120px] sm:max-w-[160px] lg:max-w-none object-contain group-hover:scale-105 transition-transform-smooth"
                 priority
               />
             </Link>
@@ -286,7 +283,7 @@ const Header: React.FC = () => {
             </div>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Mobile Menu */}
       <MobileMenu
