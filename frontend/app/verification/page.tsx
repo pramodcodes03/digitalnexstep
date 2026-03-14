@@ -14,6 +14,9 @@ import {
   FiExternalLink,
   FiAward,
   FiGlobe,
+  FiFileText,
+  FiBriefcase,
+  FiDollarSign,
 } from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -22,9 +25,12 @@ import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
 import CertificateResult, { type VerificationData } from "@/components/verification/CertificateResult";
 import AtcResult, { type AtcVerificationData } from "@/components/verification/AtcResult";
+import MarksheetResult, { type MarksheetVerificationData } from "@/components/verification/MarksheetResult";
+import StaffResult, { type StaffVerificationData } from "@/components/verification/StaffResult";
+import ExpenseResult, { type ExpenseVerificationData } from "@/components/verification/ExpenseResult";
 
 /* ─── Types ─── */
-type VerificationType = "student" | "atc";
+type VerificationType = "student" | "atc" | "marksheet" | "staff" | "expense";
 
 /* ─── Branch Data (fallback) ─── */
 const branches = [
@@ -105,48 +111,80 @@ export default function VerificationPage() {
       }))
       : branches;
 
-  const partnerPortals = heroData?.extra_data?.partner_portals;
-
   const [activeTab, setActiveTab] = useState<VerificationType>("student");
   const [formData, setFormData] = useState({
     certificateNumber: "",
     atcCode: "",
+    marksheetNumber: "",
+    staffId: "",
+    expenseId: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [verificationResult, setVerificationResult] = useState<VerificationData | null>(null);
   const [atcResult, setAtcResult] = useState<AtcVerificationData | null>(null);
+  const [marksheetResult, setMarksheetResult] = useState<MarksheetVerificationData | null>(null);
+  const [staffResult, setStaffResult] = useState<StaffVerificationData | null>(null);
+  const [expenseResult, setExpenseResult] = useState<ExpenseVerificationData | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
+
+  const clearResults = () => {
+    setVerificationResult(null);
+    setAtcResult(null);
+    setMarksheetResult(null);
+    setStaffResult(null);
+    setExpenseResult(null);
+    setVerificationError(null);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setVerificationResult(null);
-    setAtcResult(null);
-    setVerificationError(null);
+    clearResults();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setVerificationResult(null);
-    setAtcResult(null);
-    setVerificationError(null);
+    clearResults();
 
     try {
-      if (activeTab === "student") {
-        const { data } = await api.verifyStudent(formData.certificateNumber.trim());
-        setVerificationResult(data);
-      } else {
-        const { data } = await api.verifyAtc(formData.atcCode.trim());
-        setAtcResult(data);
+      switch (activeTab) {
+        case "student": {
+          const { data } = await api.verifyStudent(formData.certificateNumber.trim());
+          setVerificationResult(data);
+          break;
+        }
+        case "atc": {
+          const { data } = await api.verifyAtc(formData.atcCode.trim());
+          setAtcResult(data);
+          break;
+        }
+        case "marksheet": {
+          const { data } = await api.verifyMarksheet(formData.marksheetNumber.trim());
+          setMarksheetResult(data);
+          break;
+        }
+        case "staff": {
+          const { data } = await api.verifyStaff(formData.staffId.trim());
+          setStaffResult(data);
+          break;
+        }
+        case "expense": {
+          const { data } = await api.verifyExpense(formData.expenseId.trim());
+          setExpenseResult(data);
+          break;
+        }
       }
     } catch (err: any) {
       const status = err?.response?.status;
+      const notFoundMessages: Record<VerificationType, string> = {
+        student: "No student found with this certificate number. Please check and try again.",
+        atc: "No ATC found with this code. Please check and try again.",
+        marksheet: "No marksheet found with this certificate number. Please check and try again.",
+        staff: "No staff record found with this ID. Please check and try again.",
+        expense: "No expense receipt found with this ID. Please check and try again.",
+      };
       if (status === 404) {
-        setVerificationError(
-          activeTab === "student"
-            ? "No student found with this certificate number. Please check and try again."
-            : "No ATC found with this code. Please check and try again."
-        );
+        setVerificationError(notFoundMessages[activeTab]);
       } else {
         setVerificationError("Verification service is currently unavailable. Please try again later.");
       }
@@ -155,26 +193,76 @@ export default function VerificationPage() {
     }
   };
 
-  const tabs = [
+  const tabs: {
+    id: VerificationType;
+    label: string;
+    icon: typeof FiUser;
+    description: string;
+    color: string;
+    lightBg: string;
+    inputName: string;
+    inputLabel: string;
+    placeholder: string;
+  }[] = [
     {
-      id: "student" as VerificationType,
-      label: "Student Verification",
+      id: "student",
+      label: "Student",
       icon: FiUser,
-      description: "Verify your student credentials and certificates",
+      description: "Verify student certificates",
       color: "from-blue-500 to-indigo-600",
       lightBg: "bg-blue-50 dark:bg-blue-900/20",
+      inputName: "certificateNumber",
+      inputLabel: "Student ID / Admission ID",
+      placeholder: "Enter your Student / Admission ID",
     },
     {
-      id: "atc" as VerificationType,
-      label: "ATC Verification",
+      id: "atc",
+      label: "ATC",
       icon: FiShield,
-      description: "Verify Authorized Training Center status",
+      description: "Verify Training Center status",
       color: "from-orange-500 to-red-500",
       lightBg: "bg-orange-50 dark:bg-orange-900/20",
+      inputName: "atcCode",
+      inputLabel: "ATC Code",
+      placeholder: "e.g., DNS-ATC-XXXXX",
+    },
+    {
+      id: "marksheet",
+      label: "Marksheet",
+      icon: FiFileText,
+      description: "Verify marksheet & grades",
+      color: "from-violet-500 to-purple-600",
+      lightBg: "bg-violet-50 dark:bg-violet-900/20",
+      inputName: "marksheetNumber",
+      inputLabel: "Certificate Number",
+      placeholder: "Enter certificate number",
+    },
+    {
+      id: "staff",
+      label: "Staff",
+      icon: FiBriefcase,
+      description: "Verify staff credentials",
+      color: "from-teal-500 to-cyan-500",
+      lightBg: "bg-teal-50 dark:bg-teal-900/20",
+      inputName: "staffId",
+      inputLabel: "Staff ID",
+      placeholder: "Enter staff ID",
+    },
+    {
+      id: "expense",
+      label: "Expense",
+      icon: FiDollarSign,
+      description: "Verify expense receipts",
+      color: "from-amber-500 to-orange-500",
+      lightBg: "bg-amber-50 dark:bg-amber-900/20",
+      inputName: "expenseId",
+      inputLabel: "Expense Receipt ID",
+      placeholder: "Enter expense receipt ID",
     },
   ];
 
   const activeTabData = tabs.find((t) => t.id === activeTab)!;
+  const inputValue = formData[activeTabData.inputName as keyof typeof formData];
 
   return (
     <div className="overflow-x-hidden">
@@ -228,77 +316,75 @@ export default function VerificationPage() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              {heroData?.content || "Instantly verify student certificates and Authorized Training Center (ATC) status with our secure verification system."}
+              {heroData?.content || "Instantly verify student certificates, marksheets, staff credentials, ATC status, and expense receipts with our secure verification system."}
             </p>
           </motion.div>
 
-          {/* Tab Switcher */}
+          {/* Tab Switcher — Scrollable on mobile */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12 max-w-2xl mx-auto"
+            className="mb-12 max-w-4xl mx-auto"
           >
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setVerificationResult(null);
-                    setAtcResult(null);
-                    setVerificationError(null);
-                  }}
-                  className={`relative flex-1 flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left ${isActive
-                      ? "border-transparent shadow-xl scale-[1.02]"
-                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
-                    }`}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTabBg"
-                      className={`absolute inset-0 bg-gradient-to-r ${tab.color} rounded-2xl`}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                  <div className="relative z-10 flex items-center gap-4">
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${isActive
-                          ? "bg-white/20"
-                          : tab.lightBg
-                        }`}
-                    >
-                      <Icon
-                        className={`w-6 h-6 ${isActive
-                            ? "text-white"
-                            : tab.id === "student"
-                              ? "text-blue-600 dark:text-blue-400"
-                              : "text-orange-600 dark:text-orange-400"
-                          }`}
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide justify-start sm:justify-center">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      clearResults();
+                    }}
+                    className={`relative flex-shrink-0 flex items-center gap-3 px-5 py-3.5 rounded-2xl border-2 transition-all duration-300 ${isActive
+                        ? "border-transparent shadow-xl scale-[1.02]"
+                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
+                      }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTabBg"
+                        className={`absolute inset-0 bg-gradient-to-r ${tab.color} rounded-2xl`}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
                       />
-                    </div>
-                    <div>
-                      <h3
-                        className={`font-bold text-lg ${isActive ? "text-white" : "text-gray-900 dark:text-white"
+                    )}
+                    <div className="relative z-10 flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center ${isActive
+                            ? "bg-white/20"
+                            : tab.lightBg
                           }`}
                       >
-                        {tab.label}
-                      </h3>
-                      <p
-                        className={`text-sm ${isActive
-                            ? "text-white/80"
-                            : "text-gray-500 dark:text-gray-400"
-                          }`}
-                      >
-                        {tab.description}
-                      </p>
+                        <Icon
+                          className={`w-5 h-5 ${isActive
+                              ? "text-white"
+                              : "text-gray-600 dark:text-gray-400"
+                            }`}
+                        />
+                      </div>
+                      <div className="text-left">
+                        <h3
+                          className={`font-bold text-sm ${isActive ? "text-white" : "text-gray-900 dark:text-white"
+                            }`}
+                        >
+                          {tab.label}
+                        </h3>
+                        <p
+                          className={`text-xs hidden sm:block ${isActive
+                              ? "text-white/80"
+                              : "text-gray-500 dark:text-gray-400"
+                            }`}
+                        >
+                          {tab.description}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
 
           {/* Verification Form */}
@@ -326,22 +412,14 @@ export default function VerificationPage() {
                   <div
                     className={`w-12 h-12 bg-gradient-to-br ${activeTabData.color} rounded-xl flex items-center justify-center shadow-lg`}
                   >
-                    {activeTab === "student" ? (
-                      <FiUser className="w-6 h-6 text-white" />
-                    ) : (
-                      <FiShield className="w-6 h-6 text-white" />
-                    )}
+                    <activeTabData.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {activeTab === "student"
-                        ? "Student Verification"
-                        : "ATC Verification"}
+                      {activeTabData.label} Verification
                     </h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {activeTab === "student"
-                        ? "Enter your certificate number to verify"
-                        : "Enter your ATC code to verify status"}
+                      {activeTabData.description}
                     </p>
                   </div>
                 </div>
@@ -350,24 +428,14 @@ export default function VerificationPage() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      {activeTab === "student"
-                        ? "Student ID / Admission ID"
-                        : "ATC Code"}
+                      {activeTabData.inputLabel}
                     </label>
                     <input
                       type="text"
-                      name={activeTab === "student" ? "certificateNumber" : "atcCode"}
-                      value={
-                        activeTab === "student"
-                          ? formData.certificateNumber
-                          : formData.atcCode
-                      }
+                      name={activeTabData.inputName}
+                      value={inputValue}
                       onChange={handleInputChange}
-                      placeholder={
-                        activeTab === "student"
-                          ? "Enter your Student / Admission ID"
-                          : "e.g., DNS-ATC-XXXXX"
-                      }
+                      placeholder={activeTabData.placeholder}
                       className="w-full px-5 py-4 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300 text-lg"
                       required
                     />
@@ -429,7 +497,7 @@ export default function VerificationPage() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Student Certificate Result */}
+          {/* Results */}
           <AnimatePresence>
             {verificationResult && (
               <motion.div
@@ -444,7 +512,6 @@ export default function VerificationPage() {
             )}
           </AnimatePresence>
 
-          {/* ATC Result */}
           <AnimatePresence>
             {atcResult && (
               <motion.div
@@ -455,6 +522,48 @@ export default function VerificationPage() {
                 className="max-w-4xl mx-auto"
               >
                 <AtcResult data={atcResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {marksheetResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <MarksheetResult data={marksheetResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {staffResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <StaffResult data={staffResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {expenseResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <ExpenseResult data={expenseResult} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -491,7 +600,6 @@ export default function VerificationPage() {
                 className="group"
               >
                 <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 overflow-hidden">
-                  {/* Gradient Accent */}
                   <motion.div
                     className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-500"
                     initial={{ scaleX: 0 }}
@@ -500,11 +608,8 @@ export default function VerificationPage() {
                     transition={{ duration: 0.8, delay: 0.3 }}
                     style={{ transformOrigin: "left" }}
                   />
-
-                  {/* Background Glow */}
                   <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/5 via-cyan-500/5 to-transparent dark:from-blue-500/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
 
-                  {/* Icon & Badge */}
                   <div className="relative flex items-center justify-between mb-6">
                     <motion.div
                       initial={{ scale: 0 }}
@@ -522,7 +627,6 @@ export default function VerificationPage() {
                     </span>
                   </div>
 
-                  {/* Content */}
                   <h3 className="relative text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
                     ditrpindia.com
                   </h3>
@@ -531,7 +635,6 @@ export default function VerificationPage() {
                     through the DITR India verification portal for instant results.
                   </p>
 
-                  {/* Features List */}
                   <div className="relative space-y-3 mb-8">
                     {["Instant certificate verification", "Download verified badge", "Share on LinkedIn"].map(
                       (item, i) => (
@@ -547,7 +650,6 @@ export default function VerificationPage() {
                     )}
                   </div>
 
-                  {/* CTA Button */}
                   <motion.a
                     href="https://ditrpindia.com"
                     target="_blank"
@@ -572,7 +674,6 @@ export default function VerificationPage() {
                 className="group"
               >
                 <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 overflow-hidden">
-                  {/* Gradient Accent */}
                   <motion.div
                     className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600"
                     initial={{ scaleX: 0 }}
@@ -581,11 +682,8 @@ export default function VerificationPage() {
                     transition={{ duration: 0.8, delay: 0.5 }}
                     style={{ transformOrigin: "right" }}
                   />
-
-                  {/* Background Glow */}
                   <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-orange-500/5 via-pink-500/5 to-transparent dark:from-orange-500/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
 
-                  {/* Icon & Badge */}
                   <div className="relative flex items-center justify-between mb-6">
                     <motion.div
                       initial={{ scale: 0 }}
@@ -603,7 +701,6 @@ export default function VerificationPage() {
                     </span>
                   </div>
 
-                  {/* Content */}
                   <h3 className="relative text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
                     ditrppro.com
                   </h3>
@@ -612,7 +709,6 @@ export default function VerificationPage() {
                     portal for seamless credential validation.
                   </p>
 
-                  {/* Features List */}
                   <div className="relative space-y-3 mb-8">
                     {["Quick ATC verification", "Bulk certificate check", "API integration support"].map(
                       (item, i) => (
@@ -628,7 +724,6 @@ export default function VerificationPage() {
                     )}
                   </div>
 
-                  {/* CTA Button */}
                   <motion.a
                     href="https://ditrppro.com"
                     target="_blank"
@@ -649,7 +744,6 @@ export default function VerificationPage() {
 
       {/* Our Branches Section */}
       <section className="py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
-        {/* Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <motion.div
             className="absolute top-1/3 -right-32 w-80 h-80 bg-gradient-to-bl from-indigo-200/10 to-purple-200/10 dark:from-indigo-600/5 dark:to-purple-600/5 rounded-full blur-3xl"
@@ -659,7 +753,6 @@ export default function VerificationPage() {
         </div>
 
         <Container className="relative z-10">
-          {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -689,7 +782,6 @@ export default function VerificationPage() {
             </p>
           </motion.div>
 
-          {/* Branches Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayBranches.map((branch, index) => (
               <motion.div
@@ -702,12 +794,9 @@ export default function VerificationPage() {
                 className="group"
               >
                 <div className="relative h-full bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-500 border border-gray-100 dark:border-gray-700 overflow-hidden">
-                  {/* Accent */}
                   <div
                     className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${branch.color}`}
                   />
-
-                  {/* Pin Icon */}
                   <div className="flex items-center gap-3 mb-4">
                     <div
                       className={`w-10 h-10 bg-gradient-to-br ${branch.color} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}
@@ -718,8 +807,6 @@ export default function VerificationPage() {
                       {branch.name}
                     </h3>
                   </div>
-
-                  {/* Details */}
                   <div className="space-y-3 text-sm">
                     <div className="flex items-start gap-2.5 text-gray-600 dark:text-gray-300">
                       <FiMapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400" />
@@ -734,8 +821,6 @@ export default function VerificationPage() {
                       <span>{branch.email}</span>
                     </div>
                   </div>
-
-                  {/* Hover Action */}
                   <div className="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <span>Get Directions</span>
                     <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />

@@ -3,19 +3,30 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiShield, FiSearch, FiLoader } from "react-icons/fi";
+import { FiShield, FiSearch } from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
 import api from "@/lib/api";
 import CertificateResult, { type VerificationData } from "@/components/verification/CertificateResult";
+import AtcResult, { type AtcVerificationData } from "@/components/verification/AtcResult";
+import MarksheetResult, { type MarksheetVerificationData } from "@/components/verification/MarksheetResult";
+import StaffResult, { type StaffVerificationData } from "@/components/verification/StaffResult";
+import ExpenseResult, { type ExpenseVerificationData } from "@/components/verification/ExpenseResult";
+
+type ResultType = "student" | "atc" | "marksheet" | "staff" | "expense";
 
 export default function VerificationByIdPage() {
   const params = useParams();
   const id = params.id as string;
 
   const [isLoading, setIsLoading] = useState(true);
-  const [verificationResult, setVerificationResult] = useState<VerificationData | null>(null);
+  const [resultType, setResultType] = useState<ResultType | null>(null);
+  const [studentResult, setStudentResult] = useState<VerificationData | null>(null);
+  const [atcResult, setAtcResult] = useState<AtcVerificationData | null>(null);
+  const [marksheetResult, setMarksheetResult] = useState<MarksheetVerificationData | null>(null);
+  const [staffResult, setStaffResult] = useState<StaffVerificationData | null>(null);
+  const [expenseResult, setExpenseResult] = useState<ExpenseVerificationData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,19 +35,48 @@ export default function VerificationByIdPage() {
     const verify = async () => {
       setIsLoading(true);
       setError(null);
-      try {
-        const { data } = await api.verifyStudent(id.trim());
-        setVerificationResult(data);
-      } catch (err: any) {
-        const status = err?.response?.status;
-        if (status === 404) {
-          setError("No student found with this ID. Please check and try again.");
-        } else {
-          setError("Verification service is currently unavailable. Please try again later.");
+
+      // Try verification endpoints in order: student → marksheet → ATC → staff → expense
+      const attempts: { type: ResultType; fn: () => Promise<any> }[] = [
+        { type: "student", fn: () => api.verifyStudent(id.trim()) },
+        { type: "marksheet", fn: () => api.verifyMarksheet(id.trim()) },
+        { type: "atc", fn: () => api.verifyAtc(id.trim()) },
+        { type: "staff", fn: () => api.verifyStaff(id.trim()) },
+        { type: "expense", fn: () => api.verifyExpense(id.trim()) },
+      ];
+
+      for (const attempt of attempts) {
+        try {
+          const { data } = await attempt.fn();
+          if (data?.verified) {
+            setResultType(attempt.type);
+            switch (attempt.type) {
+              case "student":
+                setStudentResult(data);
+                break;
+              case "atc":
+                setAtcResult(data);
+                break;
+              case "marksheet":
+                setMarksheetResult(data);
+                break;
+              case "staff":
+                setStaffResult(data);
+                break;
+              case "expense":
+                setExpenseResult(data);
+                break;
+            }
+            setIsLoading(false);
+            return;
+          }
+        } catch {
+          // Continue to next verification type
         }
-      } finally {
-        setIsLoading(false);
       }
+
+      setError("No record found with this ID. Please check and try again.");
+      setIsLoading(false);
     };
 
     verify();
@@ -62,7 +102,7 @@ export default function VerificationByIdPage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full text-sm font-semibold uppercase tracking-wider mb-5"
             >
               <FiShield className="w-4 h-4" />
-              Student Verification
+              Verification
             </motion.span>
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
               Verifying{" "}
@@ -122,9 +162,9 @@ export default function VerificationByIdPage() {
             )}
           </AnimatePresence>
 
-          {/* Success Result */}
+          {/* Results */}
           <AnimatePresence>
-            {!isLoading && verificationResult && (
+            {!isLoading && resultType === "student" && studentResult && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -132,7 +172,63 @@ export default function VerificationByIdPage() {
                 transition={{ duration: 0.3 }}
                 className="max-w-4xl mx-auto"
               >
-                <CertificateResult data={verificationResult} />
+                <CertificateResult data={studentResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {!isLoading && resultType === "atc" && atcResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <AtcResult data={atcResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {!isLoading && resultType === "marksheet" && marksheetResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <MarksheetResult data={marksheetResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {!isLoading && resultType === "staff" && staffResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <StaffResult data={staffResult} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {!isLoading && resultType === "expense" && expenseResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-4xl mx-auto"
+              >
+                <ExpenseResult data={expenseResult} />
               </motion.div>
             )}
           </AnimatePresence>

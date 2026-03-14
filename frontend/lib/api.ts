@@ -131,6 +131,18 @@ export const api = {
   verifyAtc: (atcCode: string) =>
     tenantApiClient.get(`/atc-verification/${encodeURIComponent(atcCode)}`),
 
+  // Marksheet verification
+  verifyMarksheet: (certificateNumber: string) =>
+    tenantApiClient.get(`/marksheet-verification/${encodeURIComponent(certificateNumber)}`),
+
+  // Staff verification
+  verifyStaff: (staffId: string) =>
+    tenantApiClient.get(`/staff-verification/${encodeURIComponent(staffId)}`),
+
+  // Expense receipt verification
+  verifyExpense: (expenseId: string) =>
+    tenantApiClient.get(`/expense-verification/${encodeURIComponent(expenseId)}`),
+
   // Franchise registration (all calls go to tenant API)
   franchiseFormData: () =>
     tenantApiClient.get('/franchise-registration/form-data'),
