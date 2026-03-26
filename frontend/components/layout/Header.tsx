@@ -10,8 +10,9 @@ import Button from "../ui/Button";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
+import { useDomain } from "@/lib/DomainContext";
 
-/* ── All nav items in display order ── */
+/* ── All nav items in display order (main site) ── */
 const allNavItems = [
   { name: "Home", href: "/" },
   { name: "Features", href: "/features" },
@@ -44,13 +45,27 @@ const overflowItems = [
   { name: "FAQ", href: "#faq", icon: FiHelpCircle },
 ];
 
+/* ── Partner domain nav — anchor links to home sections only ── */
+const partnerNavItems = [
+  { name: "Home", href: "#hero" },
+  { name: "Features", href: "#features" },
+  { name: "About Us", href: "#about" },
+  { name: "Verification", href: "#verification" },
+  { name: "Testimonials", href: "#testimonials" },
+  { name: "FAQ", href: "#faq" },
+  { name: "Contact", href: "#contact" },
+];
+
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
+  const { isPartnerDomain } = useDomain();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
+
+  const currentNavItems = isPartnerDomain ? partnerNavItems : allNavItems;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,8 +78,8 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = allNavItems.map((item) => {
-        const href = item.href.replace("#", "");
+      const sections = currentNavItems.map((item) => {
+        const href = item.href.replace("#", "").replace("/", "");
         return document.getElementById(href);
       }).filter(Boolean);
 
@@ -93,12 +108,26 @@ const Header: React.FC = () => {
 
   /* Shared nav link renderer */
   const NavLink = ({ name, href }: { name: string; href: string }) => {
-    const isActive = activeSection === href || (href === "/" && activeSection === "");
-    return (
-      <Link
-        href={href}
-        className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth group whitespace-nowrap"
-      >
+    const isActive = activeSection === href || (href === "/" && activeSection === "") || (href === "#hero" && activeSection === "");
+    const isAnchor = href.startsWith("#");
+
+    const handleClick = (e: React.MouseEvent) => {
+      if (isAnchor) {
+        e.preventDefault();
+        const id = href.replace("#", "");
+        if (id === "hero") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          const el = document.getElementById(id);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+      }
+    };
+
+    const linkContent = (
+      <>
         {name}
         {isActive && (
           <motion.div
@@ -110,6 +139,27 @@ const Header: React.FC = () => {
         {!isActive && (
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all-smooth" />
         )}
+      </>
+    );
+
+    if (isAnchor) {
+      return (
+        <a
+          href={href}
+          onClick={handleClick}
+          className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth group whitespace-nowrap cursor-pointer"
+        >
+          {linkContent}
+        </a>
+      );
+    }
+
+    return (
+      <Link
+        href={href}
+        className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth group whitespace-nowrap"
+      >
+        {linkContent}
       </Link>
     );
   };
@@ -138,60 +188,68 @@ const Header: React.FC = () => {
 
             {/* ═══ Desktop Navigation: XL+ (1280px+) — ALL items flat ═══ */}
             <nav className="hidden xl:flex items-center gap-5">
-              {allNavItems.map((item) => (
+              {currentNavItems.map((item) => (
                 <NavLink key={item.name} name={item.name} href={item.href} />
               ))}
             </nav>
 
             {/* ═══ Desktop Navigation: LG only (1024-1279px) — primary + More dropdown ═══ */}
-            <nav className="hidden lg:flex xl:hidden items-center gap-4">
-              {primaryItems.map((item) => (
-                <NavLink key={item.name} name={item.name} href={item.href} />
-              ))}
+            {isPartnerDomain ? (
+              <nav className="hidden lg:flex xl:hidden items-center gap-4">
+                {currentNavItems.map((item) => (
+                  <NavLink key={item.name} name={item.name} href={item.href} />
+                ))}
+              </nav>
+            ) : (
+              <nav className="hidden lg:flex xl:hidden items-center gap-4">
+                {primaryItems.map((item) => (
+                  <NavLink key={item.name} name={item.name} href={item.href} />
+                ))}
 
-              {/* More Dropdown */}
-              <div
-                className="relative"
-                onMouseEnter={() => setIsMoreOpen(true)}
-                onMouseLeave={() => setIsMoreOpen(false)}
-              >
-                <button
-                  className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth flex items-center gap-1 whitespace-nowrap"
+                {/* More Dropdown */}
+                <div
+                  className="relative"
+                  onMouseEnter={() => setIsMoreOpen(true)}
+                  onMouseLeave={() => setIsMoreOpen(false)}
                 >
-                  More
-                  <FiChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${isMoreOpen ? "rotate-180" : ""
-                      }`}
-                  />
-                </button>
+                  <button
+                    className="relative py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors-smooth flex items-center gap-1 whitespace-nowrap"
+                  >
+                    More
+                    <FiChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${isMoreOpen ? "rotate-180" : ""
+                        }`}
+                    />
+                  </button>
 
-                <AnimatePresence>
-                  {isMoreOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="absolute top-full right-0 mt-1 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 overflow-hidden"
-                    >
-                      {overflowItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors-smooth"
-                          >
-                            <Icon className="w-4 h-4" />
-                            {item.name}
-                          </Link>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </nav>
+                  <AnimatePresence>
+                    {isMoreOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute top-full right-0 mt-1 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 overflow-hidden"
+                      >
+                        {overflowItems.map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors-smooth"
+                            >
+                              <Icon className="w-4 h-4" />
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </nav>
+            )}
 
             {/* Theme Toggle and CTA Buttons */}
             <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
@@ -289,6 +347,7 @@ const Header: React.FC = () => {
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isPartnerDomain={isPartnerDomain}
       />
 
       {/* Spacer to prevent content from going under fixed header */}

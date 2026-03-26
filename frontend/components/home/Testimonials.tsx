@@ -84,7 +84,7 @@ const Testimonials: React.FC = () => {
   const handleNext = () => setActiveIndex((prev) => Math.min(maxIndex, prev + 1));
 
   return (
-    <section className="py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
+    <section id="testimonials" className="py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div

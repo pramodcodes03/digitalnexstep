@@ -10,6 +10,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  isPartnerDomain?: boolean;
 }
 
 const navItems = [
@@ -26,8 +27,18 @@ const navItems = [
   { name: "Contact", href: "/contact", icon: FiMail },
 ];
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+const partnerNavItems = [
+  { name: "Home", href: "#hero", icon: FiHome },
+  { name: "Features", href: "#features", icon: FiGrid },
+  { name: "About Us", href: "#about", icon: FiInfo },
+  { name: "Verification", href: "#verification", icon: FiCheckCircle },
+  { name: "FAQ", href: "#faq", icon: FiHelpCircle },
+  { name: "Contact", href: "#contact", icon: FiMail },
+];
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, isPartnerDomain = false }) => {
   const { theme } = useTheme();
+  const currentNavItems = isPartnerDomain ? partnerNavItems : navItems;
 
   useEffect(() => {
     if (isOpen) {
@@ -41,7 +52,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (href: string) => {
+    if (href.startsWith("#")) {
+      const id = href.replace("#", "");
+      if (id === "hero") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    }
     onClose();
   };
 
@@ -91,8 +113,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
               {/* Navigation Links */}
               <nav className="flex-1 overflow-y-auto py-6">
                 <ul className="space-y-2 px-4">
-                  {navItems.map((item, index) => {
+                  {currentNavItems.map((item, index) => {
                     const Icon = item.icon;
+                    const isAnchor = item.href.startsWith("#");
                     return (
                       <motion.li
                         key={item.name}
@@ -100,14 +123,28 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
                       >
-                        <Link
-                          href={item.href}
-                          onClick={handleLinkClick}
-                          className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-primary-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors-smooth group"
-                        >
-                          <Icon className="w-5 h-5 group-hover:scale-110 transition-transform-smooth" />
-                          <span className="font-medium">{item.name}</span>
-                        </Link>
+                        {isAnchor ? (
+                          <a
+                            href={item.href}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleLinkClick(item.href);
+                            }}
+                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-primary-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors-smooth group cursor-pointer"
+                          >
+                            <Icon className="w-5 h-5 group-hover:scale-110 transition-transform-smooth" />
+                            <span className="font-medium">{item.name}</span>
+                          </a>
+                        ) : (
+                          <Link
+                            href={item.href}
+                            onClick={() => handleLinkClick(item.href)}
+                            className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-primary-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors-smooth group"
+                          >
+                            <Icon className="w-5 h-5 group-hover:scale-110 transition-transform-smooth" />
+                            <span className="font-medium">{item.name}</span>
+                          </Link>
+                        )}
                       </motion.li>
                     );
                   })}
@@ -116,13 +153,16 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
               {/* Footer CTA */}
               <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-                <Link
+                <a
                   href="#contact"
-                  onClick={handleLinkClick}
-                  className="block w-full px-6 py-3 text-center font-semibold text-white bg-primary-600 dark:bg-primary-500 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors-smooth shadow-md"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLinkClick("#contact");
+                  }}
+                  className="block w-full px-6 py-3 text-center font-semibold text-white bg-primary-600 dark:bg-primary-500 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors-smooth shadow-md cursor-pointer"
                 >
                   Get Started
-                </Link>
+                </a>
               </div>
             </div>
           </motion.div>

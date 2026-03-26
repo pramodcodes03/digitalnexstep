@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: [
+    "ditrpindia.com",
+    "www.ditrpindia.com",
+    "ditrppro.com",
+    "www.ditrppro.com",
+    "ditrpindia.org",
+    "www.ditrpindia.org",
+  ],
 };
 
 export default nextConfig;

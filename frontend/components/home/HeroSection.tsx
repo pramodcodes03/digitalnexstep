@@ -111,6 +111,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <section
+      id="hero"
       className="relative min-h-screen flex items-center overflow-hidden"
       style={{ background: "linear-gradient(135deg, #0a0618 0%, #140b3d 30%, #28166f 70%, #1a0f4a 100%)" }}
     >

@@ -17,6 +17,7 @@ import OurPartners from "@/components/home/OurPartners";
 import ContactFormSection from "@/components/home/ContactFormSection";
 import FAQSection from "@/components/home/FAQSection";
 import MapSection from "@/components/home/MapSection";
+import VerificationSection from "@/components/home/VerificationSection";
 
 export default function Home() {
   return (
@@ -42,6 +43,7 @@ export default function Home() {
         <ExploreFeatures />
         {/* <FeaturesShowcase /> */}
         <RobustSupport />
+        <VerificationSection />
         <JobUpdates />
         <Testimonials />
         <OurPartners />

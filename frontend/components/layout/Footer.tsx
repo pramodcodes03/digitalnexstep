@@ -21,12 +21,14 @@ import Container from "../ui/Container";
 import { getCurrentYear } from "@/lib/utils";
 import api from "@/lib/api";
 import { useSiteSettings } from "@/lib/SiteSettingsContext";
+import { useDomain } from "@/lib/DomainContext";
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success" | "error">("idle");
   const settings = useSiteSettings();
+  const { isPartnerDomain } = useDomain();
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,14 +58,23 @@ const Footer: React.FC = () => {
     { icon: FiInstagram, href: settings?.instagram_url || "#", label: "Instagram", color: "hover:bg-pink-600" },
   ];
 
-  const quickLinks = [
-    { name: "Home", href: "/" },
-    { name: "All Features", href: "#features" },
-    { name: "About Us", href: "#about" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "FAQ", href: "#faq" },
-    { name: "Contact Us", href: "#contact" },
-  ];
+  const quickLinks = isPartnerDomain
+    ? [
+        { name: "Home", href: "#hero" },
+        { name: "Features", href: "#features" },
+        { name: "About Us", href: "#about" },
+        { name: "Verification", href: "#verification" },
+        { name: "FAQ", href: "#faq" },
+        { name: "Contact Us", href: "#contact" },
+      ]
+    : [
+        { name: "Home", href: "/" },
+        { name: "All Features", href: "#features" },
+        { name: "About Us", href: "#about" },
+        { name: "Pricing", href: "#pricing" },
+        { name: "FAQ", href: "#faq" },
+        { name: "Contact Us", href: "#contact" },
+      ];
 
   const legalLinks = [
     { name: "Terms & Conditions", href: "/terms" },
