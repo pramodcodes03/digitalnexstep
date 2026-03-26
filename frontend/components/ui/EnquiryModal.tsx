@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   FiX, FiSend, FiUser, FiMail, FiPhone, FiMapPin,
-  FiHash, FiMessageSquare, FiCheckCircle,
+  FiHash, FiMessageSquare, FiCheckCircle, FiSearch, FiChevronDown,
 } from "react-icons/fi";
 import api from "@/lib/api";
 
@@ -40,10 +40,17 @@ const inputCls =
 
 const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productName }) => {
   const [submitted, setSubmitted] = useState(false);
+  const [centers, setCenters] = useState<{ id: number; name: string }[]>([]);
+  const [centerSearch, setCenterSearch] = useState("");
+  const [centerDropdownOpen, setCenterDropdownOpen] = useState(false);
+  const centerDropdownRef = useRef<HTMLDivElement>(null);
+
   const {
     register,
     handleSubmit,
     reset,
+    control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<EnquiryFormData>();
 
@@ -51,7 +58,14 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productNam
     if (isOpen) {
       document.body.style.overflow = "hidden";
       setSubmitted(false);
+      setCenterSearch("");
+      setCenterDropdownOpen(false);
       reset();
+      // Fetch centers
+      api.getCenters().then((res: any) => {
+        const data = Array.isArray(res) ? res : res?.data || [];
+        setCenters(data.map((c: any) => ({ id: c.id, name: c.name || c.center_name || c.title })));
+      }).catch(() => {});
     } else {
       document.body.style.overflow = "unset";
     }
@@ -59,6 +73,21 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productNam
       document.body.style.overflow = "unset";
     };
   }, [isOpen, reset]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (centerDropdownRef.current && !centerDropdownRef.current.contains(e.target as Node)) {
+        setCenterDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredCenters = centers.filter((c) =>
+    c.name?.toLowerCase().includes(centerSearch.toLowerCase())
+  );
 
   const onSubmit = async (data: EnquiryFormData) => {
     try {
@@ -165,17 +194,69 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, productNam
                     onSubmit={handleSubmit(onSubmit)}
                     className="p-6 space-y-4 max-h-[62vh] overflow-y-auto"
                   >
-                    {/* Center Name */}
-                    <div>
+                    {/* Select Institute / Centre */}
+                    <div ref={centerDropdownRef}>
                       <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
                         <FiUser className="w-3.5 h-3.5 text-primary-500" />
-                        Center Name <span className="text-red-500">*</span>
+                        Select Institute / Centre <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        type="text"
-                        placeholder="Enter center name"
-                        {...register("centerName", { required: "Center name is required" })}
-                        className={inputCls}
+                      <Controller
+                        name="centerName"
+                        control={control}
+                        rules={{ required: "Please select an institute / centre" }}
+                        render={({ field }) => (
+                          <div className="relative">
+                            <div
+                              onClick={() => setCenterDropdownOpen(!centerDropdownOpen)}
+                              className={`${inputCls} cursor-pointer flex items-center justify-between`}
+                            >
+                              <span className={field.value ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}>
+                                {field.value || "Search & select centre..."}
+                              </span>
+                              <FiChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${centerDropdownOpen ? "rotate-180" : ""}`} />
+                            </div>
+                            {centerDropdownOpen && (
+                              <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden">
+                                <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 dark:border-gray-700">
+                                  <FiSearch className="w-4 h-4 text-gray-400" />
+                                  <input
+                                    type="text"
+                                    placeholder="Type to search..."
+                                    value={centerSearch}
+                                    onChange={(e) => setCenterSearch(e.target.value)}
+                                    className="w-full bg-transparent text-sm text-gray-900 dark:text-white placeholder-gray-400 outline-none"
+                                    autoFocus
+                                  />
+                                </div>
+                                <ul className="max-h-48 overflow-y-auto">
+                                  {filteredCenters.length > 0 ? (
+                                    filteredCenters.map((c) => (
+                                      <li
+                                        key={c.id}
+                                        onClick={() => {
+                                          field.onChange(c.name);
+                                          setCenterSearch("");
+                                          setCenterDropdownOpen(false);
+                                        }}
+                                        className={`px-4 py-2.5 text-sm cursor-pointer transition-colors hover:bg-primary-50 dark:hover:bg-primary-900/20 ${
+                                          field.value === c.name
+                                            ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-semibold"
+                                            : "text-gray-700 dark:text-gray-300"
+                                        }`}
+                                      >
+                                        {c.name}
+                                      </li>
+                                    ))
+                                  ) : (
+                                    <li className="px-4 py-3 text-sm text-gray-400 text-center">
+                                      No centres found
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       />
                       {errors.centerName && (
                         <p className="text-red-500 text-xs mt-1">{errors.centerName.message}</p>

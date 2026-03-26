@@ -8,9 +8,14 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- TinyMCE Rich Text Editor (open-source, no API key) --}}
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
     <style>
         [x-cloak] { display: none !important; }
+        .tox-tinymce { border-radius: 0.75rem !important; border-color: #e5e7eb !important; }
+        .tox .tox-toolbar__primary { background: #f9fafb !important; }
     </style>
+    @stack('head')
 </head>
 <body class="h-full bg-gray-50 font-[Inter]" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
     <div class="min-h-full flex">

@@ -19,7 +19,6 @@ const ModuleSelector: React.FC<ModuleSelectorProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const pillsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const indicatorRef = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
 
   // Reusable: move indicator to active pill
   const updateIndicator = useCallback(
@@ -49,13 +48,14 @@ const ModuleSelector: React.FC<ModuleSelectorProps> = ({
     [activeId, features]
   );
 
-  // Entrance animation
+  // Entrance animation — re-run when features data changes (e.g. API load)
   useEffect(() => {
-    if (hasAnimated.current || !containerRef.current) return;
-    hasAnimated.current = true;
+    if (!containerRef.current) return;
+    const pills = pillsRef.current.filter(Boolean);
+    if (pills.length === 0) return;
 
     gsap.fromTo(
-      pillsRef.current.filter(Boolean),
+      pills,
       { opacity: 0, y: 15, scale: 0.92 },
       {
         opacity: 1,
@@ -67,7 +67,7 @@ const ModuleSelector: React.FC<ModuleSelectorProps> = ({
         onComplete: () => updateIndicator(false),
       }
     );
-  }, [updateIndicator]);
+  }, [features, updateIndicator]);
 
   // Slide indicator when activeId changes
   useEffect(() => {

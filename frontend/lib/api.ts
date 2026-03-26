@@ -96,6 +96,7 @@ export const api = {
     apiClient.get("/page-sections", { params: page ? { page } : {} }),
   getSiteSettings: () => apiClient.get("/site-settings"),
   getAwardImages: () => apiClient.get("/award-images"),
+  getFeatureModules: () => apiClient.get("/feature-modules"),
 
   // Form submissions
   contact: (data: {
@@ -106,6 +107,11 @@ export const api = {
     message: string;
     service?: string;
   }) => apiClient.post("/contact", data),
+
+  submitJobApplication: (data: FormData) =>
+    apiClient.post("/job-applications", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
 
   submitEnquiry: (data: {
     product_name: string;
@@ -125,23 +131,23 @@ export const api = {
 
   // Student verification — calls TENANT_API_BASE_URL directly (configurable via NEXT_PUBLIC_TENANT_API_URL)
   verifyStudent: (certificateNumber: string) =>
-    tenantApiClient.get(`/student-verification/${encodeURIComponent(certificateNumber)}`),
+    tenantApiClient.get(`/student-verification/${certificateNumber}`),
 
   // ATC (franchise) verification
   verifyAtc: (atcCode: string) =>
-    tenantApiClient.get(`/atc-verification/${encodeURIComponent(atcCode)}`),
+    tenantApiClient.get(`/atc-verification/${atcCode}`),
 
   // Marksheet verification
   verifyMarksheet: (certificateNumber: string) =>
-    tenantApiClient.get(`/marksheet-verification/${encodeURIComponent(certificateNumber)}`),
+    tenantApiClient.get(`/marksheet-verification/${certificateNumber}`),
 
   // Staff verification
   verifyStaff: (staffId: string) =>
-    tenantApiClient.get(`/staff-verification/${encodeURIComponent(staffId)}`),
+    tenantApiClient.get(`/staff-verification/${staffId}`),
 
   // Expense receipt verification
   verifyExpense: (expenseId: string) =>
-    tenantApiClient.get(`/expense-verification/${encodeURIComponent(expenseId)}`),
+    tenantApiClient.get(`/expense-verification/${expenseId}`),
 
   // Franchise registration (all calls go to tenant API)
   franchiseFormData: () =>

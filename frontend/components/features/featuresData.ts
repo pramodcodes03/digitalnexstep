@@ -1113,3 +1113,48 @@ export const featuresData: MainFeature[] = [
     ],
   },
 ];
+
+/* ─── Icon Map for dynamic data ─── */
+export const iconMap: Record<string, IconType> = {
+  FiHome, FiBook, FiBookOpen, FiUsers, FiDollarSign, FiClock, FiClipboard,
+  FiAward, FiPackage, FiUserCheck, FiSettings, FiGlobe, FiGrid, FiVideo,
+  FiFileText, FiMessageCircle, FiUserPlus, FiPrinter, FiHelpCircle,
+  FiCheckCircle, FiBarChart2, FiSmartphone, FiXCircle, FiCalendar, FiEdit,
+  FiInbox, FiBookmark, FiFile, FiCheckSquare, FiImage, FiTag, FiLayers,
+  FiCreditCard, FiFolder, FiUser, FiLock, FiBriefcase, FiGift, FiShield,
+  FiMapPin, FiBell, FiLayout,
+};
+
+/* ─── Map API response to MainFeature[] ─── */
+export function mapApiToFeatures(apiData: any[]): MainFeature[] {
+  return apiData.map((mod: any) => ({
+    id: mod.id?.toString() || mod.title?.toLowerCase().replace(/\s+/g, "-"),
+    title: mod.title || "",
+    description: mod.description || "",
+    icon: iconMap[mod.icon] || FiHome,
+    gradient: mod.gradient || "from-blue-500 to-cyan-500",
+    subFeatures: (mod.sub_features || []).map((sf: any) => ({
+      id: sf.id || sf.title?.toLowerCase().replace(/\s+/g, "-"),
+      title: sf.title || "",
+      description: sf.description || "",
+      icon: iconMap[sf.icon] || FiGrid,
+      color: sf.color || "text-blue-600 dark:text-blue-400",
+      bgColor: sf.bgColor || "bg-blue-100 dark:bg-blue-900/30",
+      points: (sf.points || []).map((pt: any) => ({
+        id: pt.id || pt.title?.toLowerCase().replace(/\s+/g, "-"),
+        title: pt.title || "",
+        description: pt.description || "",
+        videos: (pt.videos || []).map((v: any) => ({
+          id: v.id || v.title?.toLowerCase().replace(/\s+/g, "-"),
+          title: v.title || "",
+          url: v.url || "",
+          thumbnail: v.thumbnail || "",
+          duration: v.duration || "0:00",
+          deviceType: v.deviceType || "laptop",
+          aspectRatio: v.aspectRatio || "16:9",
+        })),
+        carouselLayout: pt.carouselLayout || "cards",
+      })),
+    })),
+  }));
+}

@@ -6,20 +6,20 @@ import Container from "../ui/Container";
 import AnimatedSection from "../ui/AnimatedSection";
 import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
+import { useSiteSettings } from "@/lib/SiteSettingsContext";
 
 const MapSection: React.FC = () => {
   const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
   const sectionData = apiSections.find((s: any) => s.section_key === "map");
 
-  const { data: siteSettings } = useApi(() => api.getSiteSettings(), {} as any);
+  const settings = useSiteSettings();
 
-  // Extract contact info from site settings with fallbacks
-  const address = siteSettings?.address || "123 Education Street, Suite 456\nNew York, NY 10001\nUnited States";
-  const phone = siteSettings?.phone || "(123) 456-7890";
-  const email = siteSettings?.email || "info@digitalnexstep.com";
-  const businessHours = siteSettings?.business_hours || siteSettings?.hours || null;
-  const mapUrl = siteSettings?.map_url || siteSettings?.google_map_url || siteSettings?.map_embed_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830921927!2d-74.11976378897398!3d40.69766374859258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus";
-  const directionsUrl = siteSettings?.directions_url || "https://www.google.com/maps/dir//New+York,+NY";
+  const address = settings?.contact_address || "";
+  const phone = settings?.contact_phone || "";
+  const email = settings?.contact_email || "";
+  const businessHours = settings?.business_hours || null;
+  const mapUrl = settings?.google_maps_embed || "";
+  const directionsUrl = settings?.google_maps_directions || "";
 
   return (
     <section className="py-20 bg-white dark:bg-gray-900">
@@ -127,28 +127,10 @@ const MapSection: React.FC = () => {
                     <h3 className="font-bold text-gray-900 dark:text-white mb-1 text-lg">Business Hours</h3>
                     <div className="text-gray-600 dark:text-gray-300">
                       {businessHours ? (
-                        typeof businessHours === "string" ? (
-                          businessHours.split("\n").map((line: string, i: number) => (
-                            <p key={i}>{line}</p>
-                          ))
-                        ) : Array.isArray(businessHours) ? (
-                          businessHours.map((line: string, i: number) => (
-                            <p key={i}>{line}</p>
-                          ))
-                        ) : (
-                          <>
-                            <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                            <p>Saturday: 10:00 AM - 2:00 PM</p>
-                            <p>Sunday: Closed</p>
-                          </>
-                        )
-                      ) : (
-                        <>
-                          <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                          <p>Saturday: 10:00 AM - 2:00 PM</p>
-                          <p>Sunday: Closed</p>
-                        </>
-                      )}
+                        businessHours.split("\n").map((line: string, i: number) => (
+                          <p key={i}>{line}</p>
+                        ))
+                      ) : null}
                     </div>
                   </div>
                 </div>

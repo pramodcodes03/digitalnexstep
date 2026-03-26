@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiBriefcase, FiMapPin, FiClock, FiArrowRight, FiDollarSign } from "react-icons/fi";
 import Container from "../ui/Container";
+import JobApplyModal from "../ui/JobApplyModal";
 import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
 
@@ -90,7 +91,13 @@ const JobUpdates: React.FC = () => {
   const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
   const sectionData = apiSections.find((s: any) => s.section_key === "jobs_header");
 
-  const displayJobs: typeof jobs = apiJobs.length > 0
+  const [applyModal, setApplyModal] = useState<{
+    open: boolean;
+    title: string;
+    id: number | null;
+  }>({ open: false, title: "", id: null });
+
+  const displayJobs: (typeof jobs[0] & { apiId?: number })[] = apiJobs.length > 0
     ? apiJobs.map((j: any, i: number) => ({
         title: j.title,
         department: j.department || j.category || "General",
@@ -101,6 +108,7 @@ const JobUpdates: React.FC = () => {
         tags: j.tags || [],
         color: defaultJobColors[i % defaultJobColors.length],
         urgent: j.is_urgent || false,
+        apiId: j.id,
       }))
     : jobs;
 
@@ -162,6 +170,13 @@ const JobUpdates: React.FC = () => {
               transition={{ duration: 0.5, delay: index * 0.08 }}
               whileHover={{ y: -6, transition: { duration: 0.25 } }}
               className="group cursor-pointer"
+              onClick={() =>
+                setApplyModal({
+                  open: true,
+                  title: job.title,
+                  id: (job as any).apiId || null,
+                })
+              }
             >
               <div className="relative h-full bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700 overflow-hidden">
                 {/* Top Gradient */}
@@ -226,7 +241,7 @@ const JobUpdates: React.FC = () => {
                 </div>
 
                 {/* Apply Button */}
-                <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold text-sm opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-sm group-hover:opacity-100 opacity-70 transition-all duration-300">
                   <span>Apply Now</span>
                   <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
@@ -235,23 +250,15 @@ const JobUpdates: React.FC = () => {
           ))}
         </div>
 
-        {/* View All CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-12 text-center"
-        >
-          <a
-            href="#"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-          >
-            View All Openings
-            <FiArrowRight className="w-5 h-5" />
-          </a>
-        </motion.div>
       </Container>
+
+      {/* Job Apply Modal */}
+      <JobApplyModal
+        isOpen={applyModal.open}
+        onClose={() => setApplyModal({ open: false, title: "", id: null })}
+        jobTitle={applyModal.title}
+        jobId={applyModal.id}
+      />
     </section>
   );
 };

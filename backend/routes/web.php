@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\AchievementController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\PageSectionController;
 use App\Http\Controllers\Admin\AwardImageController;
+use App\Http\Controllers\Admin\FeatureModuleController;
+use App\Http\Controllers\Admin\JobApplicationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,6 +56,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('achievements', AchievementController::class)->except(['show']);
     Route::resource('page-sections', PageSectionController::class)->except(['show']);
     Route::resource('award-images', AwardImageController::class)->except(['show']);
+    Route::resource('feature-modules', FeatureModuleController::class)->except(['show']);
 
     // Read-only submissions
     Route::get('enquiries', [EnquiryController::class, 'index'])->name('enquiries.index');
@@ -63,6 +66,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('franchise-registrations', [FranchiseRegistrationController::class, 'index'])->name('franchise-registrations.index');
     Route::get('franchise-registrations/{franchiseRegistration}', [FranchiseRegistrationController::class, 'show'])->name('franchise-registrations.show');
     Route::patch('franchise-registrations/{franchiseRegistration}/status', [FranchiseRegistrationController::class, 'updateStatus'])->name('franchise-registrations.update-status');
+
+    Route::get('job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
+    Route::get('job-applications/{jobApplication}', [JobApplicationController::class, 'show'])->name('job-applications.show');
+    Route::patch('job-applications/{jobApplication}/status', [JobApplicationController::class, 'updateStatus'])->name('job-applications.update-status');
+    Route::delete('job-applications/{jobApplication}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
 
     Route::get('contact-submissions', [ContactSubmissionController::class, 'index'])->name('contact-submissions.index');
     Route::get('contact-submissions/{contactSubmission}', [ContactSubmissionController::class, 'show'])->name('contact-submissions.show');

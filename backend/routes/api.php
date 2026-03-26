@@ -38,9 +38,11 @@ Route::get('/courses/{id}', [PublicController::class, 'course']);
 Route::get('/page-sections', [PublicController::class, 'pageSections']);
 Route::get('/site-settings', [PublicController::class, 'siteSettings']);
 Route::get('/award-images', [PublicController::class, 'awardImages']);
+Route::get('/feature-modules', [PublicController::class, 'featureModules']);
 
 Route::post('/contact', [PublicController::class, 'submitContact']);
 Route::post('/enquiries', [PublicController::class, 'submitEnquiry']);
+Route::post('/job-applications', [PublicController::class, 'submitJobApplication']);
 Route::post('/franchise-registrations', [PublicController::class, 'submitFranchise']);
 
 // Dynamic student verification — proxies to the tenant API (domain configured via TENANT_API_BASE_URL)

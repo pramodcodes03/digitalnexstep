@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
 
 export const metadata: Metadata = {
   title: "DITRP INDIA - Educational Assessment Excellence",
@@ -24,7 +25,9 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased bg-white dark:bg-gray-900 transition-colors duration-300">
         <ThemeProvider>
-          {children}
+          <SiteSettingsProvider>
+            {children}
+          </SiteSettingsProvider>
         </ThemeProvider>
       </body>
     </html>

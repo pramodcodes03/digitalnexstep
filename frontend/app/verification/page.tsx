@@ -7,16 +7,9 @@ import {
   FiShield,
   FiSearch,
   FiCheckCircle,
-  FiMapPin,
-  FiPhone,
-  FiMail,
-  FiArrowRight,
   FiExternalLink,
   FiAward,
   FiGlobe,
-  FiFileText,
-  FiBriefcase,
-  FiDollarSign,
 } from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -25,114 +18,29 @@ import { useApi } from "@/lib/useApi";
 import api from "@/lib/api";
 import CertificateResult, { type VerificationData } from "@/components/verification/CertificateResult";
 import AtcResult, { type AtcVerificationData } from "@/components/verification/AtcResult";
-import MarksheetResult, { type MarksheetVerificationData } from "@/components/verification/MarksheetResult";
-import StaffResult, { type StaffVerificationData } from "@/components/verification/StaffResult";
-import ExpenseResult, { type ExpenseVerificationData } from "@/components/verification/ExpenseResult";
 
 /* ─── Types ─── */
-type VerificationType = "student" | "atc" | "marksheet" | "staff" | "expense";
-
-/* ─── Branch Data (fallback) ─── */
-const branches = [
-  {
-    name: "Delhi (Head Office)",
-    address: "123, Connaught Place, New Delhi - 110001",
-    phone: "+91 11-2345-6789",
-    email: "delhi@digitalnexstep.com",
-    color: "from-blue-500 to-indigo-600",
-  },
-  {
-    name: "Mumbai",
-    address: "456, Bandra West, Mumbai - 400050",
-    phone: "+91 22-3456-7890",
-    email: "mumbai@digitalnexstep.com",
-    color: "from-purple-500 to-pink-600",
-  },
-  {
-    name: "Bangalore",
-    address: "789, Koramangala, Bangalore - 560034",
-    phone: "+91 80-4567-8901",
-    email: "bangalore@digitalnexstep.com",
-    color: "from-green-500 to-emerald-600",
-  },
-  {
-    name: "Hyderabad",
-    address: "321, HITEC City, Hyderabad - 500081",
-    phone: "+91 40-5678-9012",
-    email: "hyderabad@digitalnexstep.com",
-    color: "from-orange-500 to-red-500",
-  },
-  {
-    name: "Chennai",
-    address: "654, Anna Nagar, Chennai - 600040",
-    phone: "+91 44-6789-0123",
-    email: "chennai@digitalnexstep.com",
-    color: "from-cyan-500 to-blue-600",
-  },
-  {
-    name: "Kolkata",
-    address: "987, Salt Lake City, Kolkata - 700091",
-    phone: "+91 33-7890-1234",
-    email: "kolkata@digitalnexstep.com",
-    color: "from-rose-500 to-pink-600",
-  },
-];
+type VerificationType = "student" | "atc";
 
 /* ─── Main Page ─── */
-const defaultBranchColors = [
-  "from-blue-500 to-indigo-600",
-  "from-purple-500 to-pink-600",
-  "from-green-500 to-emerald-600",
-  "from-orange-500 to-red-500",
-  "from-cyan-500 to-blue-600",
-  "from-rose-500 to-pink-600",
-];
 
 export default function VerificationPage() {
   const { data: apiSections } = useApi(() => api.getPageSections("verification"), [] as any[]);
-  const { data: apiCenters } = useApi(() => api.getCenters(), [] as any[]);
   const heroData = apiSections.find((s: any) => s.section_key === "verification_hero");
-
-  const displayBranches: typeof branches = heroData?.extra_data?.branches?.length > 0
-    ? heroData.extra_data.branches.map((b: any, i: number) => ({
-      name: b.name || "",
-      address: b.address || "",
-      phone: b.phone || "",
-      email: b.email || "",
-      color: defaultBranchColors[i % defaultBranchColors.length],
-    }))
-    : apiCenters.length > 0
-      ? apiCenters.map((c: any, i: number) => ({
-        name: c.name,
-        address: c.address || "",
-        phone: c.phone || "",
-        email: c.email || "",
-        color: defaultBranchColors[i % defaultBranchColors.length],
-      }))
-      : branches;
 
   const [activeTab, setActiveTab] = useState<VerificationType>("student");
   const [formData, setFormData] = useState({
     certificateNumber: "",
     atcCode: "",
-    marksheetNumber: "",
-    staffId: "",
-    expenseId: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [verificationResult, setVerificationResult] = useState<VerificationData | null>(null);
   const [atcResult, setAtcResult] = useState<AtcVerificationData | null>(null);
-  const [marksheetResult, setMarksheetResult] = useState<MarksheetVerificationData | null>(null);
-  const [staffResult, setStaffResult] = useState<StaffVerificationData | null>(null);
-  const [expenseResult, setExpenseResult] = useState<ExpenseVerificationData | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
   const clearResults = () => {
     setVerificationResult(null);
     setAtcResult(null);
-    setMarksheetResult(null);
-    setStaffResult(null);
-    setExpenseResult(null);
     setVerificationError(null);
   };
 
@@ -158,30 +66,12 @@ export default function VerificationPage() {
           setAtcResult(data);
           break;
         }
-        case "marksheet": {
-          const { data } = await api.verifyMarksheet(formData.marksheetNumber.trim());
-          setMarksheetResult(data);
-          break;
-        }
-        case "staff": {
-          const { data } = await api.verifyStaff(formData.staffId.trim());
-          setStaffResult(data);
-          break;
-        }
-        case "expense": {
-          const { data } = await api.verifyExpense(formData.expenseId.trim());
-          setExpenseResult(data);
-          break;
-        }
       }
     } catch (err: any) {
       const status = err?.response?.status;
       const notFoundMessages: Record<VerificationType, string> = {
         student: "No student found with this certificate number. Please check and try again.",
         atc: "No ATC found with this code. Please check and try again.",
-        marksheet: "No marksheet found with this certificate number. Please check and try again.",
-        staff: "No staff record found with this ID. Please check and try again.",
-        expense: "No expense receipt found with this ID. Please check and try again.",
       };
       if (status === 404) {
         setVerificationError(notFoundMessages[activeTab]);
@@ -225,39 +115,6 @@ export default function VerificationPage() {
       inputName: "atcCode",
       inputLabel: "ATC Code",
       placeholder: "e.g., DNS-ATC-XXXXX",
-    },
-    {
-      id: "marksheet",
-      label: "Marksheet",
-      icon: FiFileText,
-      description: "Verify marksheet & grades",
-      color: "from-violet-500 to-purple-600",
-      lightBg: "bg-violet-50 dark:bg-violet-900/20",
-      inputName: "marksheetNumber",
-      inputLabel: "Certificate Number",
-      placeholder: "Enter certificate number",
-    },
-    {
-      id: "staff",
-      label: "Staff",
-      icon: FiBriefcase,
-      description: "Verify staff credentials",
-      color: "from-teal-500 to-cyan-500",
-      lightBg: "bg-teal-50 dark:bg-teal-900/20",
-      inputName: "staffId",
-      inputLabel: "Staff ID",
-      placeholder: "Enter staff ID",
-    },
-    {
-      id: "expense",
-      label: "Expense",
-      icon: FiDollarSign,
-      description: "Verify expense receipts",
-      color: "from-amber-500 to-orange-500",
-      lightBg: "bg-amber-50 dark:bg-amber-900/20",
-      inputName: "expenseId",
-      inputLabel: "Expense Receipt ID",
-      placeholder: "Enter expense receipt ID",
     },
   ];
 
@@ -526,48 +383,6 @@ export default function VerificationPage() {
             )}
           </AnimatePresence>
 
-          <AnimatePresence>
-            {marksheetResult && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="max-w-4xl mx-auto"
-              >
-                <MarksheetResult data={marksheetResult} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {staffResult && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="max-w-4xl mx-auto"
-              >
-                <StaffResult data={staffResult} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {expenseResult && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="max-w-4xl mx-auto"
-              >
-                <ExpenseResult data={expenseResult} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Domain-Based Verification Portals */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -739,96 +554,6 @@ export default function VerificationPage() {
               </motion.div>
             </div>
           </motion.div>
-        </Container>
-      </section>
-
-      {/* Our Branches Section */}
-      <section className="py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <motion.div
-            className="absolute top-1/3 -right-32 w-80 h-80 bg-gradient-to-bl from-indigo-200/10 to-purple-200/10 dark:from-indigo-600/5 dark:to-purple-600/5 rounded-full blur-3xl"
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-
-        <Container className="relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-16"
-          >
-            <motion.span
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full text-sm font-semibold uppercase tracking-wider mb-5"
-            >
-              <FiMapPin className="w-4 h-4" />
-              Our Branches
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-              Visit Us{" "}
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Nationwide
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              We have branches across India to serve you better. Visit your nearest
-              center for in-person assistance.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayBranches.map((branch, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-                whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                className="group"
-              >
-                <div className="relative h-full bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-500 border border-gray-100 dark:border-gray-700 overflow-hidden">
-                  <div
-                    className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${branch.color}`}
-                  />
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className={`w-10 h-10 bg-gradient-to-br ${branch.color} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <FiMapPin className="w-5 h-5 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                      {branch.name}
-                    </h3>
-                  </div>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-start gap-2.5 text-gray-600 dark:text-gray-300">
-                      <FiMapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400" />
-                      <span>{branch.address}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
-                      <FiPhone className="w-4 h-4 flex-shrink-0 text-gray-400" />
-                      <span>{branch.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
-                      <FiMail className="w-4 h-4 flex-shrink-0 text-gray-400" />
-                      <span>{branch.email}</span>
-                    </div>
-                  </div>
-                  <div className="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span>Get Directions</span>
-                    <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </Container>
       </section>
 

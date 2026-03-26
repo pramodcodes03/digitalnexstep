@@ -12,6 +12,9 @@ import {
   FiExternalLink,
   FiCalendar,
   FiEye,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
 } from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -28,6 +31,8 @@ interface GalleryItem {
   description: string;
   category: "images" | "news" | "awards" | "videos";
   date: string;
+  image?: string;
+  video_url?: string;
   color: string;
   accent: string;
 }
@@ -211,6 +216,15 @@ const categoryLabel: Record<string, string> = {
 /* ─── Main Page ─── */
 export default function GalleryPage() {
   const [activeFilter, setActiveFilter] = useState<GalleryCategory>("all");
+  const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
+
+  const handleCardClick = (item: GalleryItem) => {
+    if (item.category === "videos" && item.video_url) {
+      window.open(item.video_url, "_blank", "noopener,noreferrer");
+    } else if (item.image) {
+      setLightboxItem(item);
+    }
+  };
 
   const categoryColors: Record<string, { color: string; accent: string }> = {
     images: { color: "from-blue-500 to-indigo-600", accent: "blue" },
@@ -231,6 +245,8 @@ export default function GalleryPage() {
         description: item.description,
         category: item.category,
         date: item.date ? new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "",
+        image: item.image || undefined,
+        video_url: item.video_url || undefined,
         color: categoryColors[item.category]?.color || "from-gray-500 to-gray-600",
         accent: categoryColors[item.category]?.accent || "gray",
       }))
@@ -240,6 +256,17 @@ export default function GalleryPage() {
     activeFilter === "all"
       ? items
       : items.filter((item) => item.category === activeFilter);
+
+  const navigateLightbox = (direction: "prev" | "next") => {
+    if (!lightboxItem) return;
+    const imageItems = filteredItems.filter((i) => i.image);
+    const currentImageIndex = imageItems.findIndex((i) => i.id === lightboxItem.id);
+    if (currentImageIndex === -1) return;
+    const newIndex = direction === "next"
+      ? (currentImageIndex + 1) % imageItems.length
+      : (currentImageIndex - 1 + imageItems.length) % imageItems.length;
+    setLightboxItem(imageItems[newIndex]);
+  };
 
   const activeTab = filterTabs.find((t) => t.id === activeFilter)!;
 
@@ -380,35 +407,44 @@ export default function GalleryPage() {
                     transition={{ duration: 0.4, delay: index * 0.05 }}
                     whileHover={{ y: -8, transition: { duration: 0.25 } }}
                     className="group cursor-pointer"
+                    onClick={() => handleCardClick(item)}
                   >
                     <div className="relative h-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700">
                       {/* Image / Thumbnail Area */}
                       <div className={`relative h-48 bg-gradient-to-br ${item.color} overflow-hidden`}>
-                        {/* Decorative Pattern */}
-                        <div className="absolute inset-0 opacity-10">
-                          <div
-                            className="w-full h-full"
-                            style={{
-                              backgroundImage:
-                                "radial-gradient(circle at 25% 25%, white 1px, transparent 1px), radial-gradient(circle at 75% 75%, white 1px, transparent 1px)",
-                              backgroundSize: "30px 30px",
-                            }}
+                        {/* Actual Image or Fallback Pattern */}
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="absolute inset-0 w-full h-full object-cover"
                           />
-                        </div>
-
-                        {/* Center Icon */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <motion.div
-                            className="w-20 h-20 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-                            whileHover={{ rotate: 5 }}
-                          >
-                            {item.category === "videos" ? (
-                              <FiPlay className="w-10 h-10 text-white" />
-                            ) : (
-                              <CatIcon className="w-10 h-10 text-white" />
-                            )}
-                          </motion.div>
-                        </div>
+                        ) : (
+                          <>
+                            <div className="absolute inset-0 opacity-10">
+                              <div
+                                className="w-full h-full"
+                                style={{
+                                  backgroundImage:
+                                    "radial-gradient(circle at 25% 25%, white 1px, transparent 1px), radial-gradient(circle at 75% 75%, white 1px, transparent 1px)",
+                                  backgroundSize: "30px 30px",
+                                }}
+                              />
+                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <motion.div
+                                className="w-20 h-20 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                                whileHover={{ rotate: 5 }}
+                              >
+                                {item.category === "videos" ? (
+                                  <FiPlay className="w-10 h-10 text-white" />
+                                ) : (
+                                  <CatIcon className="w-10 h-10 text-white" />
+                                )}
+                              </motion.div>
+                            </div>
+                          </>
+                        )}
 
                         {/* Hover Overlay */}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
@@ -487,6 +523,66 @@ export default function GalleryPage() {
           )}
         </Container>
       </section>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setLightboxItem(null)}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setLightboxItem(null)}
+              className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-10"
+            >
+              <FiX className="w-5 h-5" />
+            </button>
+
+            {/* Prev Button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); navigateLightbox("prev"); }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-10"
+            >
+              <FiChevronLeft className="w-5 h-5" />
+            </button>
+
+            {/* Next Button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); navigateLightbox("next"); }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-10"
+            >
+              <FiChevronRight className="w-5 h-5" />
+            </button>
+
+            {/* Image & Info */}
+            <motion.div
+              key={lightboxItem.id}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="max-w-4xl w-full max-h-[90vh] flex flex-col items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={lightboxItem.image}
+                alt={lightboxItem.title}
+                className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl"
+              />
+              <div className="mt-4 text-center">
+                <h3 className="text-lg font-bold text-white">{lightboxItem.title}</h3>
+                {lightboxItem.description && (
+                  <p className="text-sm text-gray-300 mt-1 max-w-xl">{lightboxItem.description}</p>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

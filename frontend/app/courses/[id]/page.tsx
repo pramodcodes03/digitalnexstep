@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   FiStar, FiBookOpen, FiCheckCircle, FiX, FiUser, FiPhone,
   FiInfo, FiChevronDown, FiArrowRight, FiClock, FiEye,
-  FiHeart, FiAlertCircle, FiMapPin, FiLoader,
+  FiHeart, FiAlertCircle, FiMapPin, FiLoader, FiSearch,
 } from "react-icons/fi";
 import { useParams } from "next/navigation";
 import Header from "@/components/layout/Header";
@@ -100,6 +100,9 @@ function EnquiryModal({
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [instSearch, setInstSearch] = useState("");
+  const [instDropdownOpen, setInstDropdownOpen] = useState(false);
+  const instDropdownRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -127,11 +130,26 @@ function EnquiryModal({
       .finally(() => setLoadingInstitutes(false));
   }, [isOpen, courseId]);
 
-  // Lock scroll
+  // Lock scroll & reset search state
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
+    if (isOpen) {
+      setInstSearch("");
+      setInstDropdownOpen(false);
+    }
     return () => { document.body.style.overflow = "unset"; };
   }, [isOpen]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (instDropdownRef.current && !instDropdownRef.current.contains(e.target as Node)) {
+        setInstDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const set =
     (k: keyof typeof formData) =>
@@ -241,14 +259,64 @@ function EnquiryModal({
                         Loading institutes...
                       </div>
                     ) : (
-                      <select value={formData.institute_id} onChange={set("institute_id")} className={inputCls} required>
-                        <option value="">Select a centre</option>
-                        {institutes.map((inst) => (
-                          <option key={inst.id} value={inst.id}>
-                            {inst.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div ref={instDropdownRef} className="relative">
+                        <input type="hidden" name="institute_id" value={formData.institute_id} required />
+                        <div
+                          onClick={() => setInstDropdownOpen(!instDropdownOpen)}
+                          className={`${inputCls} cursor-pointer flex items-center justify-between ${!formData.institute_id ? "text-gray-400" : ""}`}
+                        >
+                          <span className="truncate">
+                            {formData.institute_id
+                              ? institutes.find((i) => String(i.id) === formData.institute_id)?.name || "Select a centre"
+                              : "Search & select a centre..."}
+                          </span>
+                          <FiChevronDown className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform ${instDropdownOpen ? "rotate-180" : ""}`} />
+                        </div>
+                        {instDropdownOpen && (
+                          <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden">
+                            <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 dark:border-gray-700">
+                              <FiSearch className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                              <input
+                                type="text"
+                                placeholder="Type to search..."
+                                value={instSearch}
+                                onChange={(e) => setInstSearch(e.target.value)}
+                                className="w-full bg-transparent text-sm text-gray-900 dark:text-white placeholder-gray-400 outline-none"
+                                autoFocus
+                              />
+                            </div>
+                            <ul className="max-h-48 overflow-y-auto">
+                              {institutes
+                                .filter((inst) => inst.name.toLowerCase().includes(instSearch.toLowerCase()))
+                                .length > 0 ? (
+                                institutes
+                                  .filter((inst) => inst.name.toLowerCase().includes(instSearch.toLowerCase()))
+                                  .map((inst) => (
+                                    <li
+                                      key={inst.id}
+                                      onClick={() => {
+                                        setFormData((prev) => ({ ...prev, institute_id: String(inst.id) }));
+                                        setInstSearch("");
+                                        setInstDropdownOpen(false);
+                                      }}
+                                      className={`px-4 py-2.5 text-sm cursor-pointer transition-colors hover:bg-primary-50 dark:hover:bg-primary-900/20 ${
+                                        formData.institute_id === String(inst.id)
+                                          ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-semibold"
+                                          : "text-gray-700 dark:text-gray-300"
+                                      }`}
+                                    >
+                                      {inst.name}
+                                    </li>
+                                  ))
+                              ) : (
+                                <li className="px-4 py-3 text-sm text-gray-400 text-center">
+                                  No centres found
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
 

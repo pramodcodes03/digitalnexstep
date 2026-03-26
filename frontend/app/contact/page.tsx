@@ -26,6 +26,7 @@ import Container from "@/components/ui/Container";
 import api from "@/lib/api";
 import { useApi } from "@/lib/useApi";
 import { isValidEmail } from "@/lib/utils";
+import { useSiteSettings } from "@/lib/SiteSettingsContext";
 
 interface ContactFormData {
   name: string;
@@ -36,11 +37,10 @@ interface ContactFormData {
   message: string;
 }
 
-const defaultContactInfo = [
+const contactCardStyles = [
   {
     icon: FiMapPin,
     title: "Visit Us",
-    lines: ["123 Education Street, Suite 456", "New York, NY 10001"],
     color: "from-blue-500 to-indigo-600",
     lightBg: "bg-blue-100 dark:bg-blue-900/30",
     iconColor: "text-blue-600 dark:text-blue-400",
@@ -48,8 +48,6 @@ const defaultContactInfo = [
   {
     icon: FiPhone,
     title: "Call Us",
-    lines: ["(123) 456-7890", "Mon-Fri, 9AM-6PM EST"],
-    href: "tel:+1234567890",
     color: "from-green-500 to-emerald-600",
     lightBg: "bg-green-100 dark:bg-green-900/30",
     iconColor: "text-green-600 dark:text-green-400",
@@ -57,8 +55,6 @@ const defaultContactInfo = [
   {
     icon: FiMail,
     title: "Email Us",
-    lines: ["info@digitalnexstep.com", "We reply within 24 hours"],
-    href: "mailto:info@digitalnexstep.com",
     color: "from-purple-500 to-pink-600",
     lightBg: "bg-purple-100 dark:bg-purple-900/30",
     iconColor: "text-purple-600 dark:text-purple-400",
@@ -66,7 +62,6 @@ const defaultContactInfo = [
   {
     icon: FiClock,
     title: "Business Hours",
-    lines: ["Mon - Fri: 9:00 AM - 6:00 PM", "Sat: 10 AM - 2 PM | Sun: Closed"],
     color: "from-orange-500 to-red-500",
     lightBg: "bg-orange-100 dark:bg-orange-900/30",
     iconColor: "text-orange-600 dark:text-orange-400",
@@ -80,7 +75,7 @@ export default function ContactPage() {
   );
 
   const { data: apiSections } = useApi(() => api.getPageSections("contact"), [] as any[]);
-  const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
+  const settings = useSiteSettings();
   const { data: products } = useApi(() => api.getProducts(), [] as any[]);
 
   // Searchable service dropdown
@@ -103,21 +98,27 @@ export default function ContactPage() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
   const heroData = apiSections.find((s: any) => s.section_key === "contact_hero");
-  const apiContactInfo = heroData?.extra_data?.contact_info;
 
-  const contactIconMap: Record<string, React.ElementType> = {
-    FiMapPin, FiPhone, FiMail, FiClock,
-  };
-
-  const contactInfo = apiContactInfo
-    ? apiContactInfo.map((c: any, i: number) => ({
-        ...defaultContactInfo[i % defaultContactInfo.length],
-        icon: (c.icon && contactIconMap[c.icon]) || defaultContactInfo[i % defaultContactInfo.length].icon,
-        title: c.title || defaultContactInfo[i % defaultContactInfo.length].title,
-        lines: c.lines || defaultContactInfo[i % defaultContactInfo.length].lines,
-        href: c.href ?? defaultContactInfo[i % defaultContactInfo.length].href,
-      }))
-    : defaultContactInfo;
+  const contactInfo = [
+    {
+      ...contactCardStyles[0],
+      lines: [settings?.contact_address || ""],
+    },
+    {
+      ...contactCardStyles[1],
+      lines: [settings?.contact_phone || "", settings?.business_hours || ""],
+      href: settings?.contact_phone ? `tel:${settings.contact_phone.replace(/[^+\d]/g, "")}` : undefined,
+    },
+    {
+      ...contactCardStyles[2],
+      lines: [settings?.contact_email || "", "We reply within 24 hours"],
+      href: settings?.contact_email ? `mailto:${settings.contact_email}` : undefined,
+    },
+    {
+      ...contactCardStyles[3],
+      lines: [settings?.business_hours || ""],
+    },
+  ];
 
   const {
     register,
@@ -604,7 +605,7 @@ export default function ContactPage() {
               {/* Map */}
               <div className="rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 h-[350px] lg:h-[400px]">
                 <iframe
-                  src={settings?.google_maps_embed || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830921927!2d-74.11976378897398!3d40.69766374859258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"}
+                  src={settings?.google_maps_embed || ""}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -618,7 +619,7 @@ export default function ContactPage() {
 
               {/* Get Directions */}
               <motion.a
-                href="https://www.google.com/maps/dir//New+York,+NY"
+                href={settings?.google_maps_directions || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
@@ -646,20 +647,24 @@ export default function ContactPage() {
                       response time is under 2 hours during business hours.
                     </p>
                     <div className="flex flex-wrap gap-3">
-                      <a
-                        href="tel:+1234567890"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-600"
-                      >
-                        <FiPhone className="w-4 h-4 text-green-600" />
-                        Call Now
-                      </a>
-                      <a
-                        href="mailto:support@digitalnexstep.com"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-600"
-                      >
-                        <FiMail className="w-4 h-4 text-blue-600" />
-                        Email Support
-                      </a>
+                      {settings?.contact_phone && (
+                        <a
+                          href={`tel:${settings.contact_phone.replace(/[^+\d]/g, "")}`}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-600"
+                        >
+                          <FiPhone className="w-4 h-4 text-green-600" />
+                          Call Now
+                        </a>
+                      )}
+                      {settings?.contact_email && (
+                        <a
+                          href={`mailto:${settings.contact_email}`}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-600"
+                        >
+                          <FiMail className="w-4 h-4 text-blue-600" />
+                          Email Support
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>

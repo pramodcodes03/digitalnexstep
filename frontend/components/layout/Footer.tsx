@@ -20,13 +20,13 @@ import {
 import Container from "../ui/Container";
 import { getCurrentYear } from "@/lib/utils";
 import api from "@/lib/api";
-import { useApi } from "@/lib/useApi";
+import { useSiteSettings } from "@/lib/SiteSettingsContext";
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success" | "error">("idle");
-  const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
+  const settings = useSiteSettings();
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +71,7 @@ const Footer: React.FC = () => {
     { name: "Refund Policy", href: "/refund" },
     { name: "Our Affiliations", href: "/affiliations" },
     { name: "Accreditations", href: "/accreditations" },
-    { name: "Sitemap", href: "/sitemap" },
+    { name: "Sitemap", href: "/sitemap-page" },
   ];
 
   return (
@@ -168,23 +168,23 @@ const Footer: React.FC = () => {
             <ul className="space-y-4 mb-6">
               <li className="flex items-start gap-3 text-primary-100 dark:text-gray-400">
                 <FiMapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span>{settings?.contact_address || "123 Education Street, Suite 456, New York, NY 10001"}</span>
+                <span>{settings?.contact_address || ""}</span>
               </li>
               <li className="flex items-center gap-3 text-primary-100 dark:text-gray-400">
                 <FiPhone className="w-5 h-5 flex-shrink-0" />
-                <a href={`tel:${settings?.contact_phone || "+1234567890"}`} className="hover:text-white transition-colors-smooth">
-                  {settings?.contact_phone || "(123) 456-7890"}
+                <a href={`tel:${(settings?.contact_phone || "").replace(/[^+\d]/g, "")}`} className="hover:text-white transition-colors-smooth">
+                  {settings?.contact_phone || ""}
                 </a>
               </li>
               <li className="flex items-center gap-3 text-primary-100 dark:text-gray-400">
                 <FiMail className="w-5 h-5 flex-shrink-0" />
-                <a href={`mailto:${settings?.contact_email || "info@digitalnexstep.com"}`} className="hover:text-white transition-colors-smooth">
-                  {settings?.contact_email || "info@digitalnexstep.com"}
+                <a href={`mailto:${settings?.contact_email || ""}`} className="hover:text-white transition-colors-smooth">
+                  {settings?.contact_email || ""}
                 </a>
               </li>
               <li className="flex items-start gap-3 text-primary-100 dark:text-gray-400">
                 <FiClock className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span>{settings?.business_hours || "Mon - Fri: 9:00 AM - 6:00 PM"}</span>
+                <span>{settings?.business_hours || ""}</span>
               </li>
             </ul>
 

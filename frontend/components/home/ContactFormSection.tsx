@@ -11,6 +11,7 @@ import AnimatedSection from "../ui/AnimatedSection";
 import api from "@/lib/api";
 import { useApi } from "@/lib/useApi";
 import { isValidEmail } from "@/lib/utils";
+import { useSiteSettings } from "@/lib/SiteSettingsContext";
 
 interface ContactFormData {
   name: string;
@@ -25,8 +26,7 @@ const ContactFormSection: React.FC = () => {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const { data: apiSections } = useApi(() => api.getPageSections("home"), [] as any[]);
   const sectionData = apiSections.find((s: any) => s.section_key === "contact");
-  const { data: settings } = useApi(() => api.getSiteSettings(), {} as any);
-  const contactExtra = sectionData?.extra_data || {};
+  const settings = useSiteSettings();
 
   const {
     register,
@@ -252,7 +252,7 @@ const ContactFormSection: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Office Address</h4>
                       <p className="text-gray-700 dark:text-gray-300">
-                        {settings?.contact_address || contactExtra?.address || "123 Education Street, Suite 456, New York, NY 10001"}
+                        {settings?.contact_address || ""}
                       </p>
                     </div>
                   </div>
@@ -264,10 +264,10 @@ const ContactFormSection: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Phone Number</h4>
                       <a
-                        href={`tel:${settings?.contact_phone || contactExtra?.phone || "+1234567890"}`}
+                        href={`tel:${settings?.contact_phone || ""}`}
                         className="text-primary-700 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium"
                       >
-                        {settings?.contact_phone || contactExtra?.phone || "(123) 456-7890"}
+                        {settings?.contact_phone || ""}
                       </a>
                     </div>
                   </div>
@@ -279,10 +279,10 @@ const ContactFormSection: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Email Address</h4>
                       <a
-                        href={`mailto:${settings?.contact_email || contactExtra?.email || "info@digitalnexstep.com"}`}
+                        href={`mailto:${settings?.contact_email || ""}`}
                         className="text-primary-700 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium"
                       >
-                        {settings?.contact_email || contactExtra?.email || "info@digitalnexstep.com"}
+                        {settings?.contact_email || ""}
                       </a>
                     </div>
                   </div>
@@ -294,7 +294,7 @@ const ContactFormSection: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Business Hours</h4>
                       <p className="text-gray-700 dark:text-gray-300">
-                        {contactExtra?.business_hours || "Monday - Friday: 9:00 AM - 6:00 PM\nSaturday - Sunday: Closed"}
+                        {settings?.business_hours || ""}
                       </p>
                     </div>
                   </div>

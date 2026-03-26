@@ -55,10 +55,10 @@
                                    class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
-                        {{-- Content --}}
+                        {{-- Content (Rich Text Editor) --}}
                         <div class="md:col-span-2">
                             <label for="content" class="block text-sm font-semibold text-gray-700 mb-1">Content</label>
-                            <textarea name="content" id="content" rows="5"
+                            <textarea name="content" id="content" rows="12"
                                       class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">{{ old('content') }}</textarea>
                         </div>
 
@@ -103,3 +103,26 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof tinymce !== 'undefined') {
+        tinymce.init({
+            selector: '#content',
+            height: 400,
+            menubar: true,
+            branding: false,
+            promotion: false,
+            plugins: 'lists link table code wordcount fullscreen preview help',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link table | code fullscreen preview | removeformat help',
+            block_formats: 'Paragraph=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Blockquote=blockquote; Preformatted=pre',
+            content_style: 'body { font-family: Inter, -apple-system, sans-serif; font-size: 14px; line-height: 1.6; color: #374151; padding: 12px; } h2 { font-size: 1.5em; font-weight: 700; margin: 1em 0 0.5em; color: #111827; } h3 { font-size: 1.25em; font-weight: 600; margin: 0.8em 0 0.4em; color: #1f2937; } h4 { font-size: 1.1em; font-weight: 600; color: #374151; } ul, ol { padding-left: 1.5em; } li { margin-bottom: 0.3em; } p { margin: 0.5em 0; } a { color: #2563eb; } table { border-collapse: collapse; width: 100%; } td, th { border: 1px solid #d1d5db; padding: 8px; }',
+            setup: function (editor) {
+                editor.on('change', function () { tinymce.triggerSave(); });
+            },
+        });
+    }
+});
+</script>
+@endpush

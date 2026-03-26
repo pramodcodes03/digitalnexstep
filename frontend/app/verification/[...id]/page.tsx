@@ -18,7 +18,7 @@ type ResultType = "student" | "atc" | "marksheet" | "staff" | "expense";
 
 export default function VerificationByIdPage() {
   const params = useParams();
-  const id = params.id as string;
+  const id = Array.isArray(params.id) ? params.id.join("/") : (params.id as string);
 
   const [isLoading, setIsLoading] = useState(true);
   const [resultType, setResultType] = useState<ResultType | null>(null);

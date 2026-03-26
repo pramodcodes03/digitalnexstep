@@ -16,7 +16,7 @@
         {{-- Search & Filter --}}
         <div class="px-6 py-4 border-b border-gray-100">
             <form method="GET" action="{{ route('admin.page-sections.index') }}" class="flex flex-wrap items-center gap-3">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by title, key..."
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search anything..."
                        class="w-64 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
                 <select name="filter_page" class="rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
                     <option value="">All Pages</option>

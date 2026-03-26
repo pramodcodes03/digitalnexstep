@@ -1,470 +1,463 @@
 "use client";
 
-import { motion } from "framer-motion";
-import {
-  FiActivity,
-  FiAward,
-  FiBook,
-  FiCalendar,
-  FiClock,
-  FiFileText,
-  FiGlobe,
-  FiMail,
-  FiMapPin,
-  FiPhone,
-  FiShield,
-} from "react-icons/fi";
+import React from "react";
 
-/* ─── Types ─── */
+/* ─── Types matching actual API response ─── */
 export interface MarksheetVerificationData {
   verified: boolean;
+  id: number;
   certificate_number: string;
   student: {
     name: string | null;
+    first_name: string | null;
+    last_name: string | null;
+    middle_name: string | null;
+    mother_name: string | null;
+    dob: string | null;
     photo: string | null;
-    signature: string | null;
   };
   course: {
     name: string | null;
     duration: string | null;
     period: string | null;
-    grade: string | null;
-    percentage: string | null;
+    course_type: number;
+    exam_format: string[];
   } | null;
   institute: {
     name: string | null;
-    city: string | null;
-    email: string | null;
-    mobile: string | null;
-    address: string | null;
   };
-  marksheet: {
-    date_of_issue: string | null;
-    subjects: Array<{
-      subject_name?: string;
-      name?: string;
-      max_marks?: number | string;
-      obtained_marks?: number | string;
-      marks_obtained?: number | string;
-      grade?: string;
+  batch: {
+    name: string | null;
+  };
+  marks: {
+    type: string;
+    percentage: string | null;
+    grade: string | null;
+    total_marks?: number;
+    obtained_marks?: number;
+    objective_max?: number;
+    objective_obtained?: number;
+    practical_max?: number;
+    practical_obtained?: number;
+    course_subjects?: string[];
+    semesters?: Array<{
+      name: string;
+      is_completed: boolean;
+      subjects: Array<{
+        name: string | null;
+        max_marks: number | null;
+        obtained_marks: number | null;
+        practical_max: number | null;
+        practical_obtained: number | null;
+      }>;
     }>;
   };
+  grades: Array<{
+    name: string;
+    performance: string;
+    start_percentage: number;
+    end_percentage: number;
+  }>;
 }
 
-const gradeLabel: Record<string, string> = {
-  "A+": "Outstanding",
-  A: "Excellent",
-  "B+": "Very Good",
-  B: "Good",
-  C: "Average",
-};
+function gradeColor(name: string) {
+  const map: Record<string, { bg: string; text: string; ring: string }> = {
+    "A+": { bg: "bg-emerald-500", text: "text-emerald-600", ring: "ring-emerald-200" },
+    A: { bg: "bg-green-500", text: "text-green-600", ring: "ring-green-200" },
+    "B+": { bg: "bg-blue-500", text: "text-blue-600", ring: "ring-blue-200" },
+    B: { bg: "bg-sky-500", text: "text-sky-600", ring: "ring-sky-200" },
+    C: { bg: "bg-amber-500", text: "text-amber-600", ring: "ring-amber-200" },
+    D: { bg: "bg-orange-500", text: "text-orange-600", ring: "ring-orange-200" },
+    E: { bg: "bg-red-500", text: "text-red-600", ring: "ring-red-200" },
+  };
+  return map[name] ?? { bg: "bg-gray-500", text: "text-gray-600", ring: "ring-gray-200" };
+}
 
-/* ─── Main component ─── */
+function strokeColor(pct: number) {
+  if (pct >= 85) return "#10b981";
+  if (pct >= 70) return "#3b82f6";
+  if (pct >= 55) return "#f59e0b";
+  return "#ef4444";
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
 export default function MarksheetResult({ data }: { data: MarksheetVerificationData }) {
-  const initial = (data.student?.name ?? "S").charAt(0).toUpperCase();
-  const marksNum = data.course?.percentage ? parseFloat(data.course.percentage) : null;
-  const subjects = data.marksheet?.subjects ?? [];
+  const studentName =
+    data.student?.name ||
+    [data.student?.first_name, data.student?.last_name].filter(Boolean).join(" ") ||
+    "N/A";
+  const initial = studentName.charAt(0).toUpperCase();
+  const pct = data.marks?.percentage ? parseFloat(data.marks.percentage) : 0;
+  const grade = data.marks?.grade ?? "N/A";
+  const hasObj = data.course?.exam_format?.includes("objective_marks");
+  const hasPrac = data.course?.exam_format?.includes("practical_marks");
+  const gc = gradeColor(grade);
 
   return (
-    <div className="space-y-5 mt-8">
+    <div className="max-w-5xl mx-auto space-y-5">
 
-      {/* ══════════════════ HEADER TICKET ══════════════════ */}
-      <motion.div
-        initial={{ opacity: 0, y: -18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: "easeOut" }}
-        className="rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg"
-      >
-        {/* Rainbow top stripe */}
-        <div
-          className="h-1 animate-rainbow bg-[length:300%_100%]"
-          style={{ background: "linear-gradient(90deg,#8b5cf6,#6366f1,#3b82f6,#06b6d4,#8b5cf6)" }}
-        />
-
-        <div className="flex flex-col md:flex-row">
-
-          {/* LEFT — Animated seal */}
-          <div className="flex-shrink-0 flex flex-col items-center justify-center gap-3 px-8 py-7 bg-violet-50 dark:bg-violet-900/20 border-b md:border-b-0 md:border-r border-violet-200 dark:border-violet-800 min-w-[148px]">
-            <div className="relative w-[88px] h-[88px] flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-2 border-dashed border-violet-300 dark:border-violet-600 animate-spin-slow" />
-              <div className="absolute inset-[9px] rounded-full border border-violet-400 dark:border-violet-500 animate-spin-slow-rev" />
-              <div className="absolute inset-5 rounded-full bg-violet-50 dark:bg-violet-900/40 border-2 border-violet-400 dark:border-violet-500 flex items-center justify-center shadow-[0_0_12px_rgba(139,92,246,.25)]">
-                <FiFileText className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-              </div>
-              <div className="absolute inset-[-5px] rounded-full border border-violet-300 dark:border-violet-700 animate-pulse-ring" />
+      {/* ══════ VERIFIED BANNER ══════ */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 p-[1px]">
+        <div className="rounded-2xl bg-white/95 backdrop-blur-sm px-5 py-4 sm:px-7 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-200">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
-
-            <div className="text-center">
-              <p className="text-2xl font-black tracking-[0.1em] text-violet-600 dark:text-violet-400 leading-none">DITRP</p>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-violet-400 dark:text-violet-500 mt-1">INDIA</p>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-indigo-700 to-blue-600 bg-clip-text text-transparent leading-tight">
+                {data.institute?.name ?? "Institute"}
+              </h1>
+              <p className="text-sm text-gray-500 font-medium flex items-center gap-1.5 mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                Verified Examination Record
+              </p>
             </div>
           </div>
-
-          {/* CENTER — Title */}
-          <div className="flex-1 px-7 py-6 flex flex-col justify-center">
-            <p className="text-[10px] font-black tracking-[0.26em] uppercase text-violet-600 dark:text-violet-400 mb-2">
-              ● &nbsp;Digital Certificate Authority
-            </p>
-            <h2 className="text-[2rem] font-black leading-[1.12] text-gray-900 dark:text-white tracking-[0.02em] mb-3">
-              MARKSHEET<br />
-              <span className="text-violet-600 dark:text-violet-400">VERIFICATION</span>
-              <span className="text-gray-300 dark:text-gray-600 text-[1.35rem] font-bold"> REPORT</span>
-            </h2>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-[2.5px] w-8 bg-violet-500 rounded-full" />
-              <div className="h-[1.5px] flex-1 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-100">
+            <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold leading-none">Certificate</p>
+              <p className="text-sm font-bold text-gray-800 tracking-wide">{data.certificate_number}</p>
             </div>
-            <p className="text-[11px] font-semibold tracking-[0.04em] text-gray-400 dark:text-gray-500">
-              Directorate of Information Technology &amp; Research Promotion
-            </p>
           </div>
-
-          {/* RIGHT — Status badge */}
-          <div className="flex-shrink-0 flex flex-col items-center justify-center px-8 py-6 gap-3 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 min-w-[130px]">
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
-              className="bg-violet-50 dark:bg-violet-900/30 border-2 border-violet-300 dark:border-violet-700 rounded-2xl px-5 py-4 text-center shadow-md"
-            >
-              <div className="w-11 h-11 bg-violet-100 dark:bg-violet-900/50 rounded-full flex items-center justify-center mx-auto mb-2">
-                <FiShield className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-              </div>
-              <p className="text-[10px] font-black tracking-[0.2em] uppercase text-violet-600 dark:text-violet-400">AUTHENTIC</p>
-              <p className="text-[9px] font-bold tracking-wide text-violet-400 dark:text-violet-500 mt-1">VERIFIED</p>
-            </motion.div>
-          </div>
-
         </div>
-      </motion.div>
+      </div>
 
-      {/* ══════════════════ MAIN CARD ══════════════════ */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.1 }}
-        className="rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg"
-      >
-        <div className="px-6 md:px-9 py-8 space-y-8">
+      {/* ══════ STUDENT CARD ══════ */}
+      <div className="rounded-2xl bg-white shadow-xl shadow-gray-200/60 border border-gray-100 overflow-hidden">
 
-          {/* ─── STUDENT PROFILE ─── */}
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-7">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.25, type: "spring", stiffness: 200 }}
-              className="relative w-[120px] h-[120px] flex-shrink-0"
-            >
-              <div
-                className="absolute inset-[-4px] rounded-full animate-spin-slow z-0"
-                style={{ background: "conic-gradient(from 0deg,#8b5cf6,#6366f1,#3b82f6,#06b6d4,#8b5cf6)" }}
-              />
-              <div className="relative z-10 w-[120px] h-[120px] rounded-full overflow-hidden bg-gradient-to-br from-violet-100 to-blue-100 dark:from-violet-900/30 dark:to-blue-900/30 flex items-center justify-center"
-                style={{ border: "3px solid white" }}>
+        {/* Top accent */}
+        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+        <div className="p-5 sm:p-7 lg:p-8">
+          <div className="flex flex-col lg:flex-row gap-6">
+
+            {/* Photo */}
+            <div className="flex justify-center lg:justify-start">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl opacity-20 group-hover:opacity-40 blur transition-opacity" />
                 {data.student?.photo ? (
                   <img
                     src={data.student.photo}
-                    alt={data.student.name ?? "Student"}
-                    className="w-full h-full object-cover"
+                    alt={studentName}
+                    className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-white shadow-lg"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
                 ) : (
-                  <span className="text-[3rem] font-black text-violet-600 dark:text-violet-400 leading-none select-none">{initial}</span>
+                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 border-2 border-white shadow-lg flex items-center justify-center">
+                    <span className="text-3xl font-black text-indigo-500">{initial}</span>
+                  </div>
                 )}
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 26 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="flex-1 text-center md:text-left"
-            >
-              <p className="text-[10px] font-black tracking-[0.2em] uppercase text-violet-600 dark:text-violet-400 mb-1">
-                Name of Student
-              </p>
-              <h3 className="text-[2rem] font-black text-gray-900 dark:text-white tracking-[0.03em] mb-4 leading-tight">
-                {(data.student?.name ?? "N/A").toUpperCase()}
-              </h3>
-
-              <div className="inline-flex items-center gap-3 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 rounded-2xl px-5 py-3">
-                <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <FiFileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black tracking-[0.16em] uppercase text-indigo-500 dark:text-indigo-400 leading-none mb-1">
-                    Certificate Number
-                  </p>
-                  <p className="text-[1.1rem] font-black text-indigo-800 dark:text-indigo-300 leading-none tracking-[0.04em]">
-                    {data.certificate_number}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          <Divider dots={["#8b5cf6", "#6366f1", "#3b82f6"]} />
-
-          {/* ─── COURSE DETAILS ─── */}
-          {data.course && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.6 }}
-              className="space-y-4"
-            >
-              <SectionLabel>Course Details</SectionLabel>
-
-              <div className="bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20 border border-violet-200 dark:border-violet-800 rounded-2xl px-6 py-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default">
-                <p className="text-[10px] font-black tracking-[0.13em] uppercase text-violet-600 dark:text-violet-400 flex items-center gap-2 mb-2">
-                  <FiBook className="w-3 h-3" /> Course Name
-                </p>
-                <p className="text-[1.5rem] font-black text-gray-900 dark:text-white tracking-[0.03em] leading-tight">
-                  {(data.course.name ?? "N/A").toUpperCase()}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <StatCard label="Certificate Number" value={data.certificate_number} icon={<FiFileText />} color="indigo" />
-                <StatCard label="Course Duration" value={data.course.duration} icon={<FiClock />} color="violet" />
-                <StatCard label="Course Period" value={data.course.period} icon={<FiCalendar />} color="cyan" />
-                <StatCard label="Date of Issue" value={data.marksheet?.date_of_issue} icon={<FiCalendar />} color="emerald" />
-              </div>
-
-              {(data.course.percentage || data.course.grade) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {data.course.percentage && (
-                    <div className="bg-gradient-to-br from-violet-50 to-violet-100/60 dark:from-violet-900/20 dark:to-violet-900/10 border border-violet-200 dark:border-violet-800 rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default">
-                      <p className="text-[10px] font-black tracking-[0.13em] uppercase text-violet-600 dark:text-violet-400 flex items-center gap-2 mb-2">
-                        <FiActivity className="w-3 h-3" /> Percentage
-                      </p>
-                      <p className="text-[2.5rem] font-black text-violet-600 dark:text-violet-400 leading-none mb-3">
-                        {data.course.percentage}
-                        <span className="text-[1.5rem] font-bold text-violet-400 dark:text-violet-500">%</span>
-                      </p>
-                      {marksNum !== null && (
-                        <div className="bg-violet-200 dark:bg-violet-900/50 rounded-full h-[7px] overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min(marksNum, 100)}%` }}
-                            transition={{ delay: 0.7, duration: 1.1, ease: "easeOut" }}
-                            className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-full"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {data.course.grade && (
-                    <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl p-5 flex items-center gap-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default">
-                      <div
-                        className="w-[72px] h-[72px] rounded-full flex items-center justify-center flex-shrink-0 shadow-md bg-amber-50 dark:bg-amber-900/30"
-                        style={{ border: "3px solid #fbbf24" }}
-                      >
-                        <span className="text-[2.2rem] font-black text-amber-600 dark:text-amber-400 leading-none">
-                          {data.course.grade}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black tracking-[0.14em] uppercase text-amber-600 dark:text-amber-400 mb-2">
-                          Grade Secured
-                        </p>
-                        <p className="text-sm font-bold text-amber-800 dark:text-amber-300 leading-snug">
-                          {gradeLabel[data.course.grade.toUpperCase()] ?? "Completed"}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {/* ─── SUBJECTS TABLE ─── */}
-          {subjects.length > 0 && (
-            <>
-              <Divider dots={["#8b5cf6", "#3b82f6"]} />
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="space-y-4"
-              >
-                <SectionLabel>Subject-wise Marks</SectionLabel>
-                <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-900/30 dark:to-indigo-900/30">
-                        <th className="text-left px-5 py-3 text-[10px] font-black tracking-[0.15em] uppercase text-violet-600 dark:text-violet-400">#</th>
-                        <th className="text-left px-5 py-3 text-[10px] font-black tracking-[0.15em] uppercase text-violet-600 dark:text-violet-400">Subject</th>
-                        <th className="text-center px-5 py-3 text-[10px] font-black tracking-[0.15em] uppercase text-violet-600 dark:text-violet-400">Max Marks</th>
-                        <th className="text-center px-5 py-3 text-[10px] font-black tracking-[0.15em] uppercase text-violet-600 dark:text-violet-400">Obtained</th>
-                        <th className="text-center px-5 py-3 text-[10px] font-black tracking-[0.15em] uppercase text-violet-600 dark:text-violet-400">Grade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {subjects.map((subject, index) => (
-                        <tr key={index} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-                          <td className="px-5 py-3 text-gray-500 dark:text-gray-400 font-semibold">{index + 1}</td>
-                          <td className="px-5 py-3 font-bold text-gray-900 dark:text-white">{subject.subject_name || subject.name || "N/A"}</td>
-                          <td className="px-5 py-3 text-center text-gray-600 dark:text-gray-300">{subject.max_marks ?? "-"}</td>
-                          <td className="px-5 py-3 text-center font-bold text-violet-600 dark:text-violet-400">{subject.obtained_marks ?? subject.marks_obtained ?? "-"}</td>
-                          <td className="px-5 py-3 text-center">
-                            {subject.grade ? (
-                              <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
-                                {subject.grade}
-                              </span>
-                            ) : "-"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </motion.div>
-            </>
-          )}
-
-          <Divider dots={["#6366f1", "#8b5cf6"]} />
-
-          {/* ─── INSTITUTE DETAILS ─── */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.6 }}
-            className="space-y-4"
-          >
-            <SectionLabel>Institute Details</SectionLabel>
-
-            <div className="bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-2xl overflow-hidden shadow-sm">
-              <div className="bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 border-b border-gray-200 dark:border-gray-600 px-6 py-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-[46px] h-[46px] bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                    <FiGlobe className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black tracking-[0.16em] uppercase text-indigo-600 dark:text-indigo-400 mb-1">
-                      Name of Institute
-                    </p>
-                    <p className="text-[1.05rem] font-black text-gray-900 dark:text-white leading-tight">
-                      {data.institute?.name ?? "N/A"}
-                    </p>
-                    {data.institute?.city && (
-                      <p className="text-xs font-semibold text-violet-600 dark:text-violet-400 mt-1">
-                        {data.institute.city}
-                      </p>
+            {/* Details */}
+            <div className="flex-1 space-y-4 text-center lg:text-left">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">{studentName}</h2>
+                {data.course?.name && (
+                  <p className="text-sm sm:text-base text-gray-500 font-medium mt-1 flex flex-wrap items-center justify-center lg:justify-start gap-2">
+                    <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" /></svg>
+                    {data.course.name}
+                    {data.course?.duration && (
+                      <span className="text-gray-300">|</span>
                     )}
-                  </div>
-                </div>
+                    {data.course?.duration && (
+                      <span className="text-gray-400">{data.course.duration}</span>
+                    )}
+                  </p>
+                )}
               </div>
 
-              {data.institute?.email && (
-                <InstituteRow
-                  icon={<FiMail className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
-                  iconBg="bg-blue-100 dark:bg-blue-900/40"
-                  label="Institute Email"
-                  value={data.institute.email}
+              {/* Tags */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2">
+                <Tag color="indigo" label={`ID: ${data.id}`} />
+                {data.student?.dob && <Tag color="purple" label={`DOB: ${data.student.dob}`} />}
+                {data.batch?.name && <Tag color="emerald" label={`Batch: ${data.batch.name}`} />}
+              </div>
+
+              {/* Family + Period */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <InfoTile icon="👤" label="Father / Husband" value={data.student?.middle_name || "Not provided"} />
+                <InfoTile icon="👩" label="Mother" value={data.student?.mother_name || "Not provided"} />
+                {data.course?.period && <InfoTile icon="📅" label="Course Period" value={data.course.period} />}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ SCORE HIGHLIGHT ═══ */}
+        <div className="mx-5 sm:mx-7 lg:mx-8 mb-6 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/80 border border-blue-100/80 p-5 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            {/* Circle */}
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#e5e7eb" strokeWidth="2.5" />
+                <circle
+                  cx="18" cy="18" r="15.9155" fill="none"
+                  stroke={strokeColor(pct)} strokeWidth="2.5"
+                  strokeDasharray={`${pct} ${100 - pct}`}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000"
                 />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl sm:text-3xl font-black text-gray-900">{pct.toFixed(1)}<span className="text-base font-bold text-gray-400">%</span></span>
+              </div>
+            </div>
+
+            {/* Grade + Stats */}
+            <div className="flex-1 text-center sm:text-left space-y-3">
+              <div className="flex items-center justify-center sm:justify-start gap-3">
+                <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Grade</span>
+                <span className={`${gc.bg} text-white text-xl font-black px-5 py-1.5 rounded-xl shadow-lg`}>
+                  {grade}
+                </span>
+              </div>
+              {data.marks?.type === "single" && (
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-black text-gray-900">{data.marks.obtained_marks ?? 0}</span>
+                  <span className="text-lg text-gray-400 font-semibold">/ {data.marks.total_marks ?? 0} marks</span>
+                </div>
               )}
-              {data.institute?.mobile && (
-                <InstituteRow
-                  icon={<FiPhone className="w-4 h-4 text-violet-600 dark:text-violet-400" />}
-                  iconBg="bg-violet-100 dark:bg-violet-900/40"
-                  label="Institute Contact"
-                  value={data.institute.mobile}
-                />
-              )}
-              {data.institute?.address && (
-                <InstituteRow
-                  icon={<FiMapPin className="w-4 h-4 text-orange-600 dark:text-orange-400" />}
-                  iconBg="bg-orange-100 dark:bg-orange-900/40"
-                  label="Institute Address"
-                  value={data.institute.address}
-                  isLast
-                />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Examination Completed
+              </span>
+            </div>
+
+            {/* Theory / Practical cards (single course) */}
+            {data.marks?.type === "single" && (hasObj || hasPrac) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto">
+                {hasObj && (
+                  <MiniScoreCard
+                    label="Theory"
+                    scored={data.marks.objective_obtained ?? 0}
+                    max={data.marks.objective_max ?? 0}
+                    color="blue"
+                  />
+                )}
+                {hasPrac && (
+                  <MiniScoreCard
+                    label="Practical"
+                    scored={data.marks.practical_obtained ?? 0}
+                    max={data.marks.practical_max ?? 0}
+                    color="green"
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ═══ SEMESTERS / SUBJECTS ═══ */}
+        <div className="px-5 sm:px-7 lg:px-8 pb-6 space-y-6">
+
+          {data.marks?.type === "semester" && data.marks.semesters?.map((sem, i) => (
+            <div key={i} className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" /></svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">{sem.name}</h3>
+                {sem.is_completed ? (
+                  <span className="ml-auto text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">Completed</span>
+                ) : (
+                  <span className="ml-auto text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">In Progress</span>
+                )}
+              </div>
+
+              {sem.is_completed ? (
+                <SubjectsTable subjects={sem.subjects} hasObj={!!hasObj} hasPrac={!!hasPrac} />
+              ) : (
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">
+                  Results for <strong>{sem.name}</strong> will be available after completion of all examinations.
+                </div>
               )}
             </div>
-          </motion.div>
+          ))}
 
-          <p className="text-center text-[10px] font-bold tracking-[0.12em] uppercase text-gray-300 dark:text-gray-600">
-            Online Marksheet Verification ·{" "}
-            <span className="text-violet-500">www.ditrpindia.org</span>
+          {data.marks?.type === "single" && data.marks.course_subjects && data.marks.course_subjects.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                Course Subjects
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                {data.marks.course_subjects.map((sub, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-indigo-50 border border-gray-100 hover:border-indigo-200 rounded-xl transition-all">
+                    <span className="w-7 h-7 rounded-lg bg-indigo-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">{idx + 1}</span>
+                    <span className="text-sm font-medium text-gray-700">{sub}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Grading System */}
+          {data.grades?.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
+                Grading System
+              </h3>
+              <div className="flex flex-wrap gap-2.5">
+                {data.grades.map((g, i) => {
+                  const c = gradeColor(g.name);
+                  return (
+                    <div key={i} className={`flex items-center gap-3 px-4 py-2.5 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow ring-1 ${c.ring}`}>
+                      <span className={`w-9 h-9 rounded-full ${c.bg} text-white text-sm font-black flex items-center justify-center shadow`}>{g.name}</span>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">{g.performance}</p>
+                        <p className="text-[11px] text-gray-400 font-medium">{g.start_percentage}% – {g.end_percentage}%</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-gray-100 bg-gray-50/80 px-5 sm:px-7 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-gray-400 flex items-center gap-1.5">
+            <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+            Digitally verified through DITRP India
+          </p>
+          <p className="text-xs text-gray-400">
+            <span className="font-semibold text-indigo-500">ditrpindia.org</span>
           </p>
         </div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ─── Sub-components ─── */
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-[10px] font-black tracking-[0.22em] uppercase text-gray-400 dark:text-gray-500">
-      {children}
-    </p>
-  );
-}
-
-function Divider({ dots }: { dots: string[] }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex gap-1.5">
-        {dots.map((color, i) => (
-          <span key={i} className="w-[7px] h-[7px] rounded-full inline-block" style={{ background: color }} />
-        ))}
       </div>
-      <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent rounded-full" />
     </div>
   );
 }
 
-const statColors = {
-  indigo:  { label: "text-indigo-600 dark:text-indigo-400",  value: "text-indigo-800 dark:text-indigo-300" },
-  violet:  { label: "text-violet-600 dark:text-violet-400",  value: "text-violet-800 dark:text-violet-300" },
-  cyan:    { label: "text-cyan-600 dark:text-cyan-400",      value: "text-cyan-800 dark:text-cyan-300" },
-  emerald: { label: "text-emerald-600 dark:text-emerald-400", value: "text-emerald-800 dark:text-emerald-300" },
-} as const;
+/* ─── Reusable pieces ─── */
 
-function StatCard({
-  label, value, icon, color,
+function Tag({ color, label }: { color: string; label: string }) {
+  const styles: Record<string, string> = {
+    indigo: "bg-indigo-50 text-indigo-700 border-indigo-200",
+    purple: "bg-purple-50 text-purple-700 border-purple-200",
+    emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  };
+  return (
+    <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full border ${styles[color] ?? styles.indigo}`}>
+      {label}
+    </span>
+  );
+}
+
+function InfoTile({ icon, label, value }: { icon: string; label: string; value: string }) {
+  return (
+    <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+      <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">{icon} {label}</p>
+      <p className="text-sm font-semibold text-gray-800">{value}</p>
+    </div>
+  );
+}
+
+function MiniScoreCard({ label, scored, max, color }: { label: string; scored: number; max: number; color: "blue" | "green" }) {
+  const pct = max > 0 ? (scored / max) * 100 : 0;
+  const barColor = color === "blue" ? "bg-blue-500" : "bg-emerald-500";
+  const bgColor = color === "blue" ? "bg-blue-50 border-blue-100" : "bg-emerald-50 border-emerald-100";
+  const textColor = color === "blue" ? "text-blue-600" : "text-emerald-600";
+  return (
+    <div className={`p-3.5 rounded-xl border ${bgColor}`}>
+      <p className={`text-[11px] font-bold uppercase tracking-wide ${textColor} mb-1`}>{label}</p>
+      <p className="text-xl font-black text-gray-900">{scored}<span className="text-sm text-gray-400 font-semibold">/{max}</span></p>
+      <div className="mt-2 h-1.5 bg-white rounded-full overflow-hidden">
+        <div className={`h-full ${barColor} rounded-full transition-all duration-700`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function SubjectsTable({
+  subjects,
+  hasObj,
+  hasPrac,
 }: {
-  label: string;
-  value: string | null | undefined;
-  icon: React.ReactNode;
-  color: keyof typeof statColors;
+  subjects: Array<{ name: string | null; max_marks: number | null; obtained_marks: number | null; practical_max: number | null; practical_obtained: number | null }>;
+  hasObj: boolean;
+  hasPrac: boolean;
 }) {
-  const c = statColors[color];
+  const valid = subjects.filter((s) => s.name || s.max_marks || s.obtained_marks || s.practical_max || s.practical_obtained);
+  if (valid.length === 0) return null;
+
+  let tObjMax = 0, tObjScored = 0, tPracMax = 0, tPracScored = 0;
+  valid.forEach((s) => {
+    tObjMax += s.max_marks ?? 0;
+    tObjScored += s.obtained_marks ?? 0;
+    tPracMax += s.practical_max ?? 0;
+    tPracScored += s.practical_obtained ?? 0;
+  });
+
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 cursor-default">
-      <p className={`text-[10px] font-black tracking-[0.13em] uppercase ${c.label} flex items-center gap-1.5 mb-2`}>
-        <span className="w-3 h-3">{icon}</span>
-        {label}
-      </p>
-      <p className={`text-base font-bold ${c.value} leading-snug`}>{value ?? "N/A"}</p>
+    <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white">
+              <th className="text-left px-4 py-3 font-semibold">Subject</th>
+              {hasObj && <th className="text-center px-4 py-3 font-semibold">Theory</th>}
+              {hasPrac && <th className="text-center px-4 py-3 font-semibold">Practical</th>}
+              <th className="text-center px-4 py-3 font-semibold">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {valid.map((s, i) => {
+              const oM = s.max_marks ?? 0, oS = s.obtained_marks ?? 0;
+              const pM = s.practical_max ?? 0, pS = s.practical_obtained ?? 0;
+              const total = oS + pS, totalMax = oM + pM;
+              return (
+                <tr key={i} className={`border-t border-gray-100 transition-colors hover:bg-indigo-50/40 ${i % 2 === 0 ? "bg-gray-50/50" : "bg-white"}`}>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-6 h-6 rounded-md bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                      <span className="font-medium text-gray-800">{s.name || `Subject ${i + 1}`}</span>
+                    </div>
+                  </td>
+                  {hasObj && (
+                    <td className="text-center px-4 py-3">
+                      <span className="font-semibold text-gray-700">{oS}</span>
+                      <span className="text-gray-400">/{oM}</span>
+                      <BarMini pct={oM > 0 ? (oS / oM) * 100 : 0} color="bg-blue-500" />
+                    </td>
+                  )}
+                  {hasPrac && (
+                    <td className="text-center px-4 py-3">
+                      <span className="font-semibold text-gray-700">{pS}</span>
+                      <span className="text-gray-400">/{pM}</span>
+                      <BarMini pct={pM > 0 ? (pS / pM) * 100 : 0} color="bg-emerald-500" />
+                    </td>
+                  )}
+                  <td className="text-center px-4 py-3">
+                    <span className="font-bold text-gray-900">{total}</span>
+                    <span className="text-gray-400">/{totalMax}</span>
+                    <BarMini pct={totalMax > 0 ? (total / totalMax) * 100 : 0} color="bg-purple-500" />
+                  </td>
+                </tr>
+              );
+            })}
+            <tr className="bg-gray-100 font-bold border-t-2 border-gray-200">
+              <td className="px-4 py-3 text-gray-900">Total</td>
+              {hasObj && <td className="text-center px-4 py-3 text-gray-900">{tObjScored}/{tObjMax}</td>}
+              {hasPrac && <td className="text-center px-4 py-3 text-gray-900">{tPracScored}/{tPracMax}</td>}
+              <td className="text-center px-4 py-3 text-gray-900">{tObjScored + tPracScored}/{tObjMax + tPracMax}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
-function InstituteRow({
-  icon, iconBg, label, value, isLast = false,
-}: {
-  icon: React.ReactNode;
-  iconBg: string;
-  label: string;
-  value: string;
-  isLast?: boolean;
-}) {
+function BarMini({ pct, color }: { pct: number; color: string }) {
   return (
-    <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-200 hover:translate-x-[5px] hover:bg-gray-100/70 dark:hover:bg-gray-700/40 ${!isLast ? "border-b border-gray-100 dark:border-gray-700" : ""}`}>
-      <div className={`w-9 h-9 ${iconBg} rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5`}>
-        {icon}
-      </div>
-      <div>
-        <p className="text-[10px] font-black tracking-[0.12em] uppercase text-gray-400 dark:text-gray-500 mb-1">
-          {label}
-        </p>
-        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 leading-snug">{value}</p>
-      </div>
+    <div className="mt-1 h-1 bg-gray-200 rounded-full overflow-hidden mx-auto max-w-[80px]">
+      <div className={`h-full ${color} rounded-full transition-all duration-700`} style={{ width: `${pct}%` }} />
     </div>
   );
 }

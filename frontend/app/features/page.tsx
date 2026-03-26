@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Container from "@/components/ui/Container";
@@ -8,31 +8,47 @@ import FeaturesHero from "@/components/features/FeaturesHero";
 import ModuleSelector from "@/components/features/ModuleSelector";
 import SubFeatureTabs from "@/components/features/SubFeatureTabs";
 import FeatureContentCard from "@/components/features/FeatureContentCard";
-import { featuresData } from "@/components/features/featuresData";
+import { featuresData, mapApiToFeatures } from "@/components/features/featuresData";
 import { gsap, ScrollTrigger } from "@/components/features/useGsap";
 import { FiPlay, FiArrowRight } from "react-icons/fi";
+import api from "@/lib/api";
+import { useApi } from "@/lib/useApi";
 
 export default function FeaturesPage() {
+  // Fetch feature modules from API, fall back to hardcoded data
+  const { data: apiModules } = useApi(() => api.getFeatureModules(), [] as any[]);
+  const allFeatures = apiModules.length > 0
+    ? mapApiToFeatures(apiModules)
+    : featuresData;
+
   // Default: first module active, its first sub-feature shown
-  const [activeModuleId, setActiveModuleId] = useState(featuresData[0].id);
+  const [activeModuleId, setActiveModuleId] = useState(allFeatures[0]?.id);
   const [activeSubFeatureId, setActiveSubFeatureId] = useState(
-    featuresData[0].subFeatures[0].id
+    allFeatures[0]?.subFeatures?.[0]?.id
   );
+
+  // Reset active IDs when API data loads
+  useEffect(() => {
+    if (allFeatures.length > 0) {
+      setActiveModuleId(allFeatures[0].id);
+      setActiveSubFeatureId(allFeatures[0].subFeatures[0]?.id);
+    }
+  }, [apiModules]);
 
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const ctaSectionRef = useRef<HTMLElement>(null);
 
-  const activeModule = featuresData.find((f) => f.id === activeModuleId)!;
+  const activeModule = allFeatures.find((f) => f.id === activeModuleId) || allFeatures[0];
   const activeSubFeature = activeModule.subFeatures.find(
     (sf) => sf.id === activeSubFeatureId
-  )!;
+  ) || activeModule.subFeatures[0];
 
   // Module change: GSAP animation for transitioning content
   const handleModuleSelect = useCallback(
     (id: string) => {
       if (id === activeModuleId) return;
 
-      const newModule = featuresData.find((f) => f.id === id);
+      const newModule = allFeatures.find((f) => f.id === id);
       if (!newModule) return;
 
       // Animate out current content
@@ -64,7 +80,7 @@ export default function FeaturesPage() {
         setActiveSubFeatureId(newModule.subFeatures[0].id);
       }
     },
-    [activeModuleId]
+    [activeModuleId, allFeatures]
   );
 
   // Sub-feature change with animation
@@ -146,7 +162,7 @@ export default function FeaturesPage() {
                 Select a Module
               </p>
               <ModuleSelector
-                features={featuresData}
+                features={allFeatures}
                 activeId={activeModuleId}
                 onSelect={handleModuleSelect}
               />

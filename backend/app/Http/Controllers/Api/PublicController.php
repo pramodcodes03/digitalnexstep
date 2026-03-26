@@ -23,8 +23,11 @@ use App\Models\SiteSetting;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\AwardImage;
+use App\Models\FeatureModule;
+use App\Models\JobApplication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PublicController extends Controller
 {
@@ -172,6 +175,13 @@ class PublicController extends Controller
         );
     }
 
+    public function featureModules(): JsonResponse
+    {
+        return response()->json(
+            FeatureModule::where('is_active', true)->orderBy('sort_order')->get()
+        );
+    }
+
     public function siteSettings(): JsonResponse
     {
         $settings = SiteSetting::all()->pluck('value', 'key');
@@ -210,6 +220,30 @@ class PublicController extends Controller
         Enquiry::create($validated);
 
         return response()->json(['message' => 'Enquiry submitted successfully.'], 201);
+    }
+
+    public function submitJobApplication(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'job_update_id' => 'nullable|integer|exists:job_updates,id',
+            'job_title'     => 'required|string|max:255',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|max:255',
+            'phone'         => 'required|string|max:20',
+            'qualification' => 'nullable|string|max:255',
+            'experience'    => 'nullable|string|max:255',
+            'resume'        => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'cover_letter'  => 'nullable|string|max:5000',
+        ]);
+
+        if ($request->hasFile('resume')) {
+            $validated['resume_path'] = $request->file('resume')->store('resumes', 'public');
+        }
+        unset($validated['resume']);
+
+        JobApplication::create($validated);
+
+        return response()->json(['message' => 'Application submitted successfully.'], 201);
     }
 
     public function submitFranchise(Request $request): JsonResponse

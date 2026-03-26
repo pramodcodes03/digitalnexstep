@@ -30,7 +30,7 @@
 
         {{-- Home Page --}}
         <x-admin-nav-group label="Home Page" icon="home" key="home"
-            :active="request()->routeIs('admin.features.*') || request()->routeIs('admin.achievements.*') || request()->routeIs('admin.testimonials.*') || request()->routeIs('admin.partners.*') || request()->routeIs('admin.faqs.*') || request()->routeIs('admin.pricing-plans.*') || request()->routeIs('admin.job-updates.*') || request()->routeIs('admin.centers.*') || request()->routeIs('admin.award-images.*')">
+            :active="request()->routeIs('admin.features.*') || request()->routeIs('admin.achievements.*') || request()->routeIs('admin.testimonials.*') || request()->routeIs('admin.partners.*') || request()->routeIs('admin.faqs.*') || request()->routeIs('admin.pricing-plans.*') || request()->routeIs('admin.job-updates.*') || request()->routeIs('admin.job-applications.*') || request()->routeIs('admin.centers.*') || request()->routeIs('admin.award-images.*')">
             <x-admin-nav-child href="{{ route('admin.award-images.index') }}" :active="request()->routeIs('admin.award-images.*')">Award Images</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.features.index') }}" :active="request()->routeIs('admin.features.*')">Features</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.achievements.index') }}" :active="request()->routeIs('admin.achievements.*')">Achievements</x-admin-nav-child>
@@ -39,6 +39,7 @@
             <x-admin-nav-child href="{{ route('admin.faqs.index') }}" :active="request()->routeIs('admin.faqs.*')">FAQs</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.pricing-plans.index') }}" :active="request()->routeIs('admin.pricing-plans.*')">Pricing Plans</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.job-updates.index') }}" :active="request()->routeIs('admin.job-updates.*')">Job Updates</x-admin-nav-child>
+            <x-admin-nav-child href="{{ route('admin.job-applications.index') }}" :active="request()->routeIs('admin.job-applications.*')">Job Applications</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.centers.index') }}" :active="request()->routeIs('admin.centers.*')">Centers</x-admin-nav-child>
         </x-admin-nav-group>
 
@@ -62,6 +63,11 @@
             <x-admin-nav-child href="{{ route('admin.franchise-registrations.index') }}" :active="request()->routeIs('admin.franchise-registrations.*')">Registrations</x-admin-nav-child>
             <x-admin-nav-child href="{{ route('admin.page-sections.index', ['page' => 'franchise-details']) }}" :active="request()->is('admin/page-sections/franchise-details*')">Details Page</x-admin-nav-child>
         </x-admin-nav-group>
+
+        {{-- Features Page --}}
+        <x-admin-nav-link href="{{ route('admin.feature-modules.index') }}" icon="pages" :active="request()->routeIs('admin.feature-modules.*')">
+            Feature Modules
+        </x-admin-nav-link>
 
         {{-- Gallery --}}
         <x-admin-nav-link href="{{ route('admin.gallery-items.index') }}" icon="gallery" :active="request()->routeIs('admin.gallery-items.*')">

@@ -21,7 +21,10 @@ class PageSectionController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('section_key', 'like', "%{$search}%")
-                  ->orWhere('subtitle', 'like', "%{$search}%");
+                  ->orWhere('subtitle', 'like', "%{$search}%")
+                  ->orWhere('page', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%")
+                  ->orWhere('extra_data', 'like', "%{$search}%");
             });
         }
 

@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "mum-objectstore.e2enetworks.net",
         pathname: "/hdi-multi-tenant/**",
       },
+      {
+        protocol: "https",
+        hostname: "objectstore.e2enetworks.net",
+        pathname: "/digitalnexstep/**",
+      },
     ],
   },
 };
